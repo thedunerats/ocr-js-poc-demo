@@ -1,0 +1,44 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# Test artifacts
+.pytest_cache/
+htmlcov/
+.coverage
+*.cover
+test-results/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Neural network saved data
+ocr_neural_network.json
+test_ocr_neural_network.json
+test_nn.json
+
+# Batch scripts (now using Docker)
+*.bat
+
+# Old config files
+pytest.ini
+setup.cfg
