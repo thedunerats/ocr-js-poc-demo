@@ -9,7 +9,7 @@ import os
 # Add src directory to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-from neural_network_design import test, find_optimal_hidden_nodes
+from neural_network_design import model_test, find_optimal_hidden_nodes
 from ocr import OCRNeuralNetwork
 
 
@@ -48,23 +48,23 @@ class TestNeuralNetworkDesign:
         data_matrix, data_labels, _, _ = sample_data
         small_test_indices = list(range(80, 85))  # Just 5 samples
         
-        result = test(data_matrix, data_labels, small_test_indices, trained_nn)
+        result = model_test(data_matrix, data_labels, small_test_indices, trained_nn)
         
         assert isinstance(result, (float, np.floating))
         assert 0 <= result <= 1
     
-    def test_test_function_consistency(self, sample_data, trained_nn):
+    def test_model_test_function_consistency(self, sample_data, trained_nn):
         """Test that the test function gives consistent results"""
         data_matrix, data_labels, _, test_indices = sample_data
         
         # Since we're averaging over multiple runs, results should be similar
-        result1 = test(data_matrix, data_labels, test_indices, trained_nn)
-        result2 = test(data_matrix, data_labels, test_indices, trained_nn)
+        result1 = model_test(data_matrix, data_labels, test_indices, trained_nn)
+        result2 = model_test(data_matrix, data_labels, test_indices, trained_nn)
         
         # Results should be close (within reasonable variance)
         assert abs(result1 - result2) < 0.3  # Allow for some randomness
     
-    def test_test_function_perfect_prediction(self, sample_data):
+    def test_model_test_function_perfect_prediction(self, sample_data):
         """Test with a scenario where predictions might be perfect"""
         data_matrix, data_labels, train_indices, _ = sample_data
         test_indices = train_indices[:10]  # Use training data as test
@@ -80,17 +80,17 @@ class TestNeuralNetworkDesign:
             ]
             nn.train(training_data)
 
-        result = test(data_matrix, data_labels, test_indices, nn)
+        result = model_test(data_matrix, data_labels, test_indices, nn)
 
         # Result should be between 0 and 1
         assert 0 <= result <= 1
 
-    def test_test_function_with_single_sample(self, sample_data, trained_nn):
+    def test_model_test_function_with_single_sample(self, sample_data, trained_nn):
         """Test the test function with a single test sample"""
         data_matrix, data_labels, _, _ = sample_data
         single_test_index = [85]
 
-        result = test(data_matrix, data_labels, single_test_index, trained_nn)
+        result = model_test(data_matrix, data_labels, single_test_index, trained_nn)
 
         assert isinstance(result, (float, np.floating))
         assert 0 <= result <= 1
@@ -100,7 +100,7 @@ class TestNeuralNetworkDesign:
         # Verify the function exists and is callable
         assert callable(find_optimal_hidden_nodes)
     
-    def test_test_function_with_different_nn_sizes(self, sample_data):
+    def test_model_test_function_with_different_nn_sizes(self, sample_data):
         """Test the test function with neural networks of different sizes"""
         data_matrix, data_labels, train_indices, test_indices = sample_data
         
@@ -109,28 +109,28 @@ class TestNeuralNetworkDesign:
                 num_nodes, data_matrix, data_labels,
                 train_indices, use_file=False
             )
-            result = test(data_matrix, data_labels, test_indices, nn)
+            result = model_test(data_matrix, data_labels, test_indices, nn)
             
             assert isinstance(result, (float, np.floating))
             assert 0 <= result <= 1
     
-    def test_test_function_accuracy_calculation(self, sample_data):
+    def test_model_test_function_accuracy_calculation(self, sample_data):
         """Test that accuracy is calculated correctly"""
         data_matrix, data_labels, train_indices, _ = sample_data
         test_indices = [80, 81, 82]  # 3 test samples
         
         nn = OCRNeuralNetwork(10, data_matrix, data_labels, train_indices, use_file=False)
-        result = test(data_matrix, data_labels, test_indices, nn)
+        result = model_test(data_matrix, data_labels, test_indices, nn)
         
         # With random initialization and 3 samples, accuracy should be reasonable
         assert 0 <= result <= 1
     
-    def test_test_function_empty_test_set(self, sample_data, trained_nn):
+    def test_model_test_function_empty_test_set(self, sample_data, trained_nn):
         """Test the test function with empty test set"""
         data_matrix, data_labels, _, _ = sample_data
         empty_test_indices = []
         
-        result = test(data_matrix, data_labels, empty_test_indices, trained_nn)
+        result = model_test(data_matrix, data_labels, empty_test_indices, trained_nn)
         # Should return 0.0 for empty test set
         assert result == 0.0
     
@@ -138,7 +138,7 @@ class TestNeuralNetworkDesign:
         """Test that all necessary functions are imported correctly"""
         import neural_network_design
         
-        assert hasattr(neural_network_design, 'test')
+        assert hasattr(neural_network_design, 'model_test')
         assert hasattr(neural_network_design, 'find_optimal_hidden_nodes')
     
     def test_repeated_testing(self, sample_data, trained_nn):
@@ -147,7 +147,7 @@ class TestNeuralNetworkDesign:
         
         results = []
         for _ in range(3):
-            result = test(data_matrix, data_labels, test_indices, trained_nn)
+            result = model_test(data_matrix, data_labels, test_indices, trained_nn)
             results.append(result)
             assert 0 <= result <= 1
         
@@ -162,8 +162,8 @@ class TestNeuralNetworkDesign:
         test_indices_1 = list(range(80, 90))
         test_indices_2 = list(range(90, 100))
         
-        result1 = test(data_matrix, data_labels, test_indices_1, trained_nn)
-        result2 = test(data_matrix, data_labels, test_indices_2, trained_nn)
+        result1 = model_test(data_matrix, data_labels, test_indices_1, trained_nn)
+        result2 = model_test(data_matrix, data_labels, test_indices_2, trained_nn)
         
         assert 0 <= result1 <= 1
         assert 0 <= result2 <= 1

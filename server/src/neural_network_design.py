@@ -6,7 +6,7 @@ It trains networks with varying hidden node counts and evaluates their performan
 from ocr import OCRNeuralNetwork
 
 
-def test(data_matrix, data_labels, test_indices, nn):
+def model_test(data_matrix, data_labels, test_indices, nn):
     """
     Test the neural network's accuracy
 
