@@ -11,13 +11,13 @@ class OCRNeuralNetwork:
     def __init__(self, num_hidden_nodes, data_matrix, data_labels, training_indices, use_file=True):
         self.num_hidden_nodes = num_hidden_nodes
         self._use_file = use_file
-        
+
         # Initialize weights
         self.theta1 = self._rand_initialize_weights(400, num_hidden_nodes)
         self.theta2 = self._rand_initialize_weights(num_hidden_nodes, 10)
         self.input_layer_bias = self._rand_initialize_weights(1, num_hidden_nodes)
         self.hidden_layer_bias = self._rand_initialize_weights(1, 10)
-        
+
         # Try to load saved weights
         if use_file and os.path.isfile(self.NN_FILE_PATH):
             self._load()
@@ -50,7 +50,7 @@ class OCRNeuralNetwork:
                 'y0': data_matrix[data_index],
                 'label': data_labels[data_index]
             }
-            
+
             # Forward propagation
             y1 = np.dot(np.asmatrix(self.theta1), np.asmatrix(data['y0']).T)
             sum1 = y1 + np.asmatrix(self.input_layer_bias)
@@ -156,4 +156,3 @@ class OCRNeuralNetwork:
         self.theta2 = [np.array(li) for li in nn['theta2']]
         self.input_layer_bias = [np.array(li) for li in nn['b1']]
         self.hidden_layer_bias = [np.array(li) for li in nn['b2']]
-

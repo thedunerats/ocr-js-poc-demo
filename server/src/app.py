@@ -22,24 +22,24 @@ def handle_request():
     """Handle training and prediction requests"""
     try:
         payload = request.get_json()
-        
+   
         if not payload:
             return jsonify({"error": "Invalid JSON"}), 400
-        
+
         if payload.get('train'):
             train_array = payload.get('trainArray')
             if not train_array:
                 return jsonify({"error": "trainArray is required"}), 400
-            
+
             nn.train(train_array)
             nn.save()
             return jsonify({"success": True, "message": "Training completed"}), 200
-        
+
         elif payload.get('predict'):
             image = payload.get('image')
             if image is None:
                 return jsonify({"error": "image is required"}), 400
-            
+
             try:
                 result = nn.predict(image)
                 return jsonify({
@@ -48,10 +48,10 @@ def handle_request():
                 }), 200
             except Exception as e:
                 return jsonify({"error": f"Prediction failed: {str(e)}"}), 500
-        
+
         else:
             return jsonify({"error": "Invalid request. Use 'train' or 'predict'"}), 400
-    
+
     except Exception as e:
         return jsonify({"error": f"Server error: {str(e)}"}), 500
 

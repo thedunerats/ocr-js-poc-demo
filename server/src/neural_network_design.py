@@ -21,7 +21,7 @@ def model_test(data_matrix, data_labels, test_indices, nn):
     """
     if not test_indices:
         return 0.0
-    
+
     avg_sum = 0
     for _ in range(100):
         correct_guess_count = 0
@@ -50,7 +50,7 @@ def find_optimal_hidden_nodes(data_matrix, data_labels, train_indices, test_indi
 
     for i in range(5, 50, 5):
         nn = OCRNeuralNetwork(i, data_matrix, data_labels, train_indices, False)
-        performance = test(data_matrix, data_labels, test_indices, nn)
+        performance = model_test(data_matrix, data_labels, test_indices, nn)
         print(f"{i} Hidden Nodes: {performance:.4f}")
 
 
