@@ -64,12 +64,20 @@ class OCRNeuralNetwork:
             actual_vals = [0] * 10
             actual_vals[data['label']] = 1
             output_errors = np.asmatrix(actual_vals).T - np.asmatrix(y2)
-            hidden_errors = np.multiply(np.dot(np.asmatrix(self.theta2).T, output_errors),
-                                        self.sigmoid_prime(sum1))
+            hidden_errors = np.multiply(
+                np.dot(np.asmatrix(self.theta2).T, output_errors),
+                self.sigmoid_prime(sum1)
+            )
 
             # Update weights
-            self.theta1 += self.LEARNING_RATE * np.dot(np.asmatrix(hidden_errors), np.asmatrix(data['y0']))
-            self.theta2 += self.LEARNING_RATE * np.dot(np.asmatrix(output_errors), np.asmatrix(y1).T)
+            self.theta1 += (
+                self.LEARNING_RATE *
+                np.dot(np.asmatrix(hidden_errors), np.asmatrix(data['y0']))
+            )
+            self.theta2 += (
+                self.LEARNING_RATE *
+                np.dot(np.asmatrix(output_errors), np.asmatrix(y1).T)
+            )
             self.hidden_layer_bias += self.LEARNING_RATE * output_errors
             self.input_layer_bias += self.LEARNING_RATE * hidden_errors
 
@@ -89,12 +97,20 @@ class OCRNeuralNetwork:
             actual_vals = [0] * 10
             actual_vals[data['label']] = 1
             output_errors = np.asmatrix(actual_vals).T - np.asmatrix(y2)
-            hidden_errors = np.multiply(np.dot(np.asmatrix(self.theta2).T, output_errors),
-                                        self.sigmoid_prime(sum1))
+            hidden_errors = np.multiply(
+                np.dot(np.asmatrix(self.theta2).T, output_errors),
+                self.sigmoid_prime(sum1)
+            )
 
             # Update weights
-            self.theta1 += self.LEARNING_RATE * np.dot(np.asmatrix(hidden_errors), np.asmatrix(data['y0']))
-            self.theta2 += self.LEARNING_RATE * np.dot(np.asmatrix(output_errors), np.asmatrix(y1).T)
+            self.theta1 += (
+                self.LEARNING_RATE *
+                np.dot(np.asmatrix(hidden_errors), np.asmatrix(data['y0']))
+            )
+            self.theta2 += (
+                self.LEARNING_RATE *
+                np.dot(np.asmatrix(output_errors), np.asmatrix(y1).T)
+            )
             self.hidden_layer_bias += self.LEARNING_RATE * output_errors
             self.input_layer_bias += self.LEARNING_RATE * hidden_errors
 
