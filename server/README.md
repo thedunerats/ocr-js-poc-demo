@@ -203,7 +203,7 @@ server/
 - **Framework**: Custom implementation using NumPy
 
 ### Docker Setup
-- **Base Image**: Python 3.11-slim (lightweight)
+- **Base Image**: Python 3.13-slim (lightweight)
 - **Multi-stage**: Separate images for app and tests
 - **Health Checks**: Automatic health monitoring
 - **Volumes**: Code mounting for development

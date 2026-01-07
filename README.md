@@ -115,7 +115,7 @@ pytest --cov=src --cov-report=html
 
 ### Server
 - Docker & Docker Compose
-- Python 3.11 (in container)
+- Python 3.13 (in container)
 - NumPy - Numerical computing
 - Flask - Web framework
 - Flask-CORS - Cross-origin resource sharing

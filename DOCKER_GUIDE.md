@@ -119,8 +119,8 @@ pytest
 
 ```
 server/
-├── Dockerfile              # Server container
-├── Dockerfile.test         # Test container
+├── Dockerfile              # Server container (Python 3.13)
+├── Dockerfile.test         # Test container (Python 3.13)
 ├── docker-compose.yml      # Orchestration
 ├── .dockerignore          # Exclude from builds
 ├── Makefile               # Convenience commands
