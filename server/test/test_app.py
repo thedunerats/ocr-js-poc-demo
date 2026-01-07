@@ -7,7 +7,7 @@ import sys
 import os
 import numpy as np
 
-from app import create_app
+from src.app import create_app
 from ocr import OCRNeuralNetwork
 
 # Add src directory to path for imports
