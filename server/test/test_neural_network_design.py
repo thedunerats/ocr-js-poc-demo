@@ -10,7 +10,7 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 from neural_network_design import model_test, find_optimal_hidden_nodes
-from ocr import OCRNeuralNetwork
+from src.ocr import OCRNeuralNetwork
 
 
 class TestNeuralNetworkDesign:

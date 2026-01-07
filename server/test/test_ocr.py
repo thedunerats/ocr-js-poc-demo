@@ -6,11 +6,12 @@ import numpy as np
 import json
 import os
 import sys
+from src.ocr import OCRNeuralNetwork
 
 # Add src directory to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-from ocr import OCRNeuralNetwork
+
 
 
 class TestOCRNeuralNetwork:

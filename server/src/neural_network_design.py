@@ -3,7 +3,7 @@ This script tests different neural network configurations to find the optimal nu
 of hidden nodes.
 It trains networks with varying hidden node counts and evaluates their performance.
 """
-from ocr import OCRNeuralNetwork
+from src.ocr import OCRNeuralNetwork
 
 
 def model_test(data_matrix, data_labels, test_indices, nn):
