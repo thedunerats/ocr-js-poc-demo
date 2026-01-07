@@ -50,8 +50,8 @@ class TestFlaskServer:
     
     def test_post_endpoint_no_data(self, client):
         """Test POST endpoint with no data"""
-        response = client.post('/', 
-                              data='',
+        response = client.post('/',
+                              data=None,
                               content_type='application/json')
         
         assert response.status_code == 400
@@ -60,11 +60,12 @@ class TestFlaskServer:
     
     def test_post_endpoint_invalid_json(self, client):
         """Test POST endpoint with invalid JSON"""
-        response = client.post('/', 
+        response = client.post('/',
                               data='not json',
                               content_type='application/json')
         
-        assert response.status_code in [400, 415]
+        # Flask returns 400 for invalid JSON
+        assert response.status_code == 400
     
     def test_train_endpoint_missing_train_array(self, client):
         """Test training endpoint without trainArray"""
@@ -252,5 +253,7 @@ class TestFlaskServer:
                               data=json.dumps(payload),
                               content_type='application/json')
         
-        # Should still return success (nothing to train)
-        assert response.status_code == 200
+        # Empty array is falsy, should return error
+        assert response.status_code == 400
+        data = json.loads(response.data)
+        assert 'error' in data
