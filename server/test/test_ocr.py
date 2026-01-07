@@ -141,12 +141,15 @@ class TestOCRNeuralNetwork:
         assert 'b1' in saved_data
         assert 'b2' in saved_data
 
-        # Store original weights
+        # Store original weights and biases
         original_theta1 = [np.array(t) for t in nn_instance.theta1]
         original_theta2 = [np.array(t) for t in nn_instance.theta2]
+        original_b1 = [np.array(b) for b in nn_instance.input_layer_bias]
+        original_b2 = [np.array(b) for b in nn_instance.hidden_layer_bias]
 
         # Modify weights
         nn_instance.theta1 = nn_instance._rand_initialize_weights(400, nn_instance.num_hidden_nodes)
+        nn_instance.theta2 = nn_instance._rand_initialize_weights(nn_instance.num_hidden_nodes, 10)
 
         # Load weights back
         nn_instance._load()
@@ -156,6 +159,10 @@ class TestOCRNeuralNetwork:
             assert np.allclose(nn_instance.theta1[i], original_theta1[i])
         for i in range(len(original_theta2)):
             assert np.allclose(nn_instance.theta2[i], original_theta2[i])
+        for i in range(len(original_b1)):
+            assert np.allclose(nn_instance.input_layer_bias[i], original_b1[i])
+        for i in range(len(original_b2)):
+            assert np.allclose(nn_instance.hidden_layer_bias[i], original_b2[i])
 
         # Cleanup
         os.remove(nn_instance.NN_FILE_PATH)
