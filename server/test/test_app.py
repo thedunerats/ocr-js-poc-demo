@@ -10,7 +10,7 @@ import numpy as np
 # Add src directory to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-from server import create_app
+from app import create_app
 from ocr import OCRNeuralNetwork
 
 

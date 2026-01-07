@@ -33,17 +33,17 @@ class TestNeuralNetworkDesign:
         nn = OCRNeuralNetwork(15, data_matrix, data_labels, train_indices, use_file=False)
         return nn
     
-    def test_test_function_structure(self, sample_data, trained_nn):
+    def test_model_test_function_structure(self, sample_data, trained_nn):
         """Test the test function returns valid results"""
         data_matrix, data_labels, _, test_indices = sample_data
         
-        result = test(data_matrix, data_labels, test_indices, trained_nn)
+        result = model_test(data_matrix, data_labels, test_indices, trained_nn)
         
         # Result should be a float between 0 and 1 (accuracy)
         assert isinstance(result, (float, np.floating))
         assert 0 <= result <= 1
     
-    def test_test_function_with_small_test_set(self, sample_data, trained_nn):
+    def test_model_test_function_with_small_test_set(self, sample_data, trained_nn):
         """Test the test function with a small test set"""
         data_matrix, data_labels, _, _ = sample_data
         small_test_indices = list(range(80, 85))  # Just 5 samples
