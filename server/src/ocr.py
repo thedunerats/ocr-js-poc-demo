@@ -52,31 +52,31 @@ class OCRNeuralNetwork:
             }
 
             # Forward propagation
-            y1 = np.dot(np.asmatrix(self.theta1), np.asmatrix(data['y0']).T)
-            sum1 = y1 + np.asmatrix(self.input_layer_bias)
+            y1 = np.dot(np.array(self.theta1), np.array(data['y0']).reshape(-1, 1))
+            sum1 = y1 + np.array(self.input_layer_bias).reshape(-1, 1)
             y1 = self.sigmoid(sum1)
 
-            y2 = np.dot(np.asmatrix(self.theta2), y1)
-            y2 = np.add(y2, np.asmatrix(self.hidden_layer_bias))
+            y2 = np.dot(np.array(self.theta2), y1)
+            y2 = np.add(y2, np.array(self.hidden_layer_bias).reshape(-1, 1))
             y2 = self.sigmoid(y2)
 
             # Backpropagation
             actual_vals = [0] * 10
             actual_vals[data['label']] = 1
-            output_errors = np.asmatrix(actual_vals).T - np.asmatrix(y2)
+            output_errors = np.array(actual_vals).reshape(-1, 1) - y2
             hidden_errors = np.multiply(
-                np.dot(np.asmatrix(self.theta2).T, output_errors),
+                np.dot(np.array(self.theta2).T, output_errors),
                 self.sigmoid_prime(sum1)
             )
 
             # Update weights
             self.theta1 += (
                 self.LEARNING_RATE *
-                np.dot(np.asmatrix(hidden_errors), np.asmatrix(data['y0']))
+                np.dot(hidden_errors, np.array(data['y0']).reshape(1, -1))
             )
             self.theta2 += (
                 self.LEARNING_RATE *
-                np.dot(np.asmatrix(output_errors), np.asmatrix(y1).T)
+                np.dot(output_errors, y1.T)
             )
             self.hidden_layer_bias += self.LEARNING_RATE * output_errors
             self.input_layer_bias += self.LEARNING_RATE * hidden_errors
@@ -85,46 +85,46 @@ class OCRNeuralNetwork:
         """Train the network with new data"""
         for data in training_data_array:
             # Forward propagation
-            y1 = np.dot(np.asmatrix(self.theta1), np.asmatrix(data['y0']).T)
-            sum1 = y1 + np.asmatrix(self.input_layer_bias)
+            y1 = np.dot(np.array(self.theta1), np.array(data['y0']).reshape(-1, 1))
+            sum1 = y1 + np.array(self.input_layer_bias).reshape(-1, 1)
             y1 = self.sigmoid(sum1)
 
-            y2 = np.dot(np.asmatrix(self.theta2), y1)
-            y2 = np.add(y2, np.asmatrix(self.hidden_layer_bias))
+            y2 = np.dot(np.array(self.theta2), y1)
+            y2 = np.add(y2, np.array(self.hidden_layer_bias).reshape(-1, 1))
             y2 = self.sigmoid(y2)
 
             # Backpropagation
             actual_vals = [0] * 10
             actual_vals[data['label']] = 1
-            output_errors = np.asmatrix(actual_vals).T - np.asmatrix(y2)
+            output_errors = np.array(actual_vals).reshape(-1, 1) - y2
             hidden_errors = np.multiply(
-                np.dot(np.asmatrix(self.theta2).T, output_errors),
+                np.dot(np.array(self.theta2).T, output_errors),
                 self.sigmoid_prime(sum1)
             )
 
             # Update weights
             self.theta1 += (
                 self.LEARNING_RATE *
-                np.dot(np.asmatrix(hidden_errors), np.asmatrix(data['y0']))
+                np.dot(hidden_errors, np.array(data['y0']).reshape(1, -1))
             )
             self.theta2 += (
                 self.LEARNING_RATE *
-                np.dot(np.asmatrix(output_errors), np.asmatrix(y1).T)
+                np.dot(output_errors, y1.T)
             )
             self.hidden_layer_bias += self.LEARNING_RATE * output_errors
             self.input_layer_bias += self.LEARNING_RATE * hidden_errors
 
     def predict(self, test):
         """Predict the digit from input data"""
-        y1 = np.dot(np.asmatrix(self.theta1), np.asmatrix(test).T)
-        y1 = y1 + np.asmatrix(self.input_layer_bias)
+        y1 = np.dot(np.array(self.theta1), np.array(test).reshape(-1, 1))
+        y1 = y1 + np.array(self.input_layer_bias).reshape(-1, 1)
         y1 = self.sigmoid(y1)
 
         y2 = np.dot(np.array(self.theta2), y1)
-        y2 = np.add(y2, self.hidden_layer_bias)
+        y2 = np.add(y2, np.array(self.hidden_layer_bias).reshape(-1, 1))
         y2 = self.sigmoid(y2)
 
-        results = y2.T.tolist()[0]
+        results = y2.flatten().tolist()
         return results.index(max(results))
 
     def save(self):

@@ -21,7 +21,10 @@ nn = OCRNeuralNetwork(20, data_matrix, data_labels, training_indices, use_file=T
 def handle_request():
     """Handle training and prediction requests"""
     try:
-        payload = request.get_json()
+        try:
+            payload = request.get_json()
+        except Exception:
+            return jsonify({"error": "Invalid JSON"}), 400
    
         if not payload:
             return jsonify({"error": "Invalid JSON"}), 400
