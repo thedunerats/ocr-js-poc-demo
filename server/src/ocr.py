@@ -44,30 +44,42 @@ class OCRNeuralNetwork:
 
     def _train(self, data_matrix, data_labels, training_indices):
         """Train the neural network using backpropagation"""
-        for idx in training_indices:
-            y0, label = data_matrix[idx], data_labels[idx]
+        for i in range(len(training_indices)):
+            data_index = training_indices[i]
+            data = {
+                'y0': data_matrix[data_index],
+                'label': data_labels[data_index]
+            }
 
             # Forward propagation
-            y1 = np.dot(np.asmatrix(self.theta1), np.asmatrix(y0).T)
-            y1 = self.sigmoid(y1 + np.asmatrix(self.input_layer_bias))
+            y1 = np.dot(np.asmatrix(self.theta1), np.asmatrix(data['y0']).T)
+            sum1 = y1 + np.asmatrix(self.input_layer_bias)
+            y1 = self.sigmoid(sum1)
+
             y2 = np.dot(np.asmatrix(self.theta2), y1)
-            y2 = self.sigmoid(y2 + np.asmatrix(self.hidden_layer_bias))
+            y2 = np.add(y2, np.asmatrix(self.hidden_layer_bias))
+            y2 = self.sigmoid(y2)
 
             # Backpropagation
-            actual = np.zeros(10)
-            actual[label] = 1
-            output_errors = np.asmatrix(actual).T - np.asmatrix(y2)
+            actual_vals = [0] * 10
+            actual_vals[data['label']] = 1
+            output_errors = np.asmatrix(actual_vals).T - np.asmatrix(y2)
             hidden_errors = np.multiply(
                 np.dot(np.asmatrix(self.theta2).T, output_errors),
-                self.sigmoid_prime(y1 + np.asmatrix(self.input_layer_bias))
+                self.sigmoid_prime(sum1)
             )
 
             # Update weights
-            lr = self.LEARNING_RATE
-            self.theta1 += lr * np.dot(np.asmatrix(hidden_errors), np.asmatrix(y0))
-            self.theta2 += lr * np.dot(np.asmatrix(output_errors), np.asmatrix(y1).T)
-            self.hidden_layer_bias += lr * output_errors
-            self.input_layer_bias += lr * hidden_errors
+            self.theta1 += (
+                self.LEARNING_RATE *
+                np.dot(np.asmatrix(hidden_errors), np.asmatrix(data['y0']))
+            )
+            self.theta2 += (
+                self.LEARNING_RATE *
+                np.dot(np.asmatrix(output_errors), np.asmatrix(y1).T)
+            )
+            self.hidden_layer_bias += self.LEARNING_RATE * output_errors
+            self.input_layer_bias += self.LEARNING_RATE * hidden_errors
 
     def train(self, training_data_array):
         """Train the network with new data"""
