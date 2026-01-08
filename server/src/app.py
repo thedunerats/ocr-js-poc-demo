@@ -25,7 +25,7 @@ def handle_request():
             payload = request.get_json()
         except Exception:
             return jsonify({"error": "Invalid JSON"}), 400
-   
+
         if not payload:
             return jsonify({"error": "Invalid JSON"}), 400
 
