@@ -136,8 +136,10 @@ class OCRNeuralNetwork:
         if not self._use_file:
             return
 
-        # Ensure directory exists
-        os.makedirs(os.path.dirname(self.NN_FILE_PATH), exist_ok=True)
+        # Ensure directory exists (only if path contains a directory)
+        dir_path = os.path.dirname(self.NN_FILE_PATH)
+        if dir_path:
+            os.makedirs(dir_path, exist_ok=True)
         
         # Create backup if file exists
         if os.path.exists(self.NN_FILE_PATH):
