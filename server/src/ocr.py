@@ -145,7 +145,7 @@ class OCRNeuralNetwork:
         
         # Create backup if file exists
         if os.path.exists(self.NN_FILE_PATH):
-            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S_%f')
             backup_path = f"{self.NN_FILE_PATH}.backup.{timestamp}"
             shutil.copy2(self.NN_FILE_PATH, backup_path)
             
