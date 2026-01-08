@@ -3,6 +3,7 @@ from datetime import datetime
 import math
 import json
 import os
+import shutil
 
 
 class OCRNeuralNetwork:
