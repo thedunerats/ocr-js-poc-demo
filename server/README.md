@@ -201,6 +201,11 @@ server/
 - **Training**: Backpropagation with gradient descent
 - **Activation**: Sigmoid function
 - **Framework**: Custom implementation using NumPy
+- **Model Persistence**: Automatic backup system
+  - Creates timestamped backups before overwriting (e.g., `ocr_neural_network.json.backup.20260107_143000`)
+  - Keeps last 5 backups by default (configurable via `max_backups` parameter)
+  - Supports restore from any backup using `restore_from_backup(backup_index)`
+  - List all backups with `list_backups()`
 
 ### Docker Setup
 - **Base Image**: Python 3.13-slim (lightweight)
@@ -314,6 +319,54 @@ Previously using `.bat` scripts? Here's the Docker equivalent:
 - For production OCR, consider using Tesseract or deep learning frameworks like TensorFlow/PyTorch
 - Docker images are optimized for size using Python slim base image
 - Health checks ensure the server is responding correctly
+
+## Model Backup & Restore
+
+The neural network includes production-grade backup protection to prevent loss of trained models.
+
+### Automatic Backups
+
+Every time you save a model, the system automatically:
+1. Creates a timestamped backup of the existing model (if one exists)
+2. Saves the new model
+3. Cleans up old backups to save disk space
+
+**Example:**
+```python
+nn = OCRNeuralNetwork(...)
+nn.save()  # Creates backup like: ocr_neural_network.json.backup.20260107_143000
+nn.save(max_backups=10)  # Keep up to 10 backups (default: 5)
+```
+
+### Restore from Backup
+
+If a model update degrades performance, restore from a previous backup:
+
+```python
+# Restore the most recent backup
+nn.restore_from_backup(backup_index=0)
+
+# Restore the second most recent backup
+nn.restore_from_backup(backup_index=1)
+```
+
+### List Available Backups
+
+View all available backups sorted by most recent first:
+
+```python
+backups = nn.list_backups()
+for timestamp, filepath in backups:
+    print(f"Backup from {timestamp}: {filepath}")
+```
+
+### Production Recommendations
+
+1. **Regular Backups**: Models are automatically backed up on each save
+2. **Backup Retention**: Adjust `max_backups` based on your disk space and update frequency
+3. **Monitoring**: Keep the 5-10 most recent backups for quick rollback
+4. **Testing**: Always validate model accuracy before deploying to production
+5. **Manual Backups**: For critical deployments, manually copy the JSON file before major changes
 
 ## Testing Details
 

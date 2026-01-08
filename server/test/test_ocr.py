@@ -164,9 +164,6 @@ class TestOCRNeuralNetwork:
         for i in range(len(original_b2)):
             assert np.allclose(nn_instance.hidden_layer_bias[i], original_b2[i])
 
-        # Cleanup
-        os.remove(nn_instance.NN_FILE_PATH)
-
     def test_save_when_use_file_false(self, nn_instance, tmp_path):
         """Test that save does nothing when use_file is False"""
         nn_instance.NN_FILE_PATH = str(tmp_path / 'should_not_exist.json')
@@ -204,3 +201,85 @@ class TestOCRNeuralNetwork:
                                     training_indices, use_file=False)
             assert nn.num_hidden_nodes == num_nodes
             assert len(nn.theta1) == num_nodes
+    
+    def test_save_creates_backup(self, nn_instance, tmp_path):
+        """Test that saving creates a backup of the existing file"""
+        nn_instance.NN_FILE_PATH = str(tmp_path / 'test_backup.json')
+        nn_instance._use_file = True
+        
+        # First save - no backup should be created
+        nn_instance.save()
+        assert os.path.exists(nn_instance.NN_FILE_PATH)
+        backups = nn_instance.list_backups()
+        assert len(backups) == 0
+        
+        # Second save - backup should be created
+        nn_instance.save()
+        backups = nn_instance.list_backups()
+        assert len(backups) == 1
+        assert backups[0][1].startswith(nn_instance.NN_FILE_PATH + '.backup.')
+    
+    def test_backup_cleanup(self, nn_instance, tmp_path):
+        """Test that old backups are cleaned up"""
+        nn_instance.NN_FILE_PATH = str(tmp_path / 'test_cleanup.json')
+        nn_instance._use_file = True
+        
+        # Create multiple saves with max_backups=3
+        for i in range(6):
+            nn_instance.save(max_backups=3)
+            # Small delay to ensure different timestamps
+            import time
+            time.sleep(0.01)
+        
+        # Should only have 3 backups
+        backups = nn_instance.list_backups()
+        assert len(backups) <= 3
+    
+    def test_restore_from_backup(self, nn_instance, tmp_path):
+        """Test restoring neural network from backup"""
+        nn_instance.NN_FILE_PATH = str(tmp_path / 'test_restore.json')
+        nn_instance._use_file = True
+        
+        # Save initial state
+        nn_instance.save()
+        original_theta1 = [np.array(t) for t in nn_instance.theta1]
+        
+        # Modify and save again (creates backup)
+        nn_instance.theta1 = nn_instance._rand_initialize_weights(400, nn_instance.num_hidden_nodes)
+        nn_instance.save()
+        
+        # Restore from backup (index 0 = most recent backup)
+        result = nn_instance.restore_from_backup(backup_index=0)
+        assert result is True
+        
+        # Verify weights match original
+        for i in range(len(original_theta1)):
+            assert np.allclose(nn_instance.theta1[i], original_theta1[i])
+    
+    def test_restore_with_no_backups(self, nn_instance, tmp_path):
+        """Test restore returns False when no backups exist"""
+        nn_instance.NN_FILE_PATH = str(tmp_path / 'test_no_backup.json')
+        nn_instance._use_file = True
+        
+        result = nn_instance.restore_from_backup()
+        assert result is False
+    
+    def test_list_backups_sorted(self, nn_instance, tmp_path):
+        """Test that list_backups returns backups sorted by most recent first"""
+        nn_instance.NN_FILE_PATH = str(tmp_path / 'test_sorted.json')
+        nn_instance._use_file = True
+        
+        # Create multiple saves
+        nn_instance.save()
+        import time
+        time.sleep(0.01)
+        nn_instance.save()
+        time.sleep(0.01)
+        nn_instance.save()
+        
+        backups = nn_instance.list_backups()
+        assert len(backups) == 2  # First save has no backup
+        
+        # Verify sorted by timestamp (newest first)
+        if len(backups) > 1:
+            assert backups[0][0] > backups[1][0]
