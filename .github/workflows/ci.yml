@@ -64,7 +64,7 @@ jobs:
       working-directory: ./server
       run: |
         docker run -d -p 3000:3000 --name ocr-test-server ocr-server:${{ github.sha }}
-        sleep 5
+        sleep 50
         curl -f http://localhost:3000/health || exit 1
         docker stop ocr-test-server
         docker rm ocr-test-server
