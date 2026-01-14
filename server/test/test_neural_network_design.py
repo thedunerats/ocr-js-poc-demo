@@ -130,7 +130,7 @@ class TestNeuralNetworkDesign:
 
     def test_module_imports(self):
         """Test that all necessary functions are imported correctly"""
-        import neural_network_design
+        from src import neural_network_design
 
         assert hasattr(neural_network_design, 'model_test')
         assert hasattr(neural_network_design, 'find_optimal_hidden_nodes')
