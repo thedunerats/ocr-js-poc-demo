@@ -64,8 +64,28 @@ jobs:
       working-directory: ./server
       run: |
         docker run -d -p 3000:3000 --name ocr-test-server ocr-server:${{ github.sha }}
-        sleep 50
-        curl -f http://localhost:3000/health || exit 1
+        
+        # Wait for server to be ready with retry logic
+        echo "Waiting for server to start..."
+        for i in {1..30}; do
+          if curl -f http://localhost:3000/health 2>/dev/null; then
+            echo "Server is healthy!"
+            break
+          fi
+          echo "Attempt $i/30: Server not ready yet..."
+          sleep 2
+        done
+        
+        # Final health check
+        if ! curl -f http://localhost:3000/health; then
+          echo "Server failed to start. Container logs:"
+          docker logs ocr-test-server
+          docker stop ocr-test-server
+          docker rm ocr-test-server
+          exit 1
+        fi
+        
+        # Cleanup
         docker stop ocr-test-server
         docker rm ocr-test-server
 
