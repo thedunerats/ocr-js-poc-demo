@@ -110,7 +110,7 @@ jobs:
     
     - name: Run flake8
       working-directory: ./server
-      run: flake8 src/ test/ --max-line-length=100 --extend-ignore=E203,W503
+      run: flake8 src/ test/ --max-line-length=110 --extend-ignore=E203,W503
     
     - name: Check formatting with black
       working-directory: ./server

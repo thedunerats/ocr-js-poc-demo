@@ -346,7 +346,7 @@ class TestOCRNeuralNetwork:
         # Should not raise any errors
         nn_instance.train(valid_data)
 
-    def test_predict_with_extreme_values(self, nn_instance):
+    def test_predict_with_extreme_values(self, nn_instance, tmp_path):
         """Test prediction with extreme numeric values"""
         # Very large values
         result1 = nn_instance.predict([1000.0] * 400)
