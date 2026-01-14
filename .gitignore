@@ -1,0 +1,62 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+ENV/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OCR Neural Network Files
+server/src/ocr_neural_network.json
+**/test_*.json
+**/test_nn.json
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+test-results/
+*.cover
+
+# Docker (optional - remove if you want to track these)
+# docker-compose.override.yml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Batch scripts (migrated to Docker)
+*.bat
+
+# Old config files
+pytest.ini
+setup.cfg

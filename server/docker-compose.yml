@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  # OCR Server Application
+  ocr-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ocr-server
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+    volumes:
+      # Mount source code for development (optional, comment out for production)
+      - ./src:/app/src
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:3000/health')"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+  # Test Runner
+  ocr-tests:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    container_name: ocr-tests
+    volumes:
+      - ./src:/app/src
+      - ./test:/app/test
+      - ./test-results:/app/test-results
+    environment:
+      - PYTEST_ARGS=${PYTEST_ARGS:--v}
+    command: pytest ${PYTEST_ARGS:--v --tb=short --disable-warnings}
+    profiles:
+      - test
+
+  # Test with Coverage
+  ocr-tests-coverage:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    container_name: ocr-tests-coverage
+    volumes:
+      - ./src:/app/src
+      - ./test:/app/test
+      - ./htmlcov:/app/htmlcov
+    command: pytest --cov=src --cov-report=html --cov-report=term -v
+    profiles:
+      - test

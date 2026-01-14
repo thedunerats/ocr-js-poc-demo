@@ -1,0 +1,117 @@
+# GitHub Actions CI/CD Pipeline for OCR Server
+name: OCR Server CI
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'server/**'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'server/**'
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+    
+    - name: Build test image
+      working-directory: ./server
+      run: docker build -f Dockerfile.test -t ocr-server-test .
+    
+    - name: Run tests
+      working-directory: ./server
+      run: docker run --rm ocr-server-test pytest -v --tb=short
+    
+    - name: Run tests with coverage
+      working-directory: ./server
+      run: |
+        docker run --rm -v $(pwd)/htmlcov:/app/htmlcov ocr-server-test \
+          pytest --cov=src --cov-report=html --cov-report=term
+    
+    - name: Upload coverage report
+      uses: actions/upload-artifact@v5
+      with:
+        name: coverage-report
+        path: server/htmlcov/
+        retention-days: 30
+
+  build:
+    name: Build Server Image
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+    
+    - name: Build server image
+      working-directory: ./server
+      run: docker build -t ocr-server:${{ github.sha }} .
+    
+    - name: Test server health
+      working-directory: ./server
+      run: |
+        docker run -d -p 3000:3000 --name ocr-test-server ocr-server:${{ github.sha }}
+        
+        # Wait for server to be ready with retry logic
+        echo "Waiting for server to start..."
+        for i in {1..30}; do
+          if curl -f http://localhost:3000/health 2>/dev/null; then
+            echo "Server is healthy!"
+            break
+          fi
+          echo "Attempt $i/30: Server not ready yet..."
+          sleep 2
+        done
+        
+        # Final health check
+        if ! curl -f http://localhost:3000/health; then
+          echo "Server failed to start. Container logs:"
+          docker logs ocr-test-server
+          docker stop ocr-test-server
+          docker rm ocr-test-server
+          exit 1
+        fi
+        
+        # Cleanup
+        docker stop ocr-test-server
+        docker rm ocr-test-server
+
+  lint:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.13'
+    
+    - name: Install dependencies
+      working-directory: ./server
+      run: |
+        pip install flake8 black
+        pip install -r requirements.txt
+    
+    - name: Run flake8
+      working-directory: ./server
+      run: flake8 src/ test/ --max-line-length=100 --extend-ignore=E203,W503
+    
+    - name: Check formatting with black
+      working-directory: ./server
+      run: black --check src/ test/
