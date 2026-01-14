@@ -1,14 +1,28 @@
-# OCR Server - Docker Setup
+# OCR Server
 
 A containerized OCR (Optical Character Recognition) neural network server built with Python and Flask.
 
-## Quick Start with Docker
+## Quick Start
 
-### Prerequisites
+### Local Development
+
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Run the server
+python run.py
+
+# Server will be available at http://localhost:3000
+```
+
+### Docker Deployment
+
+#### Prerequisites
 - Docker Desktop (Windows/Mac) or Docker Engine (Linux)
 - Docker Compose
 
-### Run the Server
+#### Run the Server
 
 ```bash
 # Start the server

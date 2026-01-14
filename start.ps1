@@ -4,7 +4,7 @@ Write-Host ""
 
 # Start server in background
 Write-Host "📡 Starting Flask server on http://localhost:3000..." -ForegroundColor Yellow
-Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd 'c:\Git Repos\ocr-js-poc-demo\server'; python src/app.py"
+Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd 'c:\Git Repos\ocr-js-poc-demo\server'; python run.py"
 
 # Wait a bit for server to start
 Start-Sleep -Seconds 3

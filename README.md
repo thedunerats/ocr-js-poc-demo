@@ -47,7 +47,7 @@ ocr-js-poc-demo/
 ```powershell
 cd server
 pip install -r requirements.txt
-python src/app.py
+python run.py
 ```
 
 The server will start on `http://localhost:3000`

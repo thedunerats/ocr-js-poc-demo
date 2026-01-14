@@ -3,14 +3,10 @@ Unit tests for neural network design utilities
 """
 import pytest
 import numpy as np
-import sys
 import os
 
-from neural_network_design import model_test, find_optimal_hidden_nodes
+from src.neural_network_design import model_test, find_optimal_hidden_nodes
 from src.ocr import OCRNeuralNetwork
-
-# Add src directory to path for imports
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 
 class TestNeuralNetworkDesign:
