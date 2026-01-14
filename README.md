@@ -1,8 +1,73 @@
-# OCR-JS POC Demo
+# OCR Neural Network Demo
 
-A proof-of-concept OCR (Optical Character Recognition) application with a Python neural network backend and JavaScript frontend, fully containerized with Docker.
+A full-stack OCR (Optical Character Recognition) application with a custom neural network backend and modern React frontend.
 
-## Project Structure
+## 🎯 Features
+
+- **Custom Neural Network**: Feedforward neural network implemented from scratch with NumPy
+- **Interactive Drawing Interface**: React-based canvas for drawing digits
+- **Real-time Training**: Train the network with your own handwriting
+- **Live Predictions**: Test the network's accuracy instantly
+- **Production-Ready**: Docker support, CI/CD pipeline, comprehensive testing
+- **Model Backup System**: Automatic versioned backups with restore capability
+
+## 🏗️ Architecture
+
+```
+ocr-js-poc-demo/
+├── client/          # React frontend (Vite)
+│   ├── src/
+│   │   ├── components/
+│   │   │   └── DrawingCanvas.jsx
+│   │   ├── App.jsx
+│   │   └── main.jsx
+│   └── package.json
+├── server/          # Flask backend
+│   ├── src/
+│   │   ├── app.py              # Flask application
+│   │   ├── ocr.py              # Neural network implementation
+│   │   └── neural_network_design.py
+│   ├── test/                   # Comprehensive test suite
+│   ├── Dockerfile
+│   └── requirements.txt
+└── .github/workflows/  # CI/CD pipeline
+```
+
+## 🚀 Quick Start
+
+### Option 1: Run Locally (Recommended for Development)
+
+**Prerequisites:**
+- Python 3.13+
+- Node.js 18+
+- npm
+
+**Step 1: Start the Server**
+
+```powershell
+cd server
+pip install -r requirements.txt
+python src/app.py
+```
+
+The server will start on `http://localhost:3000`
+
+**Step 2: Start the Client (in a new terminal)**
+
+```powershell
+cd client
+npm install
+npm run dev
+```
+
+The client will start on `http://localhost:5173`
+
+**Or use the convenience script:**
+
+```powershell
+# Run from project root
+.\start.ps1
+```
 
 ```
 ocr-js-poc-demo/

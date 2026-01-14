@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from src.ocr import OCRNeuralNetwork
+from ocr import OCRNeuralNetwork
 import numpy as np
 import os
 
