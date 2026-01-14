@@ -36,14 +36,75 @@ def handle_request():
             if not train_array:
                 return jsonify({"error": "trainArray is required"}), 400
 
-            nn.train(train_array)
-            nn.save()
-            return jsonify({"success": True, "message": "Training completed"}), 200
+            # Validate training data
+            try:
+                for i, data in enumerate(train_array):
+                    if "y0" not in data or "label" not in data:
+                        return (
+                            jsonify(
+                                {
+                                    "error": f"Sample {i}: Missing 'y0' or 'label' field"
+                                }
+                            ),
+                            400,
+                        )
+
+                    if len(data["y0"]) != 400:
+                        return (
+                            jsonify(
+                                {
+                                    "error": f"Sample {i}: Expected 400 pixels, got {len(data['y0'])}"
+                                }
+                            ),
+                            400,
+                        )
+
+                    label = data["label"]
+                    if not isinstance(label, int) or label < 0 or label > 9:
+                        return (
+                            jsonify(
+                                {
+                                    "error": f"Sample {i}: Label must be an integer between 0-9, got {label}"
+                                }
+                            ),
+                            400,
+                        )
+
+            except Exception as e:
+                return (
+                    jsonify({"error": f"Invalid training data format: {str(e)}"}),
+                    400,
+                )
+
+            try:
+                nn.train(train_array)
+                nn.save()
+                return jsonify({"success": True, "message": "Training completed"}), 200
+            except Exception as e:
+                return jsonify({"error": f"Training failed: {str(e)}"}), 500
 
         elif payload.get("predict"):
             image = payload.get("image")
             if image is None:
                 return jsonify({"error": "image is required"}), 400
+
+            # Validate image data
+            if not isinstance(image, list):
+                return jsonify({"error": "image must be an array"}), 400
+
+            if len(image) != 400:
+                return (
+                    jsonify(
+                        {"error": f"image must contain 400 pixels, got {len(image)}"}
+                    ),
+                    400,
+                )
+
+            try:
+                # Ensure all values are numeric
+                image = [float(x) for x in image]
+            except (ValueError, TypeError) as e:
+                return jsonify({"error": f"image must contain numeric values: {str(e)}"}), 400
 
             try:
                 result = nn.predict(image)
