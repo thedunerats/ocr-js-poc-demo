@@ -69,6 +69,46 @@ The client will start on `http://localhost:5173`
 .\start.ps1
 ```
 
+## 📖 Using the Application
+
+### Training the Neural Network
+
+1. **Open the app** at `http://localhost:5173`
+2. **Draw a digit** (0-9) on the black canvas using your mouse
+3. **Enter the digit** you drew in the input field
+4. **Choose training method**:
+   - **Add to Batch**: Collects samples, auto-trains after 3
+   - **Train Now**: Trains immediately with current drawing
+5. **Train multiple digits**: Repeat for all digits 0-9
+
+### Testing Predictions
+
+1. **Draw a digit** on the canvas
+2. **Click "Test"** button
+3. **See the prediction** displayed in the status message
+
+### Quick Training Strategy (Recommended)
+
+For best results, train at least **3-5 examples of each digit**:
+
+```
+Step 1: Draw "0" → enter 0 → click "Train Now" (repeat 3-5 times)
+Step 2: Draw "1" → enter 1 → click "Train Now" (repeat 3-5 times)
+Step 3: Draw "2" → enter 2 → click "Train Now" (repeat 3-5 times)
+... continue through all digits 0-9 ...
+```
+
+**Minimum training**: 30 samples (3 per digit × 10 digits)  
+**Recommended**: 50+ samples (5+ per digit) for better accuracy
+
+### Training Tips
+
+- ✅ **Vary your handwriting** - different sizes and styles
+- ✅ **Use the full canvas** - don't draw too small
+- ✅ **Train all digits** - network needs examples of each (0-9)
+- ✅ **Train more = better accuracy** - more data improves predictions
+- ⚠️ **Wait for training** - let each batch complete before testing
+
 ```
 ocr-js-poc-demo/
 ├── client/           # Frontend application

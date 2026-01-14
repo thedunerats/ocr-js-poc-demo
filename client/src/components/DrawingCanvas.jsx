@@ -4,7 +4,7 @@ import './DrawingCanvas.css'
 const CANVAS_WIDTH = 200
 const TRANSLATED_WIDTH = 20
 const PIXEL_WIDTH = 10 // TRANSLATED_WIDTH = CANVAS_WIDTH / PIXEL_WIDTH
-const BATCH_SIZE = 10
+const BATCH_SIZE = 3 // Reduced for faster training
 const API_URL = '/api'
 
 function DrawingCanvas({ setStatus, trainingCount, setTrainingCount }) {
@@ -117,7 +117,7 @@ function DrawingCanvas({ setStatus, trainingCount, setTrainingCount }) {
     }
   }
 
-  const handleTrain = async () => {
+  const handleTrain = async (forceTrain = false) => {
     if (!digit || data.indexOf(1) < 0) {
       setStatus('⚠️ Please type and draw a digit to train the network')
       return
@@ -127,21 +127,22 @@ function DrawingCanvas({ setStatus, trainingCount, setTrainingCount }) {
     setTrainArray(newTrainArray)
     setTrainingCount(trainingCount + 1)
     
-    setStatus(`✓ Added digit ${digit} to training batch (${newTrainArray.length}/${BATCH_SIZE})`)
-    
-    // Send training batch when we reach BATCH_SIZE
-    if (newTrainArray.length >= BATCH_SIZE) {
+    // Send immediately if force training or batch is full
+    if (forceTrain || newTrainArray.length >= BATCH_SIZE) {
       try {
-        setStatus('🚀 Sending training batch to server...')
+        setStatus('🚀 Training network...')
         await sendData({
           trainArray: newTrainArray,
           train: true
         })
-        setStatus(`✓ Successfully trained network with ${BATCH_SIZE} samples!`)
+        setStatus(`✓ Trained with ${newTrainArray.length} sample${newTrainArray.length > 1 ? 's' : ''}! Total: ${trainingCount + 1}`)
         setTrainArray([])
       } catch (error) {
-        setStatus(`❌ Error training network: ${error.message}`)
+        setStatus(`❌ Error: ${error.message}`)
+        return
       }
+    } else {
+      setStatus(`✓ Added digit ${digit} (${newTrainArray.length}/${BATCH_SIZE} in batch)`)
     }
     
     resetCanvas()
@@ -195,8 +196,15 @@ function DrawingCanvas({ setStatus, trainingCount, setTrainingCount }) {
         </div>
         
         <div className="button-group">
-          <button onClick={handleTrain} className="btn btn-primary">
-            🎓 Train
+          <button onClick={() => handleTrain(false)} className="btn btn-primary">
+            🎓 Add to Batch
+          </button>
+          <button 
+            onClick={() => handleTrain(true)} 
+            className="btn btn-primary-alt"
+            disabled={trainArray.length === 0 && data.indexOf(1) < 0}
+          >
+            ⚡ Train Now
           </button>
           <button onClick={handleTest} className="btn btn-success">
             🧪 Test
@@ -205,6 +213,15 @@ function DrawingCanvas({ setStatus, trainingCount, setTrainingCount }) {
             🔄 Reset
           </button>
         </div>
+        
+        {trainArray.length > 0 && (
+          <div className="batch-info">
+            📦 Pending batch: {trainArray.length} sample{trainArray.length > 1 ? 's' : ''}
+            <button onClick={() => handleTrain(true)} className="btn-link">
+              Send now
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )
