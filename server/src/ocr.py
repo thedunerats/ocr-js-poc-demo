@@ -7,10 +7,17 @@ import shutil
 
 
 class OCRNeuralNetwork:
-    NN_FILE_PATH = 'ocr_neural_network.json'
+    NN_FILE_PATH = "ocr_neural_network.json"
     LEARNING_RATE = 0.1
 
-    def __init__(self, num_hidden_nodes, data_matrix, data_labels, training_indices, use_file=True):
+    def __init__(
+        self,
+        num_hidden_nodes,
+        data_matrix,
+        data_labels,
+        training_indices,
+        use_file=True,
+    ):
         self.num_hidden_nodes = num_hidden_nodes
         self._use_file = use_file
 
@@ -34,7 +41,7 @@ class OCRNeuralNetwork:
 
     def _sigmoid_scalar(self, z):
         """The sigmoid activation function. Operates on scalars."""
-        return 1 / (1 + math.e ** -z)
+        return 1 / (1 + math.e**-z)
 
     def sigmoid(self, z):
         """Vectorized sigmoid function"""
@@ -48,13 +55,10 @@ class OCRNeuralNetwork:
         """Train the neural network using backpropagation"""
         for i in range(len(training_indices)):
             data_index = training_indices[i]
-            data = {
-                'y0': data_matrix[data_index],
-                'label': data_labels[data_index]
-            }
+            data = {"y0": data_matrix[data_index], "label": data_labels[data_index]}
 
             # Forward propagation
-            y1 = np.dot(np.array(self.theta1), np.array(data['y0']).reshape(-1, 1))
+            y1 = np.dot(np.array(self.theta1), np.array(data["y0"]).reshape(-1, 1))
             sum1 = y1 + np.array(self.input_layer_bias).reshape(-1, 1)
             y1 = self.sigmoid(sum1)
 
@@ -64,22 +68,17 @@ class OCRNeuralNetwork:
 
             # Backpropagation
             actual_vals = [0] * 10
-            actual_vals[data['label']] = 1
+            actual_vals[data["label"]] = 1
             output_errors = np.array(actual_vals).reshape(-1, 1) - y2
             hidden_errors = np.multiply(
-                np.dot(np.array(self.theta2).T, output_errors),
-                self.sigmoid_prime(sum1)
+                np.dot(np.array(self.theta2).T, output_errors), self.sigmoid_prime(sum1)
             )
 
             # Update weights
-            self.theta1 += (
-                self.LEARNING_RATE *
-                np.dot(hidden_errors, np.array(data['y0']).reshape(1, -1))
+            self.theta1 += self.LEARNING_RATE * np.dot(
+                hidden_errors, np.array(data["y0"]).reshape(1, -1)
             )
-            self.theta2 += (
-                self.LEARNING_RATE *
-                np.dot(output_errors, y1.T)
-            )
+            self.theta2 += self.LEARNING_RATE * np.dot(output_errors, y1.T)
             self.hidden_layer_bias += self.LEARNING_RATE * output_errors
             self.input_layer_bias += self.LEARNING_RATE * hidden_errors
 
@@ -87,7 +86,7 @@ class OCRNeuralNetwork:
         """Train the network with new data"""
         for data in training_data_array:
             # Forward propagation
-            y1 = np.dot(np.array(self.theta1), np.array(data['y0']).reshape(-1, 1))
+            y1 = np.dot(np.array(self.theta1), np.array(data["y0"]).reshape(-1, 1))
             sum1 = y1 + np.array(self.input_layer_bias).reshape(-1, 1)
             y1 = self.sigmoid(sum1)
 
@@ -97,22 +96,17 @@ class OCRNeuralNetwork:
 
             # Backpropagation
             actual_vals = [0] * 10
-            actual_vals[data['label']] = 1
+            actual_vals[data["label"]] = 1
             output_errors = np.array(actual_vals).reshape(-1, 1) - y2
             hidden_errors = np.multiply(
-                np.dot(np.array(self.theta2).T, output_errors),
-                self.sigmoid_prime(sum1)
+                np.dot(np.array(self.theta2).T, output_errors), self.sigmoid_prime(sum1)
             )
 
             # Update weights
-            self.theta1 += (
-                self.LEARNING_RATE *
-                np.dot(hidden_errors, np.array(data['y0']).reshape(1, -1))
+            self.theta1 += self.LEARNING_RATE * np.dot(
+                hidden_errors, np.array(data["y0"]).reshape(1, -1)
             )
-            self.theta2 += (
-                self.LEARNING_RATE *
-                np.dot(output_errors, y1.T)
-            )
+            self.theta2 += self.LEARNING_RATE * np.dot(output_errors, y1.T)
             self.hidden_layer_bias += self.LEARNING_RATE * output_errors
             self.input_layer_bias += self.LEARNING_RATE * hidden_errors
 
@@ -145,7 +139,7 @@ class OCRNeuralNetwork:
 
         # Create backup if file exists
         if os.path.exists(self.NN_FILE_PATH):
-            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S_%f')
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
             backup_path = f"{self.NN_FILE_PATH}.backup.{timestamp}"
             shutil.copy2(self.NN_FILE_PATH, backup_path)
 
@@ -153,17 +147,23 @@ class OCRNeuralNetwork:
             self._cleanup_old_backups(max_backups)
 
         json_neural_network = {
-            "theta1": [w.tolist() if isinstance(w, np.ndarray) else w
-                       for w in self.theta1],
-            "theta2": [w.tolist() if isinstance(w, np.ndarray) else w
-                       for w in self.theta2],
-            "b1": [w.tolist() if isinstance(w, np.ndarray) else w
-                   for w in self.input_layer_bias],
-            "b2": [w.tolist() if isinstance(w, np.ndarray) else w
-                   for w in self.hidden_layer_bias]
+            "theta1": [
+                w.tolist() if isinstance(w, np.ndarray) else w for w in self.theta1
+            ],
+            "theta2": [
+                w.tolist() if isinstance(w, np.ndarray) else w for w in self.theta2
+            ],
+            "b1": [
+                w.tolist() if isinstance(w, np.ndarray) else w
+                for w in self.input_layer_bias
+            ],
+            "b2": [
+                w.tolist() if isinstance(w, np.ndarray) else w
+                for w in self.hidden_layer_bias
+            ],
         }
 
-        with open(self.NN_FILE_PATH, 'w') as nnFile:
+        with open(self.NN_FILE_PATH, "w") as nnFile:
             json.dump(json_neural_network, nnFile)
 
     def _cleanup_old_backups(self, max_backups):
@@ -173,7 +173,7 @@ class OCRNeuralNetwork:
             max_backups: Maximum number of backup files to keep
         """
         backup_dir = os.path.dirname(self.NN_FILE_PATH)
-        backup_prefix = os.path.basename(self.NN_FILE_PATH) + '.backup.'
+        backup_prefix = os.path.basename(self.NN_FILE_PATH) + ".backup."
 
         # Find all backup files
         backups = []
@@ -203,7 +203,7 @@ class OCRNeuralNetwork:
             return False
 
         backup_dir = os.path.dirname(self.NN_FILE_PATH)
-        backup_prefix = os.path.basename(self.NN_FILE_PATH) + '.backup.'
+        backup_prefix = os.path.basename(self.NN_FILE_PATH) + ".backup."
 
         # Find all backup files
         backups = []
@@ -233,13 +233,13 @@ class OCRNeuralNetwork:
             list: List of tuples (timestamp, filepath) sorted by most recent first
         """
         backup_dir = os.path.dirname(self.NN_FILE_PATH)
-        backup_prefix = os.path.basename(self.NN_FILE_PATH) + '.backup.'
+        backup_prefix = os.path.basename(self.NN_FILE_PATH) + ".backup."
 
         backups = []
         for filename in os.listdir(backup_dir):
             if filename.startswith(backup_prefix):
                 backup_path = os.path.join(backup_dir, filename)
-                timestamp = filename.replace(backup_prefix, '')
+                timestamp = filename.replace(backup_prefix, "")
                 backups.append((timestamp, backup_path))
 
         # Sort by timestamp (newest first)
@@ -253,7 +253,7 @@ class OCRNeuralNetwork:
 
         with open(self.NN_FILE_PATH) as nnFile:
             nn = json.load(nnFile)
-        self.theta1 = [np.array(li) for li in nn['theta1']]
-        self.theta2 = [np.array(li) for li in nn['theta2']]
-        self.input_layer_bias = [np.array(li) for li in nn['b1']]
-        self.hidden_layer_bias = [np.array(li) for li in nn['b2']]
+        self.theta1 = [np.array(li) for li in nn["theta1"]]
+        self.theta2 = [np.array(li) for li in nn["theta2"]]
+        self.input_layer_bias = [np.array(li) for li in nn["b1"]]
+        self.hidden_layer_bias = [np.array(li) for li in nn["b2"]]

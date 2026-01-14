@@ -3,6 +3,7 @@ This script tests different neural network configurations to find the optimal nu
 of hidden nodes.
 It trains networks with varying hidden node counts and evaluates their performance.
 """
+
 from src.ocr import OCRNeuralNetwork
 
 
@@ -31,7 +32,7 @@ def model_test(data_matrix, data_labels, test_indices, nn):
             if data_labels[i] == prediction:
                 correct_guess_count += 1
 
-        avg_sum += (correct_guess_count / float(len(test_indices)))
+        avg_sum += correct_guess_count / float(len(test_indices))
     return avg_sum / 100
 
 
@@ -54,11 +55,13 @@ def find_optimal_hidden_nodes(data_matrix, data_labels, train_indices, test_indi
         print(f"{i} Hidden Nodes: {performance:.4f}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Example usage with dummy data
     # In a real scenario, you would load actual MNIST or similar dataset
     print("Note: This script requires actual training data to run properly.")
-    print("Please provide a dataset (e.g., MNIST) to test neural network configurations.")
+    print(
+        "Please provide a dataset (e.g., MNIST) to test neural network configurations."
+    )
 
     # Placeholder for demonstration
     # data_matrix = np.random.rand(1000, 400)  # 1000 samples, 400 features

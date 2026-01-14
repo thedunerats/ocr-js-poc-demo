@@ -1,6 +1,7 @@
 """
 Unit tests for the OCRNeuralNetwork class
 """
+
 import pytest
 import numpy as np
 import json
@@ -27,21 +28,25 @@ class TestOCRNeuralNetwork:
 
         # Change to temp directory to avoid file conflicts
         original_path = OCRNeuralNetwork.NN_FILE_PATH
-        OCRNeuralNetwork.NN_FILE_PATH = str(tmp_path / 'test_nn.json')
+        OCRNeuralNetwork.NN_FILE_PATH = str(tmp_path / "test_nn.json")
 
-        nn = OCRNeuralNetwork(15, data_matrix, data_labels, training_indices, use_file=False)
+        nn = OCRNeuralNetwork(
+            15, data_matrix, data_labels, training_indices, use_file=False
+        )
 
         yield nn
 
         # Cleanup
         OCRNeuralNetwork.NN_FILE_PATH = original_path
-        if os.path.exists(str(tmp_path / 'test_nn.json')):
-            os.remove(str(tmp_path / 'test_nn.json'))
+        if os.path.exists(str(tmp_path / "test_nn.json")):
+            os.remove(str(tmp_path / "test_nn.json"))
 
     def test_initialization(self, sample_data):
         """Test neural network initialization"""
         data_matrix, data_labels, training_indices = sample_data
-        nn = OCRNeuralNetwork(20, data_matrix, data_labels, training_indices, use_file=False)
+        nn = OCRNeuralNetwork(
+            20, data_matrix, data_labels, training_indices, use_file=False
+        )
 
         assert nn.num_hidden_nodes == 20
         assert len(nn.theta1) == 20
@@ -100,8 +105,8 @@ class TestOCRNeuralNetwork:
     def test_train(self, nn_instance):
         """Test training functionality"""
         training_data = [
-            {'y0': np.random.rand(400), 'label': 5},
-            {'y0': np.random.rand(400), 'label': 3}
+            {"y0": np.random.rand(400), "label": 5},
+            {"y0": np.random.rand(400), "label": 3},
         ]
 
         # Store original weights
@@ -119,7 +124,7 @@ class TestOCRNeuralNetwork:
     def test_save_and_load(self, nn_instance, tmp_path):
         """Test saving and loading neural network"""
         # Change file path to temp directory
-        nn_instance.NN_FILE_PATH = str(tmp_path / 'test_save_nn.json')
+        nn_instance.NN_FILE_PATH = str(tmp_path / "test_save_nn.json")
         nn_instance._use_file = True
 
         # Save the network
@@ -127,13 +132,13 @@ class TestOCRNeuralNetwork:
         assert os.path.exists(nn_instance.NN_FILE_PATH)
 
         # Check JSON structure
-        with open(nn_instance.NN_FILE_PATH, 'r') as f:
+        with open(nn_instance.NN_FILE_PATH, "r") as f:
             saved_data = json.load(f)
 
-        assert 'theta1' in saved_data
-        assert 'theta2' in saved_data
-        assert 'b1' in saved_data
-        assert 'b2' in saved_data
+        assert "theta1" in saved_data
+        assert "theta2" in saved_data
+        assert "b1" in saved_data
+        assert "b2" in saved_data
 
         # Store original weights and biases
         original_theta1 = [np.array(t) for t in nn_instance.theta1]
@@ -142,8 +147,12 @@ class TestOCRNeuralNetwork:
         original_b2 = [np.array(b) for b in nn_instance.hidden_layer_bias]
 
         # Modify weights
-        nn_instance.theta1 = nn_instance._rand_initialize_weights(400, nn_instance.num_hidden_nodes)
-        nn_instance.theta2 = nn_instance._rand_initialize_weights(nn_instance.num_hidden_nodes, 10)
+        nn_instance.theta1 = nn_instance._rand_initialize_weights(
+            400, nn_instance.num_hidden_nodes
+        )
+        nn_instance.theta2 = nn_instance._rand_initialize_weights(
+            nn_instance.num_hidden_nodes, 10
+        )
 
         # Load weights back
         nn_instance._load()
@@ -160,7 +169,7 @@ class TestOCRNeuralNetwork:
 
     def test_save_when_use_file_false(self, nn_instance, tmp_path):
         """Test that save does nothing when use_file is False"""
-        nn_instance.NN_FILE_PATH = str(tmp_path / 'should_not_exist.json')
+        nn_instance.NN_FILE_PATH = str(tmp_path / "should_not_exist.json")
         nn_instance._use_file = False
 
         nn_instance.save()
@@ -199,7 +208,7 @@ class TestOCRNeuralNetwork:
 
     def test_save_creates_backup(self, nn_instance, tmp_path):
         """Test that saving creates a backup of the existing file"""
-        nn_instance.NN_FILE_PATH = str(tmp_path / 'test_backup.json')
+        nn_instance.NN_FILE_PATH = str(tmp_path / "test_backup.json")
         nn_instance._use_file = True
 
         # First save - no backup should be created
@@ -212,11 +221,11 @@ class TestOCRNeuralNetwork:
         nn_instance.save()
         backups = nn_instance.list_backups()
         assert len(backups) == 1
-        assert backups[0][1].startswith(nn_instance.NN_FILE_PATH + '.backup.')
+        assert backups[0][1].startswith(nn_instance.NN_FILE_PATH + ".backup.")
 
     def test_backup_cleanup(self, nn_instance, tmp_path):
         """Test that old backups are cleaned up"""
-        nn_instance.NN_FILE_PATH = str(tmp_path / 'test_cleanup.json')
+        nn_instance.NN_FILE_PATH = str(tmp_path / "test_cleanup.json")
         nn_instance._use_file = True
 
         # Create multiple saves with max_backups=3
@@ -224,6 +233,7 @@ class TestOCRNeuralNetwork:
             nn_instance.save(max_backups=3)
             # Small delay to ensure different timestamps
             import time
+
             time.sleep(0.01)
 
         # Should only have 3 backups
@@ -232,7 +242,7 @@ class TestOCRNeuralNetwork:
 
     def test_restore_from_backup(self, nn_instance, tmp_path):
         """Test restoring neural network from backup"""
-        nn_instance.NN_FILE_PATH = str(tmp_path / 'test_restore.json')
+        nn_instance.NN_FILE_PATH = str(tmp_path / "test_restore.json")
         nn_instance._use_file = True
 
         # Save initial state
@@ -240,7 +250,9 @@ class TestOCRNeuralNetwork:
         original_theta1 = [np.array(t) for t in nn_instance.theta1]
 
         # Modify and save again (creates backup)
-        nn_instance.theta1 = nn_instance._rand_initialize_weights(400, nn_instance.num_hidden_nodes)
+        nn_instance.theta1 = nn_instance._rand_initialize_weights(
+            400, nn_instance.num_hidden_nodes
+        )
         nn_instance.save()
 
         # Restore from backup (index 0 = most recent backup)
@@ -253,7 +265,7 @@ class TestOCRNeuralNetwork:
 
     def test_restore_with_no_backups(self, nn_instance, tmp_path):
         """Test restore returns False when no backups exist"""
-        nn_instance.NN_FILE_PATH = str(tmp_path / 'test_no_backup.json')
+        nn_instance.NN_FILE_PATH = str(tmp_path / "test_no_backup.json")
         nn_instance._use_file = True
 
         result = nn_instance.restore_from_backup()
@@ -261,12 +273,13 @@ class TestOCRNeuralNetwork:
 
     def test_list_backups_sorted(self, nn_instance, tmp_path):
         """Test that list_backups returns backups sorted by most recent first"""
-        nn_instance.NN_FILE_PATH = str(tmp_path / 'test_sorted.json')
+        nn_instance.NN_FILE_PATH = str(tmp_path / "test_sorted.json")
         nn_instance._use_file = True
 
         # Create multiple saves
         nn_instance.save()
         import time
+
         time.sleep(0.01)
         nn_instance.save()
         time.sleep(0.01)

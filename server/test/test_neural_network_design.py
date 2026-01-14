@@ -1,6 +1,7 @@
 """
 Unit tests for neural network design utilities
 """
+
 import pytest
 import numpy as np
 
@@ -26,7 +27,9 @@ class TestNeuralNetworkDesign:
     def trained_nn(self, sample_data):
         """Create a trained neural network for testing"""
         data_matrix, data_labels, train_indices, _ = sample_data
-        nn = OCRNeuralNetwork(15, data_matrix, data_labels, train_indices, use_file=False)
+        nn = OCRNeuralNetwork(
+            15, data_matrix, data_labels, train_indices, use_file=False
+        )
         return nn
 
     def test_model_test_function_structure(self, sample_data, trained_nn):
@@ -65,11 +68,13 @@ class TestNeuralNetworkDesign:
         data_matrix, data_labels, train_indices, _ = sample_data
         test_indices = train_indices[:10]  # Use training data as test
         # Create a well-trained network
-        nn = OCRNeuralNetwork(20, data_matrix, data_labels, train_indices, use_file=False)
+        nn = OCRNeuralNetwork(
+            20, data_matrix, data_labels, train_indices, use_file=False
+        )
         # Train multiple times to improve accuracy
         for _ in range(5):
             training_data = [
-                {'y0': data_matrix[i], 'label': data_labels[i]}
+                {"y0": data_matrix[i], "label": data_labels[i]}
                 for i in train_indices[:20]
             ]
             nn.train(training_data)
@@ -100,8 +105,7 @@ class TestNeuralNetworkDesign:
 
         for num_nodes in [5, 10, 20]:
             nn = OCRNeuralNetwork(
-                num_nodes, data_matrix, data_labels,
-                train_indices, use_file=False
+                num_nodes, data_matrix, data_labels, train_indices, use_file=False
             )
             result = model_test(data_matrix, data_labels, test_indices, nn)
 
@@ -113,7 +117,9 @@ class TestNeuralNetworkDesign:
         data_matrix, data_labels, train_indices, _ = sample_data
         test_indices = [80, 81, 82]  # 3 test samples
 
-        nn = OCRNeuralNetwork(10, data_matrix, data_labels, train_indices, use_file=False)
+        nn = OCRNeuralNetwork(
+            10, data_matrix, data_labels, train_indices, use_file=False
+        )
         result = model_test(data_matrix, data_labels, test_indices, nn)
 
         # With random initialization and 3 samples, accuracy should be reasonable
@@ -130,8 +136,8 @@ class TestNeuralNetworkDesign:
 
     def test_module_imports(self):
         """Test that all necessary functions are imported correctly"""
-        assert hasattr(neural_network_design, 'model_test')
-        assert hasattr(neural_network_design, 'find_optimal_hidden_nodes')
+        assert hasattr(neural_network_design, "model_test")
+        assert hasattr(neural_network_design, "find_optimal_hidden_nodes")
 
     def test_repeated_testing(self, sample_data, trained_nn):
         """Test running the test function multiple times"""
