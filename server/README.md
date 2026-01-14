@@ -329,7 +329,7 @@ Previously using `.bat` scripts? Here's the Docker equivalent:
 ## Notes
 
 - The neural network saves its trained weights to `ocr_neural_network.json`
-- Training data should be provided through the client interface
+- Training data is provided through the React client interface
 - For production OCR, consider using Tesseract or deep learning frameworks like TensorFlow/PyTorch
 - Docker images are optimized for size using Python slim base image
 - Health checks ensure the server is responding correctly

@@ -21,7 +21,8 @@ ocr-js-poc-demo/
 │   │   │   └── DrawingCanvas.jsx
 │   │   ├── App.jsx
 │   │   └── main.jsx
-│   └── package.json
+│   ├── package.json
+│   └── vite.config.js
 ├── server/          # Flask backend
 │   ├── src/
 │   │   ├── app.py              # Flask application
@@ -29,6 +30,7 @@ ocr-js-poc-demo/
 │   │   └── neural_network_design.py
 │   ├── test/                   # Comprehensive test suite
 │   ├── Dockerfile
+│   ├── run.py
 │   └── requirements.txt
 └── .github/workflows/  # CI/CD pipeline
 ```
@@ -109,73 +111,7 @@ Step 3: Draw "2" → enter 2 → click "Train Now" (repeat 3-5 times)
 - ✅ **Train more = better accuracy** - more data improves predictions
 - ⚠️ **Wait for training** - let each batch complete before testing
 
-```
-ocr-js-poc-demo/
-├── client/           # Frontend application
-│   ├── src/
-│   │   ├── ocr.html  # Main HTML interface
-│   │   └── ocr.js    # Client-side JavaScript
-│   └── test/
-├── server/           # Python backend server (Dockerized)
-│   ├── src/
-│   │   ├── ocr.py                      # Neural network implementation
-│   │   ├── server.py                   # Flask application
-│   │   └── neural_network_design.py   # Network configuration testing
-│   ├── test/
-│   │   ├── test_ocr.py                 # OCR tests
-│   │   ├── test_server.py              # Flask endpoint tests
-│   │   └── test_neural_network_design.py  # Design utility tests
-│   ├── Dockerfile                      # Production server image
-│   ├── Dockerfile.test                 # Test runner image
-│   ├── docker-compose.yml              # Docker orchestration
-│   ├── .dockerignore                   # Docker ignore patterns
-│   ├── requirements.txt                # Python dependencies
-│   └── README.md                       # Server documentation
-└── README.md         # This file
-```
-
-## Quick Start
-
-### Prerequisites
-- Docker Desktop (Windows/Mac) or Docker Engine (Linux)
-- Docker Compose
-- Modern web browser for the client
-
-### Server Setup (Docker)
-
-1. Navigate to the server directory:
-   ```bash
-   cd server
-   ```
-
-2. Build and start the server:
-   ```bash
-   docker-compose up -d ocr-server
-   ```
-
-3. Verify the server is running:
-   ```bash
-   curl http://localhost:3000/health
-   ```
-
-### Run Tests
-
-```bash
-cd server
-docker-compose run --rm ocr-tests
-```
-
-### Client Setup
-
-1. Open `client/src/ocr.html` in a web browser
-2. The client will connect to the server at `http://localhost:3000`
-
-## How It Works
-
-### Neural Network
-- **Architecture**: Feedforward neural network
-  - Input layer: 400 nodes (20×20 pixel images)
-  - Hidden layer: Configurable (default: 20 nodes)
+## 🛠️ Tech Stack
   - Output layer: 10 nodes (digits 0-9)
 - **Training**: Backpropagation with gradient descent
 - **Activation**: Sigmoid function
