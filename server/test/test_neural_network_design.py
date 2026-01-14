@@ -5,6 +5,7 @@ import pytest
 import numpy as np
 import os
 
+from src import neural_network_design
 from src.neural_network_design import model_test, find_optimal_hidden_nodes
 from src.ocr import OCRNeuralNetwork
 
@@ -130,8 +131,6 @@ class TestNeuralNetworkDesign:
 
     def test_module_imports(self):
         """Test that all necessary functions are imported correctly"""
-        from src import neural_network_design
-
         assert hasattr(neural_network_design, 'model_test')
         assert hasattr(neural_network_design, 'find_optimal_hidden_nodes')
 
