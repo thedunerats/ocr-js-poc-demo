@@ -3,7 +3,6 @@ Unit tests for neural network design utilities
 """
 import pytest
 import numpy as np
-import os
 
 from src import neural_network_design
 from src.neural_network_design import model_test, find_optimal_hidden_nodes

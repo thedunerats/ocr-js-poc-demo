@@ -191,8 +191,9 @@ class TestOCRNeuralNetwork:
         data_matrix, data_labels, training_indices = sample_data
 
         for num_nodes in [5, 10, 20, 30]:
-            nn = OCRNeuralNetwork(num_nodes, data_matrix, data_labels, 
-                                    training_indices, use_file=False)
+            nn = OCRNeuralNetwork(
+                num_nodes, data_matrix, data_labels, training_indices, use_file=False
+            )
             assert nn.num_hidden_nodes == num_nodes
             assert len(nn.theta1) == num_nodes
 
@@ -200,13 +201,13 @@ class TestOCRNeuralNetwork:
         """Test that saving creates a backup of the existing file"""
         nn_instance.NN_FILE_PATH = str(tmp_path / 'test_backup.json')
         nn_instance._use_file = True
-    
+
         # First save - no backup should be created
         nn_instance.save()
         assert os.path.exists(nn_instance.NN_FILE_PATH)
         backups = nn_instance.list_backups()
         assert len(backups) == 0
-    
+
         # Second save - backup should be created
         nn_instance.save()
         backups = nn_instance.list_backups()
@@ -217,18 +218,18 @@ class TestOCRNeuralNetwork:
         """Test that old backups are cleaned up"""
         nn_instance.NN_FILE_PATH = str(tmp_path / 'test_cleanup.json')
         nn_instance._use_file = True
-    
+
         # Create multiple saves with max_backups=3
         for i in range(6):
             nn_instance.save(max_backups=3)
             # Small delay to ensure different timestamps
             import time
             time.sleep(0.01)
-    
+
         # Should only have 3 backups
         backups = nn_instance.list_backups()
         assert len(backups) <= 3
-    
+
     def test_restore_from_backup(self, nn_instance, tmp_path):
         """Test restoring neural network from backup"""
         nn_instance.NN_FILE_PATH = str(tmp_path / 'test_restore.json')

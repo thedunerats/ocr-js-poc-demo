@@ -176,7 +176,7 @@ class TestFlaskServer:
     def test_invalid_request_type(self, client):
         """Test request without train or predict"""
         payload = {'invalid': True}
-        
+
         response = client.post(
             '/',
             data=json.dumps(payload),
