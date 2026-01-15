@@ -68,6 +68,20 @@ def handle_request():
                             400,
                         )
 
+                    # Validate that all pixel values are numeric
+                    try:
+                        for pixel_idx, pixel_val in enumerate(data["y0"]):
+                            float(pixel_val)
+                    except (ValueError, TypeError) as e:
+                        return (
+                            jsonify(
+                                {
+                                    "error": f"Sample {i}, pixel {pixel_idx}: Invalid value '{pixel_val}' - {str(e)}"
+                                }
+                            ),
+                            400,
+                        )
+
             except Exception as e:
                 return (
                     jsonify({"error": f"Invalid training data format: {str(e)}"}),

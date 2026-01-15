@@ -123,7 +123,8 @@ function DrawingCanvas({ setStatus, trainingCount, setTrainingCount }) {
       return
     }
 
-    const newTrainArray = [...trainArray, { y0: data, label: parseInt(digit) }]
+    // Create a deep copy of the data array to avoid reference issues
+    const newTrainArray = [...trainArray, { y0: [...data], label: parseInt(digit) }]
     setTrainArray(newTrainArray)
     setTrainingCount(trainingCount + 1)
     
@@ -131,14 +132,34 @@ function DrawingCanvas({ setStatus, trainingCount, setTrainingCount }) {
     if (forceTrain || newTrainArray.length >= BATCH_SIZE) {
       try {
         setStatus('🚀 Training network...')
+        
+        // Ensure all data is properly formatted and numeric
+        const sanitizedTrainArray = newTrainArray.map((sample, idx) => {
+          // Ensure y0 is an array of numbers
+          const y0 = sample.y0.map(val => {
+            const num = Number(val)
+            if (!isFinite(num)) {
+              console.error(`Sample ${idx}: Invalid value at pixel:`, val)
+              return 0 // Default to 0 for invalid values
+            }
+            return num
+          })
+          
+          return {
+            y0: y0,
+            label: parseInt(sample.label)
+          }
+        })
+        
         await sendData({
-          trainArray: newTrainArray,
+          trainArray: sanitizedTrainArray,
           train: true
         })
         setStatus(`✓ Trained with ${newTrainArray.length} sample${newTrainArray.length > 1 ? 's' : ''}! Total: ${trainingCount + 1}`)
         setTrainArray([])
       } catch (error) {
         setStatus(`❌ Error: ${error.message}`)
+        console.error('Training error:', error)
         return
       }
     } else {

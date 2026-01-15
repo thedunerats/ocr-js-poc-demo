@@ -345,3 +345,24 @@ class TestFlaskServer:
         data = json.loads(response.data)
         assert "error" in data
         assert "numeric" in data["error"].lower()
+
+    def test_train_non_numeric_pixel_values(self, client):
+        """Test training with non-numeric pixel values"""
+        # Create valid training data except one sample has non-numeric pixel
+        train_array = [
+            {"y0": [0.5] * 400, "label": 1},
+            {"y0": [0.3] * 400, "label": 2},
+            {"y0": [0.5] * 399 + [None], "label": 3},  # Invalid pixel value
+        ]
+        payload = {"train": True, "trainArray": train_array}
+
+        response = client.post(
+            "/", data=json.dumps(payload), content_type="application/json"
+        )
+
+        assert response.status_code == 400
+        data = json.loads(response.data)
+        assert "error" in data
+        assert "sample 2" in data["error"].lower()  # Third sample (index 2)
+        assert "pixel 399" in data["error"].lower()  # Last pixel
+        assert "invalid value" in data["error"].lower()
