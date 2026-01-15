@@ -8,6 +8,7 @@ A full-stack OCR (Optical Character Recognition) application with a custom neura
 - **Interactive Drawing Interface**: React-based canvas for drawing digits
 - **Real-time Training**: Train the network with your own handwriting
 - **Live Predictions**: Test the network's accuracy instantly
+- **Network Optimization**: Automatically find optimal hidden layer configuration
 - **Production-Ready**: Docker support, CI/CD pipeline, comprehensive testing
 - **Model Backup System**: Automatic versioned backups with restore capability
 
@@ -18,13 +19,15 @@ ocr-js-poc-demo/
 ├── client/          # React frontend (Vite)
 │   ├── src/
 │   │   ├── components/
-│   │   │   └── DrawingCanvas.jsx
+│   │   │   ├── DrawingCanvas.jsx
+│   │   │   └── NetworkOptimizer.jsx
 │   │   ├── App.jsx
 │   │   └── main.jsx
-│   ├── test/                   # Client test suite (33 tests)
+│   ├── test/                   # Client test suite (51 tests)
 │   │   ├── App.test.jsx
 │   │   ├── DrawingCanvas.test.jsx
 │   │   ├── integration.test.jsx
+│   │   ├── NetworkOptimizer.test.jsx
 │   │   └── setup.js
 │   ├── package.json
 │   ├── vite.config.js
@@ -34,7 +37,7 @@ ocr-js-poc-demo/
 │   │   ├── app.py              # Flask application
 │   │   ├── ocr.py              # Neural network implementation
 │   │   └── neural_network_design.py
-│   ├── test/                   # Server test suite (64+ tests)
+│   ├── test/                   # Server test suite (83 tests)
 │   ├── Dockerfile
 │   ├── run.py
 │   └── requirements.txt
@@ -152,26 +155,17 @@ Step 3: Draw "2" → enter 2 → click "Train Now" (repeat 3-5 times)
 - **Endpoints**:
   - `GET /health` - Health check
   - `POST /` - Training and prediction
+  - `POST /optimize` - Find optimal hidden nodes configuration
 
 ### API
 The server provides a simple REST API:
 - `POST /` with `{ "train": true, "trainArray": [...] }` - Train the network
 - `POST /` with `{ "predict": true, "image": [...] }` - Predict a digit
+- `POST /optimize` with training and test data - Find optimal hidden nodes
 - `GET /health` - Check server status
+ ## 🧪 Testing
 
-## 📚 Documentation
-
-- **[README.md](README.md)** - Main documentation (this file)
-- **[DATA_FLOW_GUIDE.md](DATA_FLOW_GUIDE.md)** - Detailed explanation of data flow and neural network architecture
-- **[DOCKER_GUIDE.md](DOCKER_GUIDE.md)** - Docker quick reference
-- **[MIGRATION.md](MIGRATION.md)** - Migration guide from batch scripts to Docker
-- **[client/README.md](client/README.md)** - Frontend-specific documentation
-- **[client/test/README.md](client/test/README.md)** - Client testing guide
-- **[server/README.md](server/README.md)** - Backend-specific documentation
-
-## 🧪 Testing
-
-The project includes comprehensive test suites for both frontend and backend with **97+ total tests**.
+The project includes comprehensive test suites for both frontend and backend with **134 total tests**.
 
 ### Server Tests (Python/pytest)
 
@@ -190,22 +184,24 @@ docker-compose run --rm ocr-tests
 ```
 
 **Test Coverage:**
-- ✅ **64+ tests** across all server components
+- ✅ **83 tests** across all server components
 - ✅ **OCR Neural Network** (28 tests)
   - Initialization, training, prediction
   - Backup/restore functionality
   - Edge cases and validation
   - Numerical stability
-- ✅ **Flask API** (24+ tests)
+- ✅ **Flask API** (39 tests)
   - Training endpoint validation
   - Prediction endpoint validation
+  - **Optimization endpoint** (14 tests)
   - Error handling (400, 500)
   - CORS headers
   - Input sanitization
-- ✅ **Neural Network Design** (12 tests)
+- ✅ **Neural Network Design** (18 tests)
   - Model testing utilities
   - Accuracy calculations
-  - Configuration validation
+  - Configuration optimization
+  - **Hidden nodes optimization**
 
 ### Client Tests (Vitest/React Testing Library)
 
@@ -219,7 +215,7 @@ npm run test:ui           # Interactive UI
 ```
 
 **Test Coverage:**
-- ✅ **33 tests** covering React components
+- ✅ **51 tests** covering React components
 - ✅ **App Component** (7 tests)
   - Rendering and layout
   - Training count display
@@ -229,6 +225,11 @@ npm run test:ui           # Interactive UI
   - User interactions
   - Form validation
   - Button functionality
+- ✅ **NetworkOptimizer Component** (18 tests)
+  - Component rendering and UI
+  - Input validation and state management
+  - Optimization API integration
+  - Results display and error handling
 - ✅ **API Integration** (13 tests)
   - Training API calls
   - Prediction API calls
@@ -240,30 +241,32 @@ npm run test:ui           # Interactive UI
 
 **Automated Testing:**
 The GitHub Actions workflow runs all tests on every push and pull request:
-- ✅ **Server tests** (Python/pytest) - 64+ tests
+- ✅ **Server tests** (Python/pytest) - 83 tests
   - OCR Neural Network (28 tests)
-  - Flask API endpoints (24+ tests)
-  - Neural network design utilities (12 tests)
-- ✅ **Client tests** (JavaScript/Vitest) - 33 tests
+  - Flask API endpoints (39 tests, includes /optimize)
+  - Neural network design utilities (18 tests)
+- ✅ **Client tests** (JavaScript/Vitest) - 51 tests
   - App component (7 tests)
   - DrawingCanvas component (13 tests)
+  - NetworkOptimizer component (18 tests)
   - API integration (13 tests)
 - ✅ Code coverage reports (both server and client)
 - ✅ Linting (flake8, black)
 - ✅ Build validation
 
-**Total Test Coverage: 97+ tests**
+**Total Test Coverage: 134 tests**
 
 **Test Files:**
 
 **Server:**
 - `test/test_ocr.py` - OCR Neural Network tests (28 tests)
-- `test/test_app.py` - Flask API endpoint tests (24+ tests)
-- `test/test_neural_network_design.py` - Network design utilities (12 tests)
+- `test/test_app.py` - Flask API endpoint tests (39 tests, includes /optimize)
+- `test/test_neural_network_design.py` - Network design utilities (18 tests)
 
 **Client:**
 - `test/App.test.jsx` - App component tests (7 tests)
 - `test/DrawingCanvas.test.jsx` - Canvas component tests (13 tests)
+- `test/NetworkOptimizer.test.jsx` - Network optimizer tests (18 tests)
 - `test/integration.test.jsx` - API integration tests (13 tests)
 - `test/setup.js` - Test environment configuration
 
@@ -277,7 +280,41 @@ The GitHub Actions workflow runs all tests on every push and pull request:
 - **[client/test/README.md](client/test/README.md)** - Client testing guide
 - **[server/README.md](server/README.md)** - Backend-specific documentation
 
-## 📦 Dependencies
+## � Advanced Features
+
+### Network Optimization Endpoint
+
+The `/optimize` endpoint allows you to find the optimal number of hidden nodes for your neural network configuration.
+
+**Usage:**
+```bash
+curl -X POST http://localhost:3000/optimize \
+  -H "Content-Type: application/json" \
+  -d '{
+    "trainingData": [{"y0": [...], "label": 0}, ...],
+    "testData": [{"y0": [...], "label": 1}, ...],
+    "minNodes": 5,
+    "maxNodes": 50,
+    "step": 5
+  }'
+```
+
+**Response:**
+```json
+{
+  "results": [
+    {"hiddenNodes": 20, "accuracy": 0.95},
+    {"hiddenNodes": 25, "accuracy": 0.94},
+    ...
+  ],
+  "optimal": {"hiddenNodes": 20, "accuracy": 0.95},
+  "message": "Optimization completed. Tested 9 configurations."
+}
+```
+
+This feature tests multiple network configurations and returns the best performing setup based on your actual training data.
+
+## �📦 Dependencies
 
 ### Server
 - Docker & Docker Compose
@@ -351,6 +388,23 @@ npm run preview
 ```
 
 ### Testing Network Configurations
+
+**Via API (Recommended):**
+Use the NetworkOptimizer component in the client UI or call the `/optimize` endpoint directly:
+
+```bash
+curl -X POST http://localhost:3000/optimize \
+  -H "Content-Type: application/json" \
+  -d '{
+    "trainingData": [...],
+    "testData": [...],
+    "minNodes": 5,
+    "maxNodes": 30,
+    "step": 5
+  }'
+```
+
+**Via Command Line:**
 ```bash
 cd server
 docker-compose run --rm ocr-tests python src/neural_network_design.py
@@ -388,9 +442,10 @@ The network expects:
 
 ## Notes
 
-- This is a proof-of-concept demonstration with production-quality testing (97+ tests)
+- This is a proof-of-concept demonstration with production-quality testing (134 tests)
 - The neural network implementation is educational and demonstrates core ML concepts
 - Comprehensive test coverage ensures reliability and maintainability
+- Network optimizer helps find optimal configurations for your specific training data
 - For production OCR at scale, consider using:
   - Tesseract OCR
   - Google Cloud Vision API

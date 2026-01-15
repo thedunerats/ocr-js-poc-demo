@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import DrawingCanvas from './components/DrawingCanvas'
+import NetworkOptimizer from './components/NetworkOptimizer'
 import './App.css'
 
 function App() {
   const [status, setStatus] = useState('')
   const [trainingCount, setTrainingCount] = useState(0)
+  const [trainingData, setTrainingData] = useState([])
 
   return (
     <div className="app">
@@ -13,7 +15,7 @@ function App() {
         <p className="subtitle">Draw a digit and train or test the neural network</p>
         
         {status && (
-          <div className={`status ${status.includes('Error') ? 'error' : 'success'}`}>
+          <div className={`status ${status.includes('Error') || status.includes('⚠️') ? 'error' : 'success'}`}>
             {status}
           </div>
         )}
@@ -22,6 +24,8 @@ function App() {
           setStatus={setStatus}
           trainingCount={trainingCount}
           setTrainingCount={setTrainingCount}
+          trainingData={trainingData}
+          setTrainingData={setTrainingData}
         />
         
         <div className="info">
@@ -29,6 +33,11 @@ function App() {
           <p className="hint">💡 Tip: Train 3-5 examples of EACH digit (0-9) for accuracy</p>
           <p className="hint">⚡ Use "Train Now" for immediate training, or "Add to Batch" to collect 3 samples</p>
         </div>
+
+        <NetworkOptimizer 
+          trainingData={trainingData}
+          setStatus={setStatus}
+        />
       </div>
     </div>
   )

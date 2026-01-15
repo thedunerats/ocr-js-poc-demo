@@ -36,7 +36,9 @@ def model_test(data_matrix, data_labels, test_indices, nn):
     return avg_sum / 100
 
 
-def find_optimal_hidden_nodes(data_matrix, data_labels, train_indices, test_indices):
+def find_optimal_hidden_nodes(
+    data_matrix, data_labels, train_indices, test_indices, min_nodes=5, max_nodes=50, step=5
+):
     """
     Try various numbers of hidden nodes and see what performs best
 
@@ -45,14 +47,26 @@ def find_optimal_hidden_nodes(data_matrix, data_labels, train_indices, test_indi
         data_labels: Corresponding labels for the data
         train_indices: Indices to use for training
         test_indices: Indices to use for testing
+        min_nodes: Minimum number of hidden nodes to test (default: 5)
+        max_nodes: Maximum number of hidden nodes to test (default: 50)
+        step: Step size for testing (default: 5)
+
+    Returns:
+        List of tuples (hidden_nodes, accuracy) sorted by accuracy (best first)
     """
     print("Testing different hidden node configurations...")
     print("-" * 50)
 
-    for i in range(5, 50, 5):
+    results = []
+    for i in range(min_nodes, max_nodes, step):
         nn = OCRNeuralNetwork(i, data_matrix, data_labels, train_indices, False)
         performance = model_test(data_matrix, data_labels, test_indices, nn)
+        results.append((i, performance))
         print(f"{i} Hidden Nodes: {performance:.4f}")
+
+    # Sort by accuracy (descending)
+    results.sort(key=lambda x: x[1], reverse=True)
+    return results
 
 
 if __name__ == "__main__":

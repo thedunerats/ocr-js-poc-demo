@@ -7,6 +7,7 @@ A modern React application for training and testing an OCR neural network with a
 - 🎨 **Interactive Drawing Canvas**: Draw digits with your mouse
 - 🎓 **Training Mode**: Collect and send training batches to the neural network
 - 🧪 **Testing Mode**: Test predictions in real-time
+- 🔧 **Network Optimizer**: Find optimal hidden layer configuration automatically
 - 🎯 **Batch Processing**: Automatically sends training data in batches of 10
 - 📊 **Visual Feedback**: See training progress and prediction results
 - 🎭 **Modern UI**: Beautiful gradient design with smooth animations
@@ -42,6 +43,8 @@ npm run preview
 
 ## Usage
 
+### Basic Workflow
+
 1. **Draw a Digit**: Click and drag on the canvas to draw a digit (0-9)
 2. **Train**: 
    - Enter the digit you drew in the input field
@@ -49,7 +52,32 @@ npm run preview
    - OR click "Train Now" to train immediately
    - Repeat for all digits 0-9 (at least 3-5 examples each)
 3. **Test**: Draw a digit and click "Test" to see what the network predicts
-4. **Reset**: Clear the canvas to start over
+4. **Optimize** (Optional): After collecting 10+ samples, use the optimizer to find the best configuration
+5. **Reset**: Clear the canvas to start over
+
+### Network Optimizer
+
+The Network Optimizer helps you find the optimal number of hidden nodes for your training data. It automatically tests different network configurations and ranks them by accuracy.
+
+**How to Use**:
+1. **Collect Training Samples**: Draw and train at least 10 samples (more is better)
+2. **Configure Parameters**:
+   - **Min Nodes**: Starting point for testing (default: 5)
+   - **Max Nodes**: Upper limit for testing (default: 30)
+   - **Step**: Increment between tests (default: 5)
+3. **Run Optimization**: Click "Find Optimal Configuration"
+4. **Review Results**: View ranked configurations with accuracy scores
+
+**Example**:
+- Min=5, Max=30, Step=5 tests: 5, 10, 15, 20, 25, 30 hidden nodes
+- 20 training samples = 14 train (70%), 6 test (30%)
+- Best configuration shown with ⭐ OPTIMAL badge
+
+**Tips**:
+- More training samples = more reliable results
+- Smaller step = more precise but slower
+- Default range (5-30) works well for digit recognition
+- Optimal node count varies based on your handwriting samples
 
 ### Training Strategy
 
@@ -98,9 +126,38 @@ Prediction request:
 }
 ```
 
+**POST /api/optimize**
+
+Network optimization request:
+```json
+{
+  "trainingData": [
+    {"y0": [/* 400 pixel array */], "label": 5}
+  ],
+  "testData": [
+    {"y0": [/* 400 pixel array */], "label": 3}
+  ],
+  "minNodes": 5,
+  "maxNodes": 30,
+  "step": 5
+}
+```
+
+Response:
+```json
+{
+  "results": [
+    {"hiddenNodes": 20, "accuracy": 0.95},
+    {"hiddenNodes": 15, "accuracy": 0.93}
+  ],
+  "optimal": {"hiddenNodes": 20, "accuracy": 0.95},
+  "message": "Optimization completed. Tested 6 configurations."
+}
+```
+
 ## 🧪 Testing
 
-The client includes a **comprehensive test suite with 33 tests** covering components, user interactions, and API integration. All tests use **Vitest** and **React Testing Library** for reliable, maintainable testing.
+The client includes a **comprehensive test suite with 51 tests** covering components, user interactions, API integration, and network optimization. All tests use **Vitest** and **React Testing Library** for reliable, maintainable testing.
 
 📖 **See [test/README.md](test/README.md) for detailed testing documentation and examples.**
 
@@ -122,7 +179,7 @@ npm run test:ui
 
 ### Test Coverage Summary
 
-**33 tests across 3 test files:**
+**51 tests across 4 test files:**
 
 1. **App Component Tests** ([test/App.test.jsx](test/App.test.jsx)) - **7 tests**
    - ✅ Main heading and subtitle rendering
@@ -148,6 +205,16 @@ npm run test:ui
    - ✅ Data sanitization (NaN, undefined values)
    - ✅ Array length validation (400 elements)
    - ✅ Batch accumulation and sending
+
+4. **NetworkOptimizer Tests** ([test/NetworkOptimizer.test.jsx](test/NetworkOptimizer.test.jsx)) - **18 tests**
+   - ✅ Component rendering and UI elements
+   - ✅ Input field validation (min/max/step)
+   - ✅ Button states (disabled/enabled based on data)
+   - ✅ Optimization API requests and data splitting (70/30)
+   - ✅ Results display and ranking
+   - ✅ Error handling (server errors, network failures)
+   - ✅ Loading states and disabled inputs during optimization
+   - ✅ Status message updates
 
 ### Test Coverage Metrics
 
@@ -182,7 +249,9 @@ client/
 ├── src/
 │   ├── components/
 │   │   ├── DrawingCanvas.jsx      # Main canvas component
-│   │   └── DrawingCanvas.css      # Canvas styles
+│   │   ├── DrawingCanvas.css      # Canvas styles
+│   │   ├── NetworkOptimizer.jsx   # Network optimization component
+│   │   └── NetworkOptimizer.css   # Optimizer styles
 │   ├── App.jsx                    # Main app component
 │   ├── App.css                    # App styles
 │   ├── main.jsx                   # React entry point
@@ -191,7 +260,8 @@ client/
 │   ├── setup.js                   # Test environment setup
 │   ├── App.test.jsx               # App component tests (7 tests)
 │   ├── DrawingCanvas.test.jsx     # Canvas tests (13 tests)
-│   └── integration.test.jsx       # API integration tests (13 tests)
+│   ├── integration.test.jsx       # API integration tests (13 tests)
+│   └── NetworkOptimizer.test.jsx  # Optimizer tests (18 tests)
 ├── index.html                     # HTML template
 ├── vite.config.js                 # Vite configuration
 ├── vitest.config.js               # Test configuration

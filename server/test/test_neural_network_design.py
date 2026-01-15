@@ -165,3 +165,81 @@ class TestNeuralNetworkDesign:
 
         assert 0 <= result1 <= 1
         assert 0 <= result2 <= 1
+    def test_find_optimal_hidden_nodes_returns_results(self, sample_data):
+        """Test that find_optimal_hidden_nodes returns sorted results"""
+        data_matrix, data_labels, train_indices, test_indices = sample_data
+
+        results = find_optimal_hidden_nodes(
+            data_matrix, data_labels, train_indices, test_indices,
+            min_nodes=5, max_nodes=15, step=5
+        )
+
+        # Should return a list of tuples
+        assert isinstance(results, list)
+        assert len(results) > 0
+        
+        # Each result should be a tuple of (hidden_nodes, accuracy)
+        for hidden_nodes, accuracy in results:
+            assert isinstance(hidden_nodes, int)
+            assert isinstance(accuracy, (float, np.floating))
+            assert 0 <= accuracy <= 1
+
+    def test_find_optimal_hidden_nodes_sorted(self, sample_data):
+        """Test that results are sorted by accuracy (descending)"""
+        data_matrix, data_labels, train_indices, test_indices = sample_data
+
+        results = find_optimal_hidden_nodes(
+            data_matrix, data_labels, train_indices, test_indices,
+            min_nodes=5, max_nodes=15, step=5
+        )
+
+        # Extract accuracies
+        accuracies = [acc for _, acc in results]
+        
+        # Should be sorted in descending order
+        assert accuracies == sorted(accuracies, reverse=True)
+
+    def test_find_optimal_hidden_nodes_custom_range(self, sample_data):
+        """Test find_optimal_hidden_nodes with custom range"""
+        data_matrix, data_labels, train_indices, test_indices = sample_data
+
+        results = find_optimal_hidden_nodes(
+            data_matrix, data_labels, train_indices, test_indices,
+            min_nodes=10, max_nodes=20, step=2
+        )
+
+        # Should have results for nodes: 10, 12, 14, 16, 18
+        assert len(results) == 5
+        
+        # Check that all expected node counts are present
+        node_counts = [nodes for nodes, _ in results]
+        expected_nodes = [10, 12, 14, 16, 18]
+        assert sorted(node_counts) == expected_nodes
+
+    def test_find_optimal_hidden_nodes_single_configuration(self, sample_data):
+        """Test find_optimal_hidden_nodes with single configuration"""
+        data_matrix, data_labels, train_indices, test_indices = sample_data
+
+        results = find_optimal_hidden_nodes(
+            data_matrix, data_labels, train_indices, test_indices,
+            min_nodes=15, max_nodes=16, step=5
+        )
+
+        # Should test only 15 hidden nodes
+        assert len(results) == 1
+        assert results[0][0] == 15
+        assert 0 <= results[0][1] <= 1
+
+    def test_find_optimal_hidden_nodes_best_is_first(self, sample_data):
+        """Test that the best configuration is first in results"""
+        data_matrix, data_labels, train_indices, test_indices = sample_data
+
+        results = find_optimal_hidden_nodes(
+            data_matrix, data_labels, train_indices, test_indices,
+            min_nodes=5, max_nodes=20, step=5
+        )
+
+        # First result should have the highest accuracy
+        best_accuracy = results[0][1]
+        for _, accuracy in results:
+            assert accuracy <= best_accuracy

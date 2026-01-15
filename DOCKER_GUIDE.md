@@ -96,6 +96,19 @@ curl -X POST http://localhost:3000/ \
   }'
 ```
 
+### Optimization (Find Optimal Hidden Nodes)
+```bash
+curl -X POST http://localhost:3000/optimize \
+  -H "Content-Type: application/json" \
+  -d '{
+    "trainingData": [{"y0": [...], "label": 0}, ...],
+    "testData": [{"y0": [...], "label": 1}, ...],
+    "minNodes": 5,
+    "maxNodes": 50,
+    "step": 5
+  }'
+```
+
 ## Troubleshooting
 
 ### Port in use?
