@@ -21,14 +21,20 @@ ocr-js-poc-demo/
 │   │   │   └── DrawingCanvas.jsx
 │   │   ├── App.jsx
 │   │   └── main.jsx
+│   ├── test/                   # Client test suite (33 tests)
+│   │   ├── App.test.jsx
+│   │   ├── DrawingCanvas.test.jsx
+│   │   ├── integration.test.jsx
+│   │   └── setup.js
 │   ├── package.json
-│   └── vite.config.js
+│   ├── vite.config.js
+│   └── vitest.config.js        # Test configuration
 ├── server/          # Flask backend
 │   ├── src/
 │   │   ├── app.py              # Flask application
 │   │   ├── ocr.py              # Neural network implementation
 │   │   └── neural_network_design.py
-│   ├── test/                   # Comprehensive test suite
+│   ├── test/                   # Server test suite (64+ tests)
 │   ├── Dockerfile
 │   ├── run.py
 │   └── requirements.txt
@@ -69,6 +75,18 @@ The client will start on `http://localhost:5173`
 ```powershell
 # Run from project root
 .\start.ps1
+```
+
+**Step 3: Run Tests (Optional)**
+
+```powershell
+# Test the server
+cd server
+pytest
+
+# Test the client
+cd client
+npm test
 ```
 
 ## 📖 Using the Application
@@ -112,10 +130,22 @@ Step 3: Draw "2" → enter 2 → click "Train Now" (repeat 3-5 times)
 - ⚠️ **Wait for training** - let each batch complete before testing
 
 ## 🛠️ Tech Stack
+
+### Frontend
+- **Framework**: React 18 with Vite
+- **Testing**: Vitest + React Testing Library (33 tests)
+- **Canvas API**: For drawing interface
+- **Build Tool**: Vite with HMR
+
+### Backend Neural Network
+- **Architecture**: 3-layer feedforward network
+  - Input layer: 400 nodes (20×20 pixel grid)
+  - Hidden layer: 20 nodes
   - Output layer: 10 nodes (digits 0-9)
 - **Training**: Backpropagation with gradient descent
 - **Activation**: Sigmoid function
 - **Framework**: Custom implementation using NumPy
+- **Testing**: pytest (64+ tests)
 
 ### Server
 - **Framework**: Flask with CORS support
@@ -129,9 +159,19 @@ The server provides a simple REST API:
 - `POST /` with `{ "predict": true, "image": [...] }` - Predict a digit
 - `GET /health` - Check server status
 
+## 📚 Documentation
+
+- **[README.md](README.md)** - Main documentation (this file)
+- **[DATA_FLOW_GUIDE.md](DATA_FLOW_GUIDE.md)** - Detailed explanation of data flow and neural network architecture
+- **[DOCKER_GUIDE.md](DOCKER_GUIDE.md)** - Docker quick reference
+- **[MIGRATION.md](MIGRATION.md)** - Migration guide from batch scripts to Docker
+- **[client/README.md](client/README.md)** - Frontend-specific documentation
+- **[client/test/README.md](client/test/README.md)** - Client testing guide
+- **[server/README.md](server/README.md)** - Backend-specific documentation
+
 ## 🧪 Testing
 
-The project includes comprehensive test suites for both frontend and backend.
+The project includes comprehensive test suites for both frontend and backend with **97+ total tests**.
 
 ### Server Tests (Python/pytest)
 
@@ -200,11 +240,19 @@ npm run test:ui           # Interactive UI
 
 **Automated Testing:**
 The GitHub Actions workflow runs all tests on every push and pull request:
-- ✅ Server tests (Python)
-- ✅ Client tests (JavaScript)
-- ✅ Code coverage reports
+- ✅ **Server tests** (Python/pytest) - 64+ tests
+  - OCR Neural Network (28 tests)
+  - Flask API endpoints (24+ tests)
+  - Neural network design utilities (12 tests)
+- ✅ **Client tests** (JavaScript/Vitest) - 33 tests
+  - App component (7 tests)
+  - DrawingCanvas component (13 tests)
+  - API integration (13 tests)
+- ✅ Code coverage reports (both server and client)
 - ✅ Linting (flake8, black)
 - ✅ Build validation
+
+**Total Test Coverage: 97+ tests**
 
 **Test Files:**
 
@@ -219,7 +267,17 @@ The GitHub Actions workflow runs all tests on every push and pull request:
 - `test/integration.test.jsx` - API integration tests (13 tests)
 - `test/setup.js` - Test environment configuration
 
-## Dependencies
+## 📚 Documentation
+
+- **[README.md](README.md)** - Main documentation (this file)
+- **[DATA_FLOW_GUIDE.md](DATA_FLOW_GUIDE.md)** - Detailed explanation of data flow and neural network architecture
+- **[DOCKER_GUIDE.md](DOCKER_GUIDE.md)** - Docker quick reference
+- **[MIGRATION.md](MIGRATION.md)** - Migration guide from batch scripts to Docker
+- **[client/README.md](client/README.md)** - Frontend-specific documentation
+- **[client/test/README.md](client/test/README.md)** - Client testing guide
+- **[server/README.md](server/README.md)** - Backend-specific documentation
+
+## 📦 Dependencies
 
 ### Server
 - Docker & Docker Compose
@@ -228,12 +286,19 @@ The GitHub Actions workflow runs all tests on every push and pull request:
 - Flask - Web framework
 - Flask-CORS - Cross-origin resource sharing
 - pytest - Testing framework
+- pytest-cov - Test coverage
 
 See [server/requirements.txt](server/requirements.txt) for full list.
 
 ### Client
-- Modern web browser with JavaScript support
-- No additional dependencies required
+- Node.js 18+ and npm
+- React 18 - UI framework
+- Vite - Build tool and dev server
+- Vitest - Testing framework
+- React Testing Library - Component testing
+- jsdom - DOM implementation for tests
+
+See [client/package.json](client/package.json) for full list.
 
 ## Development
 
@@ -249,8 +314,40 @@ docker-compose up ocr-server
 # Run tests after changes
 docker-compose run --rm ocr-tests
 
+# Run specific test file
+docker-compose run --rm ocr-tests pytest test/test_ocr.py -v
+
+# Run with coverage
+docker-compose run --rm ocr-tests pytest --cov=src --cov-report=html
+
 # Access container shell
 docker-compose exec ocr-server bash
+```
+
+### Client Development
+```bash
+cd client
+
+# Start development server with HMR
+npm run dev
+
+# Run tests in watch mode (automatic re-run on changes)
+npm test
+
+# Run tests once
+npm run test:run
+
+# Run tests with coverage
+npm run test:coverage
+
+# Run tests with interactive UI
+npm run test:ui
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
 ```
 
 ### Testing Network Configurations
@@ -291,12 +388,14 @@ The network expects:
 
 ## Notes
 
-- This is a proof-of-concept demonstration
-- The neural network implementation is educational and not optimized for production
-- For production OCR, consider using:
+- This is a proof-of-concept demonstration with production-quality testing (97+ tests)
+- The neural network implementation is educational and demonstrates core ML concepts
+- Comprehensive test coverage ensures reliability and maintainability
+- For production OCR at scale, consider using:
   - Tesseract OCR
   - Google Cloud Vision API
   - TensorFlow/PyTorch with pre-trained models
+- See [DATA_FLOW_GUIDE.md](DATA_FLOW_GUIDE.md) for detailed architecture explanation
 
 ## License
 
