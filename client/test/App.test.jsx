@@ -40,7 +40,7 @@ describe('App Component', () => {
   })
 
   it('updates training count when training occurs', () => {
-    const { rerender } = render(<App />)
+    render(<App />)
     expect(screen.getByText('0')).toBeInTheDocument()
     
     // This would be updated through DrawingCanvas interaction
