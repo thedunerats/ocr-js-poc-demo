@@ -409,7 +409,7 @@ describe('DataImporter Component', () => {
     )
 
     const fileInput = document.querySelector('input[type="file"]')
-    const validData = [{ y0: Array(400).fill(0.5), label: 5 }]
+    const validData = [{ y0: Array(784).fill(0.5), label: 5 }]
     const file = createMockFile(JSON.stringify(validData), 'test.json', { type: 'application/json' })
 
     await user.upload(fileInput, file)
