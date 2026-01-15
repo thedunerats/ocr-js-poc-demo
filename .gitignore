@@ -48,6 +48,10 @@ server/src/ocr_neural_network.json.backup.*
 htmlcov/
 test-results/
 *.cover
+coverage/
+
+# Node modules
+node_modules/
 
 # Docker (optional - remove if you want to track these)
 # docker-compose.override.yml
