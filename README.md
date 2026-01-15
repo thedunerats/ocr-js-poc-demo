@@ -129,28 +129,95 @@ The server provides a simple REST API:
 - `POST /` with `{ "predict": true, "image": [...] }` - Predict a digit
 - `GET /health` - Check server status
 
-## Testing
+## 🧪 Testing
 
-The project includes comprehensive unit tests for all server components.
+The project includes comprehensive test suites for both frontend and backend.
 
-### Running Tests
+### Server Tests (Python/pytest)
+
+**Running Tests Locally:**
 ```bash
 cd server
-test.bat  # Windows
-
-# Or manually:
-pytest
+pytest                                    # Run all tests
+pytest -v                                 # Verbose output
+pytest --cov=src --cov-report=html       # With coverage
 ```
 
-### Running Tests with Coverage
+**Running Tests in Docker:**
 ```bash
-pytest --cov=src --cov-report=html
+cd server
+docker-compose run --rm ocr-tests
 ```
 
-### Test Files
-- `test/test_ocr.py` - Tests for OCRNeuralNetwork class
-- `test/test_server.py` - Tests for Flask endpoints
-- `test/test_neural_network_design.py` - Tests for network optimization utilities
+**Test Coverage:**
+- ✅ **64+ tests** across all server components
+- ✅ **OCR Neural Network** (28 tests)
+  - Initialization, training, prediction
+  - Backup/restore functionality
+  - Edge cases and validation
+  - Numerical stability
+- ✅ **Flask API** (24+ tests)
+  - Training endpoint validation
+  - Prediction endpoint validation
+  - Error handling (400, 500)
+  - CORS headers
+  - Input sanitization
+- ✅ **Neural Network Design** (12 tests)
+  - Model testing utilities
+  - Accuracy calculations
+  - Configuration validation
+
+### Client Tests (Vitest/React Testing Library)
+
+**Running Tests:**
+```bash
+cd client
+npm test                   # Watch mode
+npm run test:run          # Run once
+npm run test:coverage     # With coverage
+npm run test:ui           # Interactive UI
+```
+
+**Test Coverage:**
+- ✅ **33 tests** covering React components
+- ✅ **App Component** (7 tests)
+  - Rendering and layout
+  - Training count display
+  - Status messages
+- ✅ **DrawingCanvas Component** (13 tests)
+  - Canvas rendering
+  - User interactions
+  - Form validation
+  - Button functionality
+- ✅ **API Integration** (13 tests)
+  - Training API calls
+  - Prediction API calls
+  - Error handling
+  - Data sanitization
+  - Batch management
+
+### CI/CD Pipeline
+
+**Automated Testing:**
+The GitHub Actions workflow runs all tests on every push and pull request:
+- ✅ Server tests (Python)
+- ✅ Client tests (JavaScript)
+- ✅ Code coverage reports
+- ✅ Linting (flake8, black)
+- ✅ Build validation
+
+**Test Files:**
+
+**Server:**
+- `test/test_ocr.py` - OCR Neural Network tests (28 tests)
+- `test/test_app.py` - Flask API endpoint tests (24+ tests)
+- `test/test_neural_network_design.py` - Network design utilities (12 tests)
+
+**Client:**
+- `test/App.test.jsx` - App component tests (7 tests)
+- `test/DrawingCanvas.test.jsx` - Canvas component tests (13 tests)
+- `test/integration.test.jsx` - API integration tests (13 tests)
+- `test/setup.js` - Test environment configuration
 
 ## Dependencies
 

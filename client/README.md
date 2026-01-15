@@ -98,6 +98,69 @@ Prediction request:
 }
 ```
 
+## 🧪 Testing
+
+The client includes a comprehensive test suite with 33 tests covering components, interactions, and API integration.
+
+### Quick Test Commands
+
+```bash
+# Run all tests (watch mode)
+npm test
+
+# Run tests once
+npm run test:run
+
+# Run tests with coverage report
+npm run test:coverage
+
+# Open interactive UI
+npm run test:ui
+```
+
+### Test Coverage
+
+**33 tests across 3 test files:**
+
+1. **App Component Tests** (`test/App.test.jsx`) - 7 tests
+   - Rendering and display
+   - Status messages
+   - Training count
+   - Tips display
+
+2. **DrawingCanvas Tests** (`test/DrawingCanvas.test.jsx`) - 13 tests
+   - Canvas rendering and interactions
+   - User input validation
+   - Button functionality
+   - Drawing mechanics
+   - Batch management
+
+3. **Integration Tests** (`test/integration.test.jsx`) - 13 tests
+   - Training API calls
+   - Prediction API calls
+   - Error handling
+   - Data sanitization
+   - Full workflows
+
+### Coverage Report
+
+After running `npm run test:coverage`, view the HTML report:
+
+```bash
+# Windows
+start coverage/index.html
+
+# Mac/Linux
+open coverage/index.html
+```
+
+### CI/CD Integration
+
+Tests run automatically in GitHub Actions:
+- On every push
+- On every pull request
+- Must pass before merging
+
 ## Project Structure
 
 ```
@@ -110,8 +173,14 @@ client/
 │   ├── App.css                    # App styles
 │   ├── main.jsx                   # React entry point
 │   └── index.css                  # Global styles
+├── test/
+│   ├── setup.js                   # Test environment setup
+│   ├── App.test.jsx               # App component tests (7 tests)
+│   ├── DrawingCanvas.test.jsx     # Canvas tests (13 tests)
+│   └── integration.test.jsx       # API integration tests (13 tests)
 ├── index.html                     # HTML template
 ├── vite.config.js                 # Vite configuration
+├── vitest.config.js               # Test configuration
 └── package.json                   # Dependencies
 ```
 
@@ -145,6 +214,8 @@ const BATCH_SIZE = 10 // Change this value
 
 - **React 18**: UI framework
 - **Vite**: Build tool and dev server
+- **Vitest**: Test runner with coverage
+- **Testing Library**: React component testing
 - **Canvas API**: Drawing interface
 - **Fetch API**: HTTP requests to backend
 

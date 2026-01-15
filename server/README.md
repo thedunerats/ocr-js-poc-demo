@@ -155,32 +155,81 @@ Accepts JSON payloads for training and prediction:
 
 ## Testing
 
-### Run All Tests
+The server includes a comprehensive test suite with 64+ tests covering all components.
+
+### Quick Test Commands
+
 ```bash
+# Run all tests
 docker-compose run --rm ocr-tests
+
+# Run all tests locally
+pytest
+
+# Run with verbose output
+pytest -v
+
+# Run specific test file
+pytest test/test_ocr.py
+pytest test/test_app.py
+pytest test/test_neural_network_design.py
+
+# Run with coverage
+pytest --cov=src --cov-report=html
 ```
 
-### Run Specific Test File
-```bash
-docker-compose run --rm ocr-tests pytest test/test_ocr.py
-docker-compose run --rm ocr-tests pytest test/test_server.py
-docker-compose run --rm ocr-tests pytest test/test_neural_network_design.py
-```
+### Test Coverage
 
-### Run with Coverage
+**OCR Neural Network Tests** (`test/test_ocr.py` - 28 tests)
+- ✅ Initialization and weight configuration
+- ✅ Training with various data formats
+- ✅ Prediction accuracy
+- ✅ Model save/load functionality
+- ✅ Backup system (create, restore, cleanup)
+- ✅ Edge cases and validation
+- ✅ Numerical stability (sigmoid overflow protection)
+- ✅ Invalid input handling
+
+**Flask API Tests** (`test/test_app.py` - 24+ tests)
+- ✅ Health check endpoint
+- ✅ Training endpoint validation
+- ✅ Prediction endpoint validation
+- ✅ CORS headers
+- ✅ Error responses (400, 500)
+- ✅ Input sanitization
+- ✅ Array size validation
+- ✅ Label range validation
+- ✅ Non-numeric value detection
+
+**Neural Network Design Tests** (`test/test_neural_network_design.py` - 12 tests)
+- ✅ Model testing utilities
+- ✅ Accuracy calculations
+- ✅ Different network configurations
+- ✅ Data splitting
+- ✅ Empty dataset handling
+
+### Coverage Report
+
 ```bash
+# Generate HTML coverage report
 docker-compose --profile test up ocr-tests-coverage
-```
 
-Coverage report will be in `htmlcov/index.html`
+# Or locally
+pytest --cov=src --cov-report=html
+
+# Open htmlcov/index.html in browser
+```
 
 ### Interactive Testing
+
 ```bash
-# Run tests interactively
+# Run tests interactively in container
 docker-compose run --rm ocr-tests bash
+
 # Inside container:
-pytest -v
-pytest --cov=src
+pytest -v                    # All tests
+pytest test/test_ocr.py     # Specific file
+pytest -k "backup"          # Tests matching pattern
 exit
 ```
 
@@ -189,18 +238,20 @@ exit
 ```
 server/
 ├── src/
+│   ├── __init__.py                 # Package marker
+│   ├── app.py                      # Flask application
 │   ├── ocr.py                      # Neural network implementation
-│   ├── server.py                   # Flask application
 │   └── neural_network_design.py   # Network optimization
 ├── test/
 │   ├── __init__.py                 # Test package init
-│   ├── test_ocr.py                 # OCR tests (15 tests)
-│   ├── test_server.py              # Flask endpoint tests (18 tests)
-│   └── test_neural_network_design.py  # Design utility tests (13 tests)
+│   ├── test_ocr.py                 # Neural network tests (28 tests)
+│   ├── test_app.py                 # Flask API tests (24+ tests)
+│   └── test_neural_network_design.py  # Design utility tests (12 tests)
 ├── Dockerfile                      # Production server image
 ├── Dockerfile.test                 # Test runner image
 ├── docker-compose.yml              # Docker Compose configuration
 ├── .dockerignore                   # Docker ignore patterns
+├── run.py                          # Application entry point
 ├── requirements.txt                # Python dependencies
 └── README.md                       # This file
 ```
