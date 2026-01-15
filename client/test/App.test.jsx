@@ -35,8 +35,9 @@ describe('App Component', () => {
   it('does not show status initially', () => {
     render(<App />)
     // Status div should not be present when status is empty
+    // Check specifically for the status div element, not just text that might match
     const statusDiv = document.querySelector('.status')
-    expect(statusDiv).toBeNull()
+    expect(statusDiv).not.toBeInTheDocument()
   })
 
   it('updates training count when training occurs', () => {
