@@ -34,6 +34,7 @@ env/
 
 # OCR Neural Network Files
 server/src/ocr_neural_network.json
+server/src/ocr_neural_network.json.backup
 **/test_*.json
 **/test_nn.json
 
