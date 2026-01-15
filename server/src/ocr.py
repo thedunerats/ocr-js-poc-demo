@@ -94,8 +94,10 @@ class OCRNeuralNetwork:
         if not training_data_array:
             raise ValueError("Training data array is empty")
 
+        print(f"[OCR DEBUG] Starting training with {len(training_data_array)} samples")
         for idx, data in enumerate(training_data_array):
             try:
+                print(f"[OCR DEBUG] Processing sample {idx}/{len(training_data_array)}")
                 # Validate data structure
                 if "y0" not in data or "label" not in data:
                     raise ValueError(
@@ -136,10 +138,17 @@ class OCRNeuralNetwork:
                 self.theta2 += self.LEARNING_RATE * np.dot(output_errors, y1.T)
                 self.hidden_layer_bias += self.LEARNING_RATE * output_errors
                 self.input_layer_bias += self.LEARNING_RATE * hidden_errors
+                print(f"[OCR DEBUG] Sample {idx} trained successfully")
 
             except (ValueError, TypeError, KeyError) as e:
+                print(f"[OCR ERROR] ValueError at sample {idx}: {str(e)}")
                 raise ValueError(f"Training failed at sample {idx}: {str(e)}")
             except Exception as e:
+                import traceback
+
+                print(
+                    f"[OCR ERROR] Unexpected error at sample {idx}: {traceback.format_exc()}"
+                )
                 raise RuntimeError(f"Unexpected error at sample {idx}: {str(e)}")
 
     def predict(self, test):
@@ -219,6 +228,9 @@ class OCRNeuralNetwork:
             max_backups: Maximum number of backup files to keep
         """
         backup_dir = os.path.dirname(self.NN_FILE_PATH)
+        # If no directory specified, use current directory
+        if not backup_dir:
+            backup_dir = "."
         backup_prefix = os.path.basename(self.NN_FILE_PATH) + ".backup."
 
         # Find all backup files
@@ -249,6 +261,9 @@ class OCRNeuralNetwork:
             return False
 
         backup_dir = os.path.dirname(self.NN_FILE_PATH)
+        # If no directory specified, use current directory
+        if not backup_dir:
+            backup_dir = "."
         backup_prefix = os.path.basename(self.NN_FILE_PATH) + ".backup."
 
         # Find all backup files
@@ -279,6 +294,9 @@ class OCRNeuralNetwork:
             list: List of tuples (timestamp, filepath) sorted by most recent first
         """
         backup_dir = os.path.dirname(self.NN_FILE_PATH)
+        # If no directory specified, use current directory
+        if not backup_dir:
+            backup_dir = "."
         backup_prefix = os.path.basename(self.NN_FILE_PATH) + ".backup."
 
         backups = []

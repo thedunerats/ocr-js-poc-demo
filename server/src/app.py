@@ -89,10 +89,21 @@ def handle_request():
                 )
 
             try:
+                print(f"[DEBUG] Starting training with {len(train_array)} samples")
+                for idx, sample in enumerate(train_array):
+                    print(
+                        f"[DEBUG] Sample {idx}: label={sample.get('label')}, y0_length={len(sample.get('y0', []))}, y0_sample={sample.get('y0', [])[:5]}..."
+                    )
                 nn.train(train_array)
+                print(f"[DEBUG] Training completed successfully")
                 nn.save()
+                print(f"[DEBUG] Model saved successfully")
                 return jsonify({"success": True, "message": "Training completed"}), 200
             except Exception as e:
+                import traceback
+
+                error_details = traceback.format_exc()
+                print(f"[ERROR] Training failed: {error_details}")
                 return jsonify({"error": f"Training failed: {str(e)}"}), 500
 
         elif payload.get("predict"):
@@ -148,4 +159,4 @@ def create_app():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 3000))
     print(f"Starting OCR Flask server on port {port}...")
-    app.run(host="0.0.0.0", port=port, debug=False)
+    app.run(host="0.0.0.0", port=port, debug=True)

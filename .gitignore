@@ -33,10 +33,12 @@ env/
 *~
 
 # OCR Neural Network Files
+server/ocr_neural_network.json
+server/ocr_neural_network.json.backup.*
 server/src/ocr.json
 server/src/ocr_backup_*.json
 server/src/ocr_neural_network.json
-server/src/ocr_neural_network.json.backup
+server/src/ocr_neural_network.json.backup.*
 **/test_*.json
 **/test_nn.json
 
