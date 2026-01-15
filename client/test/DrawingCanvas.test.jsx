@@ -162,7 +162,6 @@ describe('DrawingCanvas Component', () => {
       json: async () => ({ success: true, message: 'Training completed' })
     })
 
-    const user = userEvent.setup()
     render(
       <DrawingCanvas
         setStatus={mockSetStatus}
