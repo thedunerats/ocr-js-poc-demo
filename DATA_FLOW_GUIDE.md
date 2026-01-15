@@ -420,6 +420,49 @@ Handles both training and prediction requests.
 }
 ```
 
+#### POST `/optimize`
+Finds the optimal number of hidden nodes for the neural network.
+
+**Optimization Request:**
+```json
+{
+  "trainingData": [
+    {"y0": [0, 1, 1, ...], "label": 5},
+    {"y0": [1, 0, 1, ...], "label": 7},
+    ...
+  ],
+  "testData": [
+    {"y0": [0, 1, 0, ...], "label": 2},
+    ...
+  ],
+  "minNodes": 5,       // Optional, default: 5
+  "maxNodes": 50,      // Optional, default: 50
+  "step": 5            // Optional, default: 5
+}
+```
+
+**Optimization Response:**
+```json
+{
+  "results": [
+    {"hiddenNodes": 20, "accuracy": 0.95},
+    {"hiddenNodes": 25, "accuracy": 0.94},
+    {"hiddenNodes": 15, "accuracy": 0.93}
+  ],
+  "optimal": {"hiddenNodes": 20, "accuracy": 0.95},
+  "message": "Optimization completed. Tested 9 configurations."
+}
+```
+
+**How it works:**
+1. Tests multiple network configurations (5, 10, 15, 20... hidden nodes)
+2. Trains each configuration with your training data
+3. Tests each configuration against your test data (100 runs per config)
+4. Returns results sorted by accuracy (best first)
+5. Recommends the optimal configuration
+
+This helps you find the best network architecture for your specific dataset!
+
 ### Data Validation
 
 The server validates all incoming data:
@@ -446,6 +489,7 @@ The server validates all incoming data:
 - Too few: Network can't learn complex patterns
 - Too many: Network might memorize instead of generalize
 - **20** is a good balance for this task (found through testing)
+- **Use the `/optimize` endpoint** to find the optimal number for your specific data!
 
 ### Why Batch Size of 3?
 - Training one sample at a time is less stable

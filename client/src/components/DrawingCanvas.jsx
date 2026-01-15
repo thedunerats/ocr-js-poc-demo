@@ -7,7 +7,7 @@ const PIXEL_WIDTH = 10 // TRANSLATED_WIDTH = CANVAS_WIDTH / PIXEL_WIDTH
 const BATCH_SIZE = 3 // Reduced for faster training
 const API_URL = '/api'
 
-function DrawingCanvas({ setStatus, trainingCount, setTrainingCount }) {
+function DrawingCanvas({ setStatus, trainingCount, setTrainingCount, trainingData, setTrainingData }) {
   const canvasRef = useRef(null)
   const [isDrawing, setIsDrawing] = useState(false)
   const [data, setData] = useState(new Array(400).fill(0))
@@ -127,6 +127,11 @@ function DrawingCanvas({ setStatus, trainingCount, setTrainingCount }) {
     const newTrainArray = [...trainArray, { y0: [...data], label: parseInt(digit) }]
     setTrainArray(newTrainArray)
     setTrainingCount(trainingCount + 1)
+    
+    // Store in global training data for optimizer
+    if (setTrainingData) {
+      setTrainingData(prev => [...prev, { y0: [...data], label: parseInt(digit) }])
+    }
     
     // Send immediately if force training or batch is full
     if (forceTrain || newTrainArray.length >= BATCH_SIZE) {

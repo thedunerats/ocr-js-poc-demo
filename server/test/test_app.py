@@ -366,3 +366,271 @@ class TestFlaskServer:
         assert "sample 2" in data["error"].lower()  # Third sample (index 2)
         assert "pixel 399" in data["error"].lower()  # Last pixel
         assert "invalid value" in data["error"].lower()
+
+
+class TestOptimizeEndpoint:
+    """Test suite for the /optimize endpoint"""
+
+    def test_optimize_endpoint_success(self, client):
+        """Test successful optimization with valid data"""
+        # Create training and test data
+        training_data = [
+            {"y0": [0.5] * 400, "label": i % 10}
+            for i in range(20)  # 20 training samples
+        ]
+        test_data = [
+            {"y0": [0.3] * 400, "label": i % 10}
+            for i in range(10)  # 10 test samples
+        ]
+
+        payload = {
+            "trainingData": training_data,
+            "testData": test_data,
+            "minNodes": 5,
+            "maxNodes": 15,
+            "step": 5
+        }
+
+        response = client.post(
+            "/optimize", data=json.dumps(payload), content_type="application/json"
+        )
+
+        assert response.status_code == 200
+        data = json.loads(response.data)
+        assert "results" in data
+        assert "optimal" in data
+        assert "message" in data
+        assert isinstance(data["results"], list)
+        assert len(data["results"]) > 0
+        assert "hiddenNodes" in data["optimal"]
+        assert "accuracy" in data["optimal"]
+
+    def test_optimize_endpoint_missing_training_data(self, client):
+        """Test optimization with missing trainingData"""
+        payload = {
+            "testData": [{"y0": [0.5] * 400, "label": 1}]
+        }
+
+        response = client.post(
+            "/optimize", data=json.dumps(payload), content_type="application/json"
+        )
+
+        assert response.status_code == 400
+        data = json.loads(response.data)
+        assert "error" in data
+        assert "trainingData" in data["error"]
+
+    def test_optimize_endpoint_missing_test_data(self, client):
+        """Test optimization with missing testData"""
+        payload = {
+            "trainingData": [{"y0": [0.5] * 400, "label": 1}]
+        }
+
+        response = client.post(
+            "/optimize", data=json.dumps(payload), content_type="application/json"
+        )
+
+        assert response.status_code == 400
+        data = json.loads(response.data)
+        assert "error" in data
+        assert "testData" in data["error"]
+
+    def test_optimize_endpoint_empty_training_data(self, client):
+        """Test optimization with empty trainingData"""
+        payload = {
+            "trainingData": [],
+            "testData": [{"y0": [0.5] * 400, "label": 1}]
+        }
+
+        response = client.post(
+            "/optimize", data=json.dumps(payload), content_type="application/json"
+        )
+
+        assert response.status_code == 400
+        data = json.loads(response.data)
+        assert "error" in data
+        assert "cannot be empty" in data["error"]
+
+    def test_optimize_endpoint_empty_test_data(self, client):
+        """Test optimization with empty testData"""
+        payload = {
+            "trainingData": [{"y0": [0.5] * 400, "label": 1}],
+            "testData": []
+        }
+
+        response = client.post(
+            "/optimize", data=json.dumps(payload), content_type="application/json"
+        )
+
+        assert response.status_code == 400
+        data = json.loads(response.data)
+        assert "error" in data
+        assert "cannot be empty" in data["error"]
+
+    def test_optimize_endpoint_invalid_min_nodes(self, client):
+        """Test optimization with invalid minNodes"""
+        payload = {
+            "trainingData": [{"y0": [0.5] * 400, "label": 1}],
+            "testData": [{"y0": [0.5] * 400, "label": 1}],
+            "minNodes": 0
+        }
+
+        response = client.post(
+            "/optimize", data=json.dumps(payload), content_type="application/json"
+        )
+
+        assert response.status_code == 400
+        data = json.loads(response.data)
+        assert "error" in data
+        assert "minNodes" in data["error"]
+
+    def test_optimize_endpoint_invalid_max_nodes(self, client):
+        """Test optimization with maxNodes <= minNodes"""
+        payload = {
+            "trainingData": [{"y0": [0.5] * 400, "label": 1}],
+            "testData": [{"y0": [0.5] * 400, "label": 1}],
+            "minNodes": 10,
+            "maxNodes": 5
+        }
+
+        response = client.post(
+            "/optimize", data=json.dumps(payload), content_type="application/json"
+        )
+
+        assert response.status_code == 400
+        data = json.loads(response.data)
+        assert "error" in data
+        assert "maxNodes" in data["error"]
+
+    def test_optimize_endpoint_invalid_step(self, client):
+        """Test optimization with invalid step"""
+        payload = {
+            "trainingData": [{"y0": [0.5] * 400, "label": 1}],
+            "testData": [{"y0": [0.5] * 400, "label": 1}],
+            "step": 0
+        }
+
+        response = client.post(
+            "/optimize", data=json.dumps(payload), content_type="application/json"
+        )
+
+        assert response.status_code == 400
+        data = json.loads(response.data)
+        assert "error" in data
+        assert "step" in data["error"]
+
+    def test_optimize_endpoint_invalid_data_format(self, client):
+        """Test optimization with invalid data format"""
+        payload = {
+            "trainingData": [{"y0": [0.5] * 400}],  # Missing label
+            "testData": [{"y0": [0.5] * 400, "label": 1}]
+        }
+
+        response = client.post(
+            "/optimize", data=json.dumps(payload), content_type="application/json"
+        )
+
+        assert response.status_code == 400
+        data = json.loads(response.data)
+        assert "error" in data
+        assert "label" in data["error"].lower()
+
+    def test_optimize_endpoint_invalid_array_size(self, client):
+        """Test optimization with wrong array size"""
+        payload = {
+            "trainingData": [{"y0": [0.5] * 100, "label": 1}],  # Wrong size
+            "testData": [{"y0": [0.5] * 400, "label": 1}]
+        }
+
+        response = client.post(
+            "/optimize", data=json.dumps(payload), content_type="application/json"
+        )
+
+        assert response.status_code == 400
+        data = json.loads(response.data)
+        assert "error" in data
+        assert "400 pixels" in data["error"]
+
+    def test_optimize_endpoint_invalid_label_range(self, client):
+        """Test optimization with invalid label"""
+        payload = {
+            "trainingData": [{"y0": [0.5] * 400, "label": 10}],  # Invalid label
+            "testData": [{"y0": [0.5] * 400, "label": 1}]
+        }
+
+        response = client.post(
+            "/optimize", data=json.dumps(payload), content_type="application/json"
+        )
+
+        assert response.status_code == 400
+        data = json.loads(response.data)
+        assert "error" in data
+        assert "0-9" in data["error"]
+
+    def test_optimize_endpoint_default_parameters(self, client):
+        """Test optimization with default parameters"""
+        training_data = [
+            {"y0": [0.5] * 400, "label": i % 10}
+            for i in range(20)
+        ]
+        test_data = [
+            {"y0": [0.3] * 400, "label": i % 10}
+            for i in range(10)
+        ]
+
+        payload = {
+            "trainingData": training_data,
+            "testData": test_data
+            # No minNodes, maxNodes, step - should use defaults
+        }
+
+        response = client.post(
+            "/optimize", data=json.dumps(payload), content_type="application/json"
+        )
+
+        assert response.status_code == 200
+        data = json.loads(response.data)
+        assert "results" in data
+        assert len(data["results"]) > 0
+
+    def test_optimize_endpoint_results_sorted(self, client):
+        """Test that optimization results are sorted by accuracy"""
+        training_data = [
+            {"y0": [0.5] * 400, "label": i % 10}
+            for i in range(20)
+        ]
+        test_data = [
+            {"y0": [0.3] * 400, "label": i % 10}
+            for i in range(10)
+        ]
+
+        payload = {
+            "trainingData": training_data,
+            "testData": test_data,
+            "minNodes": 5,
+            "maxNodes": 20,
+            "step": 5
+        }
+
+        response = client.post(
+            "/optimize", data=json.dumps(payload), content_type="application/json"
+        )
+
+        assert response.status_code == 200
+        data = json.loads(response.data)
+        results = data["results"]
+
+        # Check that results are sorted by accuracy (descending)
+        accuracies = [r["accuracy"] for r in results]
+        assert accuracies == sorted(accuracies, reverse=True)
+
+        # Check that optimal is the best result
+        assert data["optimal"] == results[0]
+
+    def test_optimize_endpoint_no_json(self, client):
+        """Test optimization endpoint with no JSON data"""
+        response = client.post("/optimize", data="", content_type="application/json")
+
+        assert response.status_code == 400
+        data = json.loads(response.data)
+        assert "error" in data

@@ -23,8 +23,11 @@ def model_test(data_matrix, data_labels, test_indices, nn):
     if not test_indices:
         return 0.0
 
+    # Run fewer test iterations for faster optimization
+    # (100 was overkill for small test sets)
+    test_runs = 10
     avg_sum = 0
-    for _ in range(100):
+    for _ in range(test_runs):
         correct_guess_count = 0
         for i in test_indices:
             test = data_matrix[i]
@@ -33,10 +36,12 @@ def model_test(data_matrix, data_labels, test_indices, nn):
                 correct_guess_count += 1
 
         avg_sum += correct_guess_count / float(len(test_indices))
-    return avg_sum / 100
+    return avg_sum / test_runs
 
 
-def find_optimal_hidden_nodes(data_matrix, data_labels, train_indices, test_indices):
+def find_optimal_hidden_nodes(
+    data_matrix, data_labels, train_indices, test_indices, min_nodes=5, max_nodes=50, step=5
+):
     """
     Try various numbers of hidden nodes and see what performs best
 
@@ -45,14 +50,38 @@ def find_optimal_hidden_nodes(data_matrix, data_labels, train_indices, test_indi
         data_labels: Corresponding labels for the data
         train_indices: Indices to use for training
         test_indices: Indices to use for testing
+        min_nodes: Minimum number of hidden nodes to test (default: 5)
+        max_nodes: Maximum number of hidden nodes to test (default: 50)
+        step: Step size for testing (default: 5)
+
+    Returns:
+        List of tuples (hidden_nodes, accuracy) sorted by accuracy (best first)
     """
     print("Testing different hidden node configurations...")
     print("-" * 50)
 
-    for i in range(5, 50, 5):
+    results = []
+    # Train each configuration for a few epochs
+    # Too many epochs with small datasets causes overfitting
+    epochs = 3
+
+    print(f"Training with {len(train_indices)} samples, testing with {len(test_indices)} samples")
+    print(f"Each configuration will train for {epochs} epochs")
+
+    for i in range(min_nodes, max_nodes, step):
         nn = OCRNeuralNetwork(i, data_matrix, data_labels, train_indices, False)
+
+        # Train for additional epochs (first epoch done in __init__)
+        for epoch in range(epochs - 1):
+            nn._train(data_matrix, data_labels, train_indices)
+
         performance = model_test(data_matrix, data_labels, test_indices, nn)
-        print(f"{i} Hidden Nodes: {performance:.4f}")
+        results.append((i, performance))
+        print(f"{i} Hidden Nodes: {performance:.4f} (accuracy on {len(test_indices)} test samples)")
+
+    # Sort by accuracy (descending)
+    results.sort(key=lambda x: x[1], reverse=True)
+    return results
 
 
 if __name__ == "__main__":

@@ -1,23 +1,24 @@
 # Client Test Suite
 
-This directory contains **33 comprehensive tests** for the OCR React frontend, covering components, user interactions, and API integration.
+This directory contains **51 comprehensive tests** for the OCR React frontend, covering components, user interactions, API integration, and network optimization.
 
 ## Overview
 
-- **Total Tests**: 33
-- **Test Files**: 3
+- **Total Tests**: 51
+- **Test Files**: 4
 - **Framework**: Vitest + React Testing Library
-- **Coverage**: Components, interactions, API calls, error handling
+- **Coverage**: Components, interactions, API calls, optimization, error handling
 
 ## Test Structure
 
 ```
 test/
-├── setup.js                  # Test environment setup
-├── App.test.jsx             # App component tests (7 tests)
-├── DrawingCanvas.test.jsx   # DrawingCanvas component tests (13 tests)
-├── integration.test.jsx     # API integration tests (13 tests)
-└── README.md                # This file
+├── setup.js                      # Test environment setup
+├── App.test.jsx                  # App component tests (7 tests)
+├── DrawingCanvas.test.jsx        # DrawingCanvas component tests (13 tests)
+├── integration.test.jsx          # API integration tests (13 tests)
+├── NetworkOptimizer.test.jsx     # Network optimizer tests (18 tests)
+└── README.md                     # This file
 ```
 
 ## Running Tests
@@ -69,12 +70,47 @@ npm run test:coverage
 - ✅ Batch count display
 
 ### API Integration (13 tests)
-- ✅ Training API requests
-- ✅ Prediction API requests
-- ✅ Error response handling (400, 500)
-- ✅ Network failure handling
-- ✅ Data sanitization
-- ✅ Batch management
+**Training API**:
+- ✅ Sends valid training request and receives success response
+- ✅ Handles 400 Bad Request errors
+- ✅ Handles 500 Internal Server Error
+- ✅ Handles network failures gracefully
+- ✅ Sanitizes NaN values in pixel data
+- ✅ Validates array length (400 elements required)
+- ✅ Accumulates multiple samples into batch
+
+**Prediction API**:
+- ✅ Sends valid prediction request and receives digit
+- ✅ Handles 400 Bad Request errors
+- ✅ Handles 500 Internal Server Error
+- ✅ Handles network failures gracefully
+- ✅ Sanitizes NaN values in pixel data
+- ✅ Validates array length (400 elements required)
+
+### NetworkOptimizer Component (18 tests)
+**Component Rendering**:
+- ✅ Renders optimizer heading and description
+- ✅ Renders input fields with default values (min=5, max=30, step=5)
+- ✅ Renders optimize button
+- ✅ Shows warning when insufficient training data
+- ✅ Disables button when not enough data
+
+**User Interactions**:
+- ✅ Allows changing min nodes input
+- ✅ Allows changing max nodes input
+- ✅ Allows changing step input
+- ✅ Button is disabled with insufficient data
+- ✅ Enables button with sufficient training data (10+ samples)
+
+**API Integration**:
+- ✅ Sends optimization request with correct data split (70/30)
+- ✅ Displays optimization results after successful request
+- ✅ Shows optimizing state during request
+- ✅ Disables inputs while optimizing
+- ✅ Handles optimization errors from server
+- ✅ Handles network failures gracefully
+- ✅ Displays results table with all configurations
+- ✅ Updates status with optimization results
 
 ## Testing Tools
 
