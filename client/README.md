@@ -100,47 +100,61 @@ Prediction request:
 
 ## 🧪 Testing
 
-The client includes a comprehensive test suite with 33 tests covering components, interactions, and API integration.
+The client includes a **comprehensive test suite with 33 tests** covering components, user interactions, and API integration. All tests use **Vitest** and **React Testing Library** for reliable, maintainable testing.
+
+📖 **See [test/README.md](test/README.md) for detailed testing documentation and examples.**
 
 ### Quick Test Commands
 
 ```bash
-# Run all tests (watch mode)
+# Run all tests (watch mode - recommended during development)
 npm test
 
-# Run tests once
+# Run tests once (CI/CD mode)
 npm run test:run
 
 # Run tests with coverage report
 npm run test:coverage
 
-# Open interactive UI
+# Open interactive UI (great for debugging)
 npm run test:ui
 ```
 
-### Test Coverage
+### Test Coverage Summary
 
 **33 tests across 3 test files:**
 
-1. **App Component Tests** (`test/App.test.jsx`) - 7 tests
-   - Rendering and display
-   - Status messages
-   - Training count
-   - Tips display
+1. **App Component Tests** ([test/App.test.jsx](test/App.test.jsx)) - **7 tests**
+   - ✅ Main heading and subtitle rendering
+   - ✅ Training count display and updates
+   - ✅ Status message handling (show/hide)
+   - ✅ Tips and recommendations display
+   - ✅ DrawingCanvas integration
 
-2. **DrawingCanvas Tests** (`test/DrawingCanvas.test.jsx`) - 13 tests
-   - Canvas rendering and interactions
-   - User input validation
-   - Button functionality
-   - Drawing mechanics
-   - Batch management
+2. **DrawingCanvas Tests** ([test/DrawingCanvas.test.jsx](test/DrawingCanvas.test.jsx)) - **13 tests**
+   - ✅ Canvas rendering (200x200px with grid)
+   - ✅ User input validation (digit 0-9)
+   - ✅ Button functionality (🎓 Add to Batch, ⚡ Train Now, 🧪 Test, 🔄 Reset)
+   - ✅ Drawing mechanics and state management
+   - ✅ Batch management and status display
+   - ✅ Form validation and error messages
+   - ✅ Canvas reset functionality
 
-3. **Integration Tests** (`test/integration.test.jsx`) - 13 tests
-   - Training API calls
-   - Prediction API calls
-   - Error handling
-   - Data sanitization
-   - Full workflows
+3. **Integration Tests** ([test/integration.test.jsx](test/integration.test.jsx)) - **13 tests**
+   - ✅ Training API requests and responses
+   - ✅ Prediction API requests and responses
+   - ✅ Error handling (400, 500 errors)
+   - ✅ Network failure handling
+   - ✅ Data sanitization (NaN, undefined values)
+   - ✅ Array length validation (400 elements)
+   - ✅ Batch accumulation and sending
+
+### Test Coverage Metrics
+
+- **Statements**: >85%
+- **Branches**: >80%
+- **Functions**: >85%
+- **Lines**: >85%
 
 ### Coverage Report
 

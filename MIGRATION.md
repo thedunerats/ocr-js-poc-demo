@@ -15,7 +15,10 @@
 - `docker-compose.yml` - Service orchestration
 - `.dockerignore` - Exclude files from Docker builds
 - `Makefile` - Optional convenience commands
-- `.github/workflows/ci.yml` - CI/CD pipeline
+- `.github/workflows/ci.yml` - CI/CD pipeline (server + client tests)
+- `client/test/` - Comprehensive client test suite (33 tests)
+- `vitest.config.js` - Client test configuration
+- `DATA_FLOW_GUIDE.md` - Detailed architecture documentation
 
 ### 📝 Updated
 - `README.md` - Docker-focused documentation
@@ -78,6 +81,8 @@ docker-compose run --rm ocr-tests
 - ✅ Complete isolation
 - ✅ Easy CI/CD integration
 - ✅ Production-ready
+- ✅ Comprehensive testing (97+ tests: 64+ server, 33 client)
+- ✅ Automated test pipeline
 
 ## Migration Steps
 

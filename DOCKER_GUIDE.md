@@ -11,8 +11,10 @@ Server runs at: **http://localhost:3000**
 
 ## Running Tests
 
+### Server Tests (Python)
+
 ```bash
-# All tests
+# All server tests
 docker-compose run --rm ocr-tests
 
 # With coverage
@@ -20,6 +22,24 @@ docker-compose --profile test up ocr-tests-coverage
 
 # Specific test
 docker-compose run --rm ocr-tests pytest test/test_ocr.py -v
+```
+
+### Client Tests (JavaScript)
+
+```bash
+cd client
+
+# All client tests
+npm test
+
+# Run once (non-watch mode)
+npm run test:run
+
+# With coverage
+npm run test:coverage
+
+# Interactive UI
+npm run test:ui
 ```
 
 ## Common Commands
@@ -101,6 +121,7 @@ docker-compose up ocr-server  # Run without -d to see output
 
 If you prefer traditional setup:
 
+### Server (Python)
 ```bash
 # Install dependencies
 python -m venv venv
@@ -113,6 +134,18 @@ python server.py
 
 # Run tests
 pytest
+```
+
+### Client (JavaScript)
+```bash
+# Install dependencies
+npm install
+
+# Run development server
+npm run dev
+
+# Run tests
+npm test
 ```
 
 ## Files Overview
