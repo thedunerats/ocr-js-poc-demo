@@ -45,10 +45,29 @@ npm run preview
 1. **Draw a Digit**: Click and drag on the canvas to draw a digit (0-9)
 2. **Train**: 
    - Enter the digit you drew in the input field
-   - Click "Train" to add it to the training batch
-   - After 10 samples, the batch is automatically sent to the server
+   - Click "Add to Batch" to collect samples (auto-trains after 3)
+   - OR click "Train Now" to train immediately
+   - Repeat for all digits 0-9 (at least 3-5 examples each)
 3. **Test**: Draw a digit and click "Test" to see what the network predicts
 4. **Reset**: Clear the canvas to start over
+
+### Training Strategy
+
+**Quick Start (30 samples minimum)**:
+- Train 3 examples of each digit (0-9)
+- Use "Train Now" for immediate feedback
+- Total time: ~5-10 minutes
+
+**Better Accuracy (50+ samples)**:
+- Train 5+ examples of each digit
+- Vary your handwriting style
+- Mix using "Add to Batch" and "Train Now"
+
+**Why you need 30+ samples**:
+- Network needs to learn all digits (0-9)
+- Too few samples = poor predictions
+- Unbalanced training = biased predictions
+- More variety = better generalization
 
 ## API Integration
 

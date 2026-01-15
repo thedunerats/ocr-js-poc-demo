@@ -226,3 +226,122 @@ class TestFlaskServer:
         assert response.status_code == 400
         data = json.loads(response.data)
         assert "error" in data
+
+    def test_train_missing_y0_field(self, client):
+        """Test training with missing y0 field"""
+        payload = {"train": True, "trainArray": [{"label": 5}]}  # Missing y0
+
+        response = client.post(
+            "/", data=json.dumps(payload), content_type="application/json"
+        )
+
+        assert response.status_code == 400
+        data = json.loads(response.data)
+        assert "error" in data
+        assert "y0" in data["error"].lower()
+
+    def test_train_missing_label_field(self, client):
+        """Test training with missing label field"""
+        payload = {"train": True, "trainArray": [{"y0": [0.5] * 400}]}  # Missing label
+
+        response = client.post(
+            "/", data=json.dumps(payload), content_type="application/json"
+        )
+
+        assert response.status_code == 400
+        data = json.loads(response.data)
+        assert "error" in data
+        assert "label" in data["error"].lower()
+
+    def test_train_invalid_array_size(self, client):
+        """Test training with wrong array size"""
+        payload = {
+            "train": True,
+            "trainArray": [{"y0": [0.5] * 100, "label": 5}],  # Wrong size
+        }
+
+        response = client.post(
+            "/", data=json.dumps(payload), content_type="application/json"
+        )
+
+        assert response.status_code == 400
+        data = json.loads(response.data)
+        assert "error" in data
+        assert "400 pixels" in data["error"] or "400" in data["error"]
+
+    def test_train_invalid_label_range(self, client):
+        """Test training with label outside 0-9 range"""
+        payload = {"train": True, "trainArray": [{"y0": [0.5] * 400, "label": 15}]}
+
+        response = client.post(
+            "/", data=json.dumps(payload), content_type="application/json"
+        )
+
+        assert response.status_code == 400
+        data = json.loads(response.data)
+        assert "error" in data
+        assert "0-9" in data["error"] or "label" in data["error"].lower()
+
+    def test_train_negative_label(self, client):
+        """Test training with negative label"""
+        payload = {"train": True, "trainArray": [{"y0": [0.5] * 400, "label": -1}]}
+
+        response = client.post(
+            "/", data=json.dumps(payload), content_type="application/json"
+        )
+
+        assert response.status_code == 400
+        data = json.loads(response.data)
+        assert "error" in data
+
+    def test_train_non_integer_label(self, client):
+        """Test training with non-integer label"""
+        payload = {"train": True, "trainArray": [{"y0": [0.5] * 400, "label": "five"}]}
+
+        response = client.post(
+            "/", data=json.dumps(payload), content_type="application/json"
+        )
+
+        assert response.status_code == 400
+        data = json.loads(response.data)
+        assert "error" in data
+
+    def test_predict_wrong_array_size(self, client):
+        """Test prediction with wrong array size"""
+        payload = {"predict": True, "image": [0.5] * 100}  # Wrong size
+
+        response = client.post(
+            "/", data=json.dumps(payload), content_type="application/json"
+        )
+
+        assert response.status_code == 400
+        data = json.loads(response.data)
+        assert "error" in data
+        assert "400" in data["error"]
+
+    def test_predict_non_array_image(self, client):
+        """Test prediction with non-array image"""
+        payload = {"predict": True, "image": "not an array"}
+
+        response = client.post(
+            "/", data=json.dumps(payload), content_type="application/json"
+        )
+
+        assert response.status_code == 400
+        data = json.loads(response.data)
+        assert "error" in data
+        assert "array" in data["error"].lower()
+
+    def test_predict_non_numeric_values(self, client):
+        """Test prediction with non-numeric values in array"""
+        image = [0.5] * 399 + ["invalid"]
+        payload = {"predict": True, "image": image}
+
+        response = client.post(
+            "/", data=json.dumps(payload), content_type="application/json"
+        )
+
+        assert response.status_code == 400
+        data = json.loads(response.data)
+        assert "error" in data
+        assert "numeric" in data["error"].lower()

@@ -271,7 +271,94 @@ class TestOCRNeuralNetwork:
         result = nn_instance.restore_from_backup()
         assert result is False
 
-    def test_list_backups_sorted(self, nn_instance, tmp_path):
+    def test_train_with_empty_array(self, nn_instance):
+        """Test that training with empty array raises error"""
+        with pytest.raises(ValueError, match="empty"):
+            nn_instance.train([])
+
+    def test_train_with_invalid_array_size(self, nn_instance):
+        """Test training with wrong input size"""
+        invalid_data = [{"y0": [0.5] * 100, "label": 5}]  # Wrong size
+
+        with pytest.raises(ValueError, match="400"):
+            nn_instance.train(invalid_data)
+
+    def test_train_with_missing_fields(self, nn_instance):
+        """Test training with missing required fields"""
+        # Missing y0
+        with pytest.raises(ValueError, match="y0"):
+            nn_instance.train([{"label": 5}])
+
+        # Missing label
+        with pytest.raises(ValueError, match="label"):
+            nn_instance.train([{"y0": [0.5] * 400}])
+
+    def test_train_with_invalid_label(self, nn_instance):
+        """Test training with invalid label values"""
+        # Label too high
+        with pytest.raises(ValueError, match="0-9"):
+            nn_instance.train([{"y0": [0.5] * 400, "label": 15}])
+
+        # Negative label
+        with pytest.raises(ValueError, match="0-9"):
+            nn_instance.train([{"y0": [0.5] * 400, "label": -1}])
+
+    def test_train_with_non_numeric_data(self, nn_instance):
+        """Test training with non-numeric input data"""
+        invalid_data = [{"y0": ["a"] * 400, "label": 5}]
+
+        with pytest.raises((ValueError, RuntimeError)):
+            nn_instance.train(invalid_data)
+
+    def test_predict_with_wrong_size(self, nn_instance):
+        """Test prediction with wrong input size"""
+        with pytest.raises(ValueError, match="400"):
+            nn_instance.predict([0.5] * 100)
+
+    def test_predict_with_non_numeric(self, nn_instance):
+        """Test prediction with non-numeric values"""
+        with pytest.raises((ValueError, RuntimeError)):
+            nn_instance.predict(["invalid"] * 400)
+
+    def test_predict_with_none(self, nn_instance):
+        """Test prediction with None input"""
+        with pytest.raises((ValueError, TypeError, RuntimeError)):
+            nn_instance.predict(None)
+
+    def test_train_multiple_samples_with_one_invalid(self, nn_instance):
+        """Test that training fails correctly when one sample is invalid"""
+        mixed_data = [
+            {"y0": [0.5] * 400, "label": 5},  # Valid
+            {"y0": [0.3] * 100, "label": 3},  # Invalid size
+        ]
+
+        with pytest.raises(ValueError, match="sample 1"):
+            nn_instance.train(mixed_data)
+
+    def test_train_with_boundary_labels(self, nn_instance):
+        """Test training with boundary label values (0 and 9)"""
+        # Should succeed with labels 0 and 9
+        valid_data = [
+            {"y0": [0.5] * 400, "label": 0},
+            {"y0": [0.8] * 400, "label": 9},
+        ]
+
+        # Should not raise any errors
+        nn_instance.train(valid_data)
+
+    def test_predict_with_extreme_values(self, nn_instance, tmp_path):
+        """Test prediction with extreme numeric values"""
+        # Very large values
+        result1 = nn_instance.predict([1000.0] * 400)
+        assert 0 <= result1 <= 9
+
+        # Very small values
+        result2 = nn_instance.predict([-1000.0] * 400)
+        assert 0 <= result2 <= 9
+
+        # Mixed extreme values
+        result3 = nn_instance.predict([1e10, -1e10] * 200)
+        assert 0 <= result3 <= 9
         """Test that list_backups returns backups sorted by most recent first"""
         nn_instance.NN_FILE_PATH = str(tmp_path / "test_sorted.json")
         nn_instance._use_file = True

@@ -40,8 +40,15 @@ class OCRNeuralNetwork:
         return [((x * 0.12) - 0.06) for x in np.random.rand(size_out, size_in)]
 
     def _sigmoid_scalar(self, z):
-        """The sigmoid activation function. Operates on scalars."""
-        return 1 / (1 + math.e**-z)
+        """The sigmoid activation function with numerical stability"""
+        # Clip values to prevent overflow
+        z = np.clip(z, -500, 500)
+        if z >= 0:
+            return 1 / (1 + math.e**-z)
+        else:
+            # For negative values, use exp(z)/(1+exp(z)) to avoid overflow
+            exp_z = math.e**z
+            return exp_z / (1 + exp_z)
 
     def sigmoid(self, z):
         """Vectorized sigmoid function"""
@@ -84,44 +91,83 @@ class OCRNeuralNetwork:
 
     def train(self, training_data_array):
         """Train the network with new data"""
-        for data in training_data_array:
+        if not training_data_array:
+            raise ValueError("Training data array is empty")
+
+        for idx, data in enumerate(training_data_array):
+            try:
+                # Validate data structure
+                if "y0" not in data or "label" not in data:
+                    raise ValueError(
+                        f"Sample {idx}: Missing required fields 'y0' or 'label'"
+                    )
+
+                # Convert to numpy arrays and validate shapes
+                input_data = np.array(data["y0"], dtype=float).reshape(-1, 1)
+                if input_data.shape[0] != 400:
+                    raise ValueError(
+                        f"Sample {idx}: Expected 400 input values, got {input_data.shape[0]}"
+                    )
+
+                label = int(data["label"])
+                if label < 0 or label > 9:
+                    raise ValueError(f"Sample {idx}: Label must be 0-9, got {label}")
+
+                # Forward propagation
+                y1 = np.dot(np.array(self.theta1), input_data)
+                sum1 = y1 + np.array(self.input_layer_bias).reshape(-1, 1)
+                y1 = self.sigmoid(sum1)
+
+                y2 = np.dot(np.array(self.theta2), y1)
+                y2 = np.add(y2, np.array(self.hidden_layer_bias).reshape(-1, 1))
+                y2 = self.sigmoid(y2)
+
+                # Backpropagation
+                actual_vals = [0] * 10
+                actual_vals[label] = 1
+                output_errors = np.array(actual_vals).reshape(-1, 1) - y2
+                hidden_errors = np.multiply(
+                    np.dot(np.array(self.theta2).T, output_errors),
+                    self.sigmoid_prime(sum1),
+                )
+
+                # Update weights
+                self.theta1 += self.LEARNING_RATE * np.dot(hidden_errors, input_data.T)
+                self.theta2 += self.LEARNING_RATE * np.dot(output_errors, y1.T)
+                self.hidden_layer_bias += self.LEARNING_RATE * output_errors
+                self.input_layer_bias += self.LEARNING_RATE * hidden_errors
+
+            except (ValueError, TypeError, KeyError) as e:
+                raise ValueError(f"Training failed at sample {idx}: {str(e)}")
+            except Exception as e:
+                raise RuntimeError(f"Unexpected error at sample {idx}: {str(e)}")
+
+    def predict(self, test):
+        """Predict the digit from input data"""
+        try:
+            # Validate and convert input
+            test_array = np.array(test, dtype=float).reshape(-1, 1)
+            if test_array.shape[0] != 400:
+                raise ValueError(
+                    f"Expected 400 input values, got {test_array.shape[0]}"
+                )
+
             # Forward propagation
-            y1 = np.dot(np.array(self.theta1), np.array(data["y0"]).reshape(-1, 1))
-            sum1 = y1 + np.array(self.input_layer_bias).reshape(-1, 1)
-            y1 = self.sigmoid(sum1)
+            y1 = np.dot(np.array(self.theta1), test_array)
+            y1 = y1 + np.array(self.input_layer_bias).reshape(-1, 1)
+            y1 = self.sigmoid(y1)
 
             y2 = np.dot(np.array(self.theta2), y1)
             y2 = np.add(y2, np.array(self.hidden_layer_bias).reshape(-1, 1))
             y2 = self.sigmoid(y2)
 
-            # Backpropagation
-            actual_vals = [0] * 10
-            actual_vals[data["label"]] = 1
-            output_errors = np.array(actual_vals).reshape(-1, 1) - y2
-            hidden_errors = np.multiply(
-                np.dot(np.array(self.theta2).T, output_errors), self.sigmoid_prime(sum1)
-            )
+            results = y2.flatten().tolist()
+            return results.index(max(results))
 
-            # Update weights
-            self.theta1 += self.LEARNING_RATE * np.dot(
-                hidden_errors, np.array(data["y0"]).reshape(1, -1)
-            )
-            self.theta2 += self.LEARNING_RATE * np.dot(output_errors, y1.T)
-            self.hidden_layer_bias += self.LEARNING_RATE * output_errors
-            self.input_layer_bias += self.LEARNING_RATE * hidden_errors
-
-    def predict(self, test):
-        """Predict the digit from input data"""
-        y1 = np.dot(np.array(self.theta1), np.array(test).reshape(-1, 1))
-        y1 = y1 + np.array(self.input_layer_bias).reshape(-1, 1)
-        y1 = self.sigmoid(y1)
-
-        y2 = np.dot(np.array(self.theta2), y1)
-        y2 = np.add(y2, np.array(self.hidden_layer_bias).reshape(-1, 1))
-        y2 = self.sigmoid(y2)
-
-        results = y2.flatten().tolist()
-        return results.index(max(results))
+        except ValueError as e:
+            raise ValueError(f"Invalid input data: {str(e)}")
+        except Exception as e:
+            raise RuntimeError(f"Prediction failed: {str(e)}")
 
     def save(self, max_backups=5):
         """Save the neural network to file with backup protection

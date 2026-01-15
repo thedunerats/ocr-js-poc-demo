@@ -26,7 +26,8 @@ function App() {
         
         <div className="info">
           <p>Training samples collected: <strong>{trainingCount}</strong></p>
-          <p className="hint">💡 Tip: Train multiple variations of each digit for better accuracy</p>
+          <p className="hint">💡 Tip: Train 3-5 examples of EACH digit (0-9) for accuracy</p>
+          <p className="hint">⚡ Use "Train Now" for immediate training, or "Add to Batch" to collect 3 samples</p>
         </div>
       </div>
     </div>
