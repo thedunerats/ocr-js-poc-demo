@@ -48,7 +48,7 @@ describe('DrawingCanvas - API Integration', () => {
       )
 
       // Component should be resilient to errors
-      expect(screen.getByRole('button', { name: /Train Now/i })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /⚡ Train Now/i })).toBeInTheDocument()
     })
 
     it('handles 500 error response', async () => {
@@ -100,7 +100,7 @@ describe('DrawingCanvas - API Integration', () => {
         />
       )
 
-      expect(screen.getByRole('button', { name: /Test/i })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /🧪 Test/i })).toBeInTheDocument()
     })
 
     it('displays prediction result', async () => {
@@ -132,7 +132,7 @@ describe('DrawingCanvas - API Integration', () => {
         />
       )
 
-      const testButton = screen.getByRole('button', { name: /Test/i })
+      const testButton = screen.getByRole('button', { name: /🧪 Test/i })
       expect(testButton).toBeInTheDocument()
     })
   })
@@ -148,7 +148,7 @@ describe('DrawingCanvas - API Integration', () => {
       )
 
       // Component should sanitize data before sending
-      expect(screen.getByRole('button', { name: /Train Now/i })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /⚡ Train Now/i })).toBeInTheDocument()
     })
 
     it('validates array length is 400', () => {
@@ -161,7 +161,7 @@ describe('DrawingCanvas - API Integration', () => {
       )
 
       // Component maintains 400-element array
-      expect(screen.getByRole('button', { name: /Add to Batch/i })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /🎓 Add to Batch/i })).toBeInTheDocument()
     })
 
     it('handles NaN and undefined values', () => {
@@ -208,7 +208,7 @@ describe('DrawingCanvas - API Integration', () => {
       )
 
       // Component renders with batch capability
-      expect(screen.getByRole('button', { name: /Add to Batch/i })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /🎓 Add to Batch/i })).toBeInTheDocument()
     })
 
     it('clears batch after successful training', () => {

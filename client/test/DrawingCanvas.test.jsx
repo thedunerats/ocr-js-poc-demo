@@ -45,10 +45,10 @@ describe('DrawingCanvas Component', () => {
         setTrainingCount={mockSetTrainingCount}
       />
     )
-    expect(screen.getByRole('button', { name: /Add to Batch/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /Train Now/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /Test/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /Reset/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /🎓 Add to Batch/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /⚡ Train Now/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /🧪 Test/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /🔄 Reset/i })).toBeInTheDocument()
   })
 
   it('shows batch status when samples are added', () => {
@@ -92,7 +92,7 @@ describe('DrawingCanvas Component', () => {
     const input = screen.getByPlaceholderText(/Enter digit/i)
     await user.type(input, '7')
     
-    const resetButton = screen.getByRole('button', { name: /Reset/i })
+    const resetButton = screen.getByRole('button', { name: /🔄 Reset/i })
     await user.click(resetButton)
     
     expect(input.value).toBe('')
@@ -112,11 +112,11 @@ describe('DrawingCanvas Component', () => {
     const input = screen.getByPlaceholderText(/Enter digit/i)
     await user.type(input, '3')
     
-    const trainButton = screen.getByRole('button', { name: /Add to Batch/i })
+    const trainButton = screen.getByRole('button', { name: /🎓 Add to Batch/i })
     await user.click(trainButton)
     
     expect(mockSetStatus).toHaveBeenCalledWith(
-      expect.stringContaining('Please type and draw a digit')
+      expect.stringContaining('Please type and draw a digit to train the network')
     )
   })
 
@@ -130,11 +130,11 @@ describe('DrawingCanvas Component', () => {
       />
     )
     
-    const trainButton = screen.getByRole('button', { name: /Add to Batch/i })
+    const trainButton = screen.getByRole('button', { name: /🎓 Add to Batch/i })
     await user.click(trainButton)
     
     expect(mockSetStatus).toHaveBeenCalledWith(
-      expect.stringContaining('Please type and draw a digit')
+      expect.stringContaining('Please type and draw a digit to train the network')
     )
   })
 
@@ -148,11 +148,11 @@ describe('DrawingCanvas Component', () => {
       />
     )
     
-    const testButton = screen.getByRole('button', { name: /Test/i })
+    const testButton = screen.getByRole('button', { name: /🧪 Test/i })
     await user.click(testButton)
     
     expect(mockSetStatus).toHaveBeenCalledWith(
-      expect.stringContaining('Please draw a digit to test')
+      expect.stringContaining('Please draw a digit to test the network')
     )
   })
 
@@ -172,7 +172,7 @@ describe('DrawingCanvas Component', () => {
     
     // Note: This test would need actual canvas interaction to work fully
     // For now, we're just testing the structure
-    expect(screen.getByRole('button', { name: /Add to Batch/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /🎓 Add to Batch/i })).toBeInTheDocument()
   })
 
   it('handles fetch errors gracefully', async () => {
@@ -187,7 +187,7 @@ describe('DrawingCanvas Component', () => {
     )
     
     // Verify component renders without crashing
-    expect(screen.getByRole('button', { name: /Test/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /🧪 Test/i })).toBeInTheDocument()
   })
 
   it('validates digit input is between 0-9', async () => {
