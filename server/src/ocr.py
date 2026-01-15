@@ -40,8 +40,15 @@ class OCRNeuralNetwork:
         return [((x * 0.12) - 0.06) for x in np.random.rand(size_out, size_in)]
 
     def _sigmoid_scalar(self, z):
-        """The sigmoid activation function. Operates on scalars."""
-        return 1 / (1 + math.e**-z)
+        """The sigmoid activation function with numerical stability"""
+        # Clip values to prevent overflow
+        z = np.clip(z, -500, 500)
+        if z >= 0:
+            return 1 / (1 + math.e**-z)
+        else:
+            # For negative values, use exp(z)/(1+exp(z)) to avoid overflow
+            exp_z = math.e**z
+            return exp_z / (1 + exp_z)
 
     def sigmoid(self, z):
         """Vectorized sigmoid function"""
@@ -104,9 +111,7 @@ class OCRNeuralNetwork:
 
                 label = int(data["label"])
                 if label < 0 or label > 9:
-                    raise ValueError(
-                        f"Sample {idx}: Label must be 0-9, got {label}"
-                    )
+                    raise ValueError(f"Sample {idx}: Label must be 0-9, got {label}")
 
                 # Forward propagation
                 y1 = np.dot(np.array(self.theta1), input_data)
@@ -127,9 +132,7 @@ class OCRNeuralNetwork:
                 )
 
                 # Update weights
-                self.theta1 += self.LEARNING_RATE * np.dot(
-                    hidden_errors, input_data.T
-                )
+                self.theta1 += self.LEARNING_RATE * np.dot(hidden_errors, input_data.T)
                 self.theta2 += self.LEARNING_RATE * np.dot(output_errors, y1.T)
                 self.hidden_layer_bias += self.LEARNING_RATE * output_errors
                 self.input_layer_bias += self.LEARNING_RATE * hidden_errors

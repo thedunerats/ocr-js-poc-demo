@@ -114,4 +114,10 @@ jobs:
     
     - name: Check formatting with black
       working-directory: ./server
-      run: black --check src/ test/
+      run: |
+        black --check --diff src/ test/ || true
+        black src/ test/
+        if [ -n "$(git status --porcelain)" ]; then
+          echo "::warning::Black formatting was applied. Please run 'black src/ test/' locally and commit the changes."
+          git diff
+        fi

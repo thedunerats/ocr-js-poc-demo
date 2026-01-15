@@ -42,9 +42,7 @@ def handle_request():
                     if "y0" not in data or "label" not in data:
                         return (
                             jsonify(
-                                {
-                                    "error": f"Sample {i}: Missing 'y0' or 'label' field"
-                                }
+                                {"error": f"Sample {i}: Missing 'y0' or 'label' field"}
                             ),
                             400,
                         )
@@ -104,7 +102,10 @@ def handle_request():
                 # Ensure all values are numeric
                 image = [float(x) for x in image]
             except (ValueError, TypeError) as e:
-                return jsonify({"error": f"image must contain numeric values: {str(e)}"}), 400
+                return (
+                    jsonify({"error": f"image must contain numeric values: {str(e)}"}),
+                    400,
+                )
 
             try:
                 result = nn.predict(image)
