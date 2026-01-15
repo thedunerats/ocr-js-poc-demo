@@ -142,7 +142,7 @@ Step 3: Draw "2" → enter 2 → click "Train Now" (repeat 3-5 times)
 
 ### Backend Neural Network
 - **Architecture**: 3-layer feedforward network
-  - Input layer: 400 nodes (20×20 pixel grid)
+  - Input layer: 784 nodes (28×28 pixel grid)
   - Hidden layer: 20 nodes
   - Output layer: 10 nodes (digits 0-9)
 - **Training**: Backpropagation with gradient descent
@@ -443,7 +443,7 @@ docker-compose up -d ocr-server
 
 ### Training Data
 The network expects:
-- Flattened 20×20 pixel images (400 values)
+- Flattened 28×28 pixel images (784 values)
 - Pixel values normalized between 0 and 1
 - Labels from 0 to 9
 

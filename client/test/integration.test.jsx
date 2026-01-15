@@ -151,7 +151,7 @@ describe('DrawingCanvas - API Integration', () => {
       expect(screen.getByRole('button', { name: /⚡ Train Now/i })).toBeInTheDocument()
     })
 
-    it('validates array length is 400', () => {
+    it('validates array length is 784', () => {
       render(
         <DrawingCanvas
           setStatus={mockSetStatus}
@@ -160,7 +160,7 @@ describe('DrawingCanvas - API Integration', () => {
         />
       )
 
-      // Component maintains 400-element array
+      // Component maintains 784-element array
       expect(screen.getByRole('button', { name: /🎓 Add to Batch/i })).toBeInTheDocument()
     })
 

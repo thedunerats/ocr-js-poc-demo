@@ -129,7 +129,7 @@ Prediction request:
 ```json
 {
   "predict": true,
-  "image": [/* 400 pixel array */]
+  "image": [/* 784 pixel array */]
 }
 ```
 
@@ -139,10 +139,10 @@ Network optimization request:
 ```json
 {
   "trainingData": [
-    {"y0": [/* 400 pixel array */], "label": 5}
+    {"y0": [/* 784 pixel array */], "label": 5}
   ],
   "testData": [
-    {"y0": [/* 400 pixel array */], "label": 3}
+    {"y0": [/* 784 pixel array */], "label": 3}
   ],
   "minNodes": 5,
   "maxNodes": 30,
@@ -210,7 +210,7 @@ npm run test:ui
    - ✅ Error handling (400, 500 errors)
    - ✅ Network failure handling
    - ✅ Data sanitization (NaN, undefined values)
-   - ✅ Array length validation (400 elements)
+   - ✅ Array length validation (784 elements)
    - ✅ Batch accumulation and sending
 
 4. **NetworkOptimizer Tests** ([test/NetworkOptimizer.test.jsx](test/NetworkOptimizer.test.jsx)) - **18 tests**

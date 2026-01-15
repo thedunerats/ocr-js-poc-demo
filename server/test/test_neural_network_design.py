@@ -17,7 +17,7 @@ class TestNeuralNetworkDesign:
     def sample_data(self):
         """Create sample test data"""
         np.random.seed(42)
-        data_matrix = np.random.rand(100, 400)
+        data_matrix = np.random.rand(100, 784)
         data_labels = [i % 10 for i in range(100)]
         train_indices = list(range(80))
         test_indices = list(range(80, 100))

@@ -130,7 +130,7 @@ Accepts JSON payloads for training and prediction:
   "train": true,
   "trainArray": [
     {
-      "y0": [/* 400-element array representing 20x20 pixel image */],
+      "y0": [/* 784-element array representing 28x28 pixel image */],
       "label": 5
     }
   ]
@@ -141,7 +141,7 @@ Accepts JSON payloads for training and prediction:
 ```json
 {
   "predict": true,
-  "image": [/* 400-element array representing 20x20 pixel image */]
+  "image": [/* 784-element array representing 28x28 pixel image */]
 }
 ```
 
@@ -165,8 +165,8 @@ Find optimal neural network configuration by testing different hidden node count
 **Request:**
 ```json
 {
-  "trainingData": [{"y0": [/* 400 values */], "label": 5}, ...],
-  "testData": [{"y0": [/* 400 values */], "label": 3}, ...],
+  "trainingData": [{"y0": [/* 784 values */], "label": 5}, ...],
+  "testData": [{"y0": [/* 784 values */], "label": 3}, ...],
   "minNodes": 5,
   "maxNodes": 30,
   "step": 5
@@ -301,7 +301,7 @@ server/
 
 ### Neural Network
 - **Architecture**: Feedforward neural network
-  - Input layer: 400 nodes (20×20 pixel images)
+  - Input layer: 784 nodes (28×28 pixel images)
   - Hidden layer: Configurable (default: 20 nodes)
   - Output layer: 10 nodes (digits 0-9)
 - **Training**: Backpropagation with gradient descent

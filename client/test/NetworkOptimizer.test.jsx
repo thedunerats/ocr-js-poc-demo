@@ -54,7 +54,7 @@ describe('NetworkOptimizer Component', () => {
   it('disables optimize button when not enough training data', () => {
     render(
       <NetworkOptimizer
-        trainingData={[{ y0: [0.5] * 400, label: 1 }]}
+        trainingData={[{ y0: Array(784).fill(0.5), label: 1 }]}
         setStatus={mockSetStatus}
       />
     )
@@ -66,7 +66,7 @@ describe('NetworkOptimizer Component', () => {
   it('shows warning when not enough training samples', () => {
     render(
       <NetworkOptimizer
-        trainingData={[{ y0: [0.5] * 400, label: 1 }]}
+        trainingData={[{ y0: Array(784).fill(0.5), label: 1 }]}
         setStatus={mockSetStatus}
       />
     )
@@ -76,7 +76,7 @@ describe('NetworkOptimizer Component', () => {
 
   it('enables optimize button with sufficient training data', () => {
     const trainingData = Array.from({ length: 10 }, (_, i) => ({
-      y0: [0.5] * 400,
+      y0: Array(784).fill(0.5),
       label: i % 10
     }))
 
@@ -141,7 +141,7 @@ describe('NetworkOptimizer Component', () => {
 
   it('button is disabled when not enough data', () => {
     const trainingData = Array.from({ length: 5 }, (_, i) => ({
-      y0: [0.5] * 400,
+      y0: Array(784).fill(0.5),
       label: i
     }))
 
@@ -159,7 +159,7 @@ describe('NetworkOptimizer Component', () => {
   it('sends optimization request with correct data', async () => {
     const user = userEvent.setup()
     const trainingData = Array.from({ length: 20 }, (_, i) => ({
-      y0: [0.5] * 400,
+      y0: Array(784).fill(0.5),
       label: i % 10
     }))
 
@@ -205,7 +205,7 @@ describe('NetworkOptimizer Component', () => {
   it('displays optimization results after successful request', async () => {
     const user = userEvent.setup()
     const trainingData = Array.from({ length: 20 }, (_, i) => ({
-      y0: [0.5] * 400,
+      y0: Array(784).fill(0.5),
       label: i % 10
     }))
 
@@ -242,7 +242,7 @@ describe('NetworkOptimizer Component', () => {
   it('shows optimizing state while request is in progress', async () => {
     const user = userEvent.setup()
     const trainingData = Array.from({ length: 20 }, (_, i) => ({
-      y0: [0.5] * 400,
+      y0: Array(784).fill(0.5),
       label: i % 10
     }))
 
@@ -267,7 +267,7 @@ describe('NetworkOptimizer Component', () => {
   it('disables inputs while optimizing', async () => {
     const user = userEvent.setup()
     const trainingData = Array.from({ length: 20 }, (_, i) => ({
-      y0: [0.5] * 400,
+      y0: Array(784).fill(0.5),
       label: i % 10
     }))
 
@@ -297,7 +297,7 @@ describe('NetworkOptimizer Component', () => {
   it('handles optimization error', async () => {
     const user = userEvent.setup()
     const trainingData = Array.from({ length: 20 }, (_, i) => ({
-      y0: [0.5] * 400,
+      y0: Array(784).fill(0.5),
       label: i % 10
     }))
 
@@ -326,7 +326,7 @@ describe('NetworkOptimizer Component', () => {
   it('handles network failure', async () => {
     const user = userEvent.setup()
     const trainingData = Array.from({ length: 20 }, (_, i) => ({
-      y0: [0.5] * 400,
+      y0: Array(784).fill(0.5),
       label: i % 10
     }))
 
@@ -352,7 +352,7 @@ describe('NetworkOptimizer Component', () => {
   it('displays results table with all configurations', async () => {
     const user = userEvent.setup()
     const trainingData = Array.from({ length: 20 }, (_, i) => ({
-      y0: [0.5] * 400,
+      y0: Array(784).fill(0.5),
       label: i % 10
     }))
 
@@ -389,7 +389,7 @@ describe('NetworkOptimizer Component', () => {
   it('updates status with optimization results', async () => {
     const user = userEvent.setup()
     const trainingData = Array.from({ length: 20 }, (_, i) => ({
-      y0: [0.5] * 400,
+      y0: Array(784).fill(0.5),
       label: i % 10
     }))
 

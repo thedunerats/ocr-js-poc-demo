@@ -22,7 +22,7 @@ class OCRNeuralNetwork:
         self._use_file = use_file
 
         # Initialize weights
-        self.theta1 = self._rand_initialize_weights(400, num_hidden_nodes)
+        self.theta1 = self._rand_initialize_weights(784, num_hidden_nodes)
         self.theta2 = self._rand_initialize_weights(num_hidden_nodes, 10)
         self.input_layer_bias = self._rand_initialize_weights(1, num_hidden_nodes)
         self.hidden_layer_bias = self._rand_initialize_weights(1, 10)
@@ -106,9 +106,9 @@ class OCRNeuralNetwork:
 
                 # Convert to numpy arrays and validate shapes
                 input_data = np.array(data["y0"], dtype=float).reshape(-1, 1)
-                if input_data.shape[0] != 400:
+                if input_data.shape[0] != 784:
                     raise ValueError(
-                        f"Sample {idx}: Expected 400 input values, got {input_data.shape[0]}"
+                        f"Sample {idx}: Expected 784 input values, got {input_data.shape[0]}"
                     )
 
                 label = int(data["label"])
@@ -156,9 +156,9 @@ class OCRNeuralNetwork:
         try:
             # Validate and convert input
             test_array = np.array(test, dtype=float).reshape(-1, 1)
-            if test_array.shape[0] != 400:
+            if test_array.shape[0] != 784:
                 raise ValueError(
-                    f"Expected 400 input values, got {test_array.shape[0]}"
+                    f"Expected 784 input values, got {test_array.shape[0]}"
                 )
 
             # Forward propagation

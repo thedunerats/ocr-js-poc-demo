@@ -75,8 +75,8 @@ class TestFlaskServer:
         payload = {
             "train": True,
             "trainArray": [
-                {"y0": [0.5] * 400, "label": 5},
-                {"y0": [0.3] * 400, "label": 3},
+                {"y0": [0.5] * 784, "label": 5},
+                {"y0": [0.3] * 784, "label": 3},
             ],
         }
 
@@ -104,8 +104,8 @@ class TestFlaskServer:
 
     def test_predict_endpoint_success(self, client):
         """Test successful prediction request"""
-        # Create a random 400-element array (20x20 pixels)
-        test_image = np.random.rand(400).tolist()
+        # Create a random 784-element array (28x28 pixels)
+        test_image = np.random.rand(784).tolist()
 
         payload = {"predict": True, "image": test_image}
 
@@ -122,7 +122,7 @@ class TestFlaskServer:
 
     def test_predict_endpoint_with_zeros(self, client):
         """Test prediction with all zeros"""
-        payload = {"predict": True, "image": [0] * 400}
+        payload = {"predict": True, "image": [0] * 784}
 
         response = client.post(
             "/", data=json.dumps(payload), content_type="application/json"
@@ -135,7 +135,7 @@ class TestFlaskServer:
 
     def test_predict_endpoint_with_ones(self, client):
         """Test prediction with all ones"""
-        payload = {"predict": True, "image": [1] * 400}
+        payload = {"predict": True, "image": [1] * 784}
 
         response = client.post(
             "/", data=json.dumps(payload), content_type="application/json"
@@ -169,9 +169,9 @@ class TestFlaskServer:
         train_payload = {
             "train": True,
             "trainArray": [
-                {"y0": [0.8] * 400, "label": 7},
-                {"y0": [0.2] * 400, "label": 2},
-                {"y0": [0.5] * 400, "label": 5},
+                {"y0": [0.8] * 784, "label": 7},
+                {"y0": [0.2] * 784, "label": 2},
+                {"y0": [0.5] * 784, "label": 5},
             ],
         }
 
@@ -181,7 +181,7 @@ class TestFlaskServer:
         assert train_response.status_code == 200
 
         # Then predict
-        predict_payload = {"predict": True, "image": [0.5] * 400}
+        predict_payload = {"predict": True, "image": [0.5] * 784}
 
         predict_response = client.post(
             "/", data=json.dumps(predict_payload), content_type="application/json"
@@ -193,7 +193,7 @@ class TestFlaskServer:
     def test_multiple_predictions(self, client):
         """Test making multiple predictions"""
         for _ in range(5):
-            payload = {"predict": True, "image": np.random.rand(400).tolist()}
+            payload = {"predict": True, "image": np.random.rand(784).tolist()}
 
             response = client.post(
                 "/", data=json.dumps(payload), content_type="application/json"
@@ -205,7 +205,7 @@ class TestFlaskServer:
 
     def test_predict_with_invalid_image_size(self, client):
         """Test prediction with wrong image size"""
-        payload = {"predict": True, "image": [0.5] * 100}  # Wrong size, should be 400
+        payload = {"predict": True, "image": [0.5] * 100}  # Wrong size, should be 784
 
         response = client.post(
             "/", data=json.dumps(payload), content_type="application/json"
@@ -242,7 +242,7 @@ class TestFlaskServer:
 
     def test_train_missing_label_field(self, client):
         """Test training with missing label field"""
-        payload = {"train": True, "trainArray": [{"y0": [0.5] * 400}]}  # Missing label
+        payload = {"train": True, "trainArray": [{"y0": [0.5] * 784}]}  # Missing label
 
         response = client.post(
             "/", data=json.dumps(payload), content_type="application/json"
@@ -267,11 +267,11 @@ class TestFlaskServer:
         assert response.status_code == 400
         data = json.loads(response.data)
         assert "error" in data
-        assert "400 pixels" in data["error"] or "400" in data["error"]
+        assert "784 pixels" in data["error"] or "784" in data["error"]
 
     def test_train_invalid_label_range(self, client):
         """Test training with label outside 0-9 range"""
-        payload = {"train": True, "trainArray": [{"y0": [0.5] * 400, "label": 15}]}
+        payload = {"train": True, "trainArray": [{"y0": [0.5] * 784, "label": 15}]}
 
         response = client.post(
             "/", data=json.dumps(payload), content_type="application/json"
@@ -284,7 +284,7 @@ class TestFlaskServer:
 
     def test_train_negative_label(self, client):
         """Test training with negative label"""
-        payload = {"train": True, "trainArray": [{"y0": [0.5] * 400, "label": -1}]}
+        payload = {"train": True, "trainArray": [{"y0": [0.5] * 784, "label": -1}]}
 
         response = client.post(
             "/", data=json.dumps(payload), content_type="application/json"
@@ -296,7 +296,7 @@ class TestFlaskServer:
 
     def test_train_non_integer_label(self, client):
         """Test training with non-integer label"""
-        payload = {"train": True, "trainArray": [{"y0": [0.5] * 400, "label": "five"}]}
+        payload = {"train": True, "trainArray": [{"y0": [0.5] * 784, "label": "five"}]}
 
         response = client.post(
             "/", data=json.dumps(payload), content_type="application/json"
@@ -317,7 +317,7 @@ class TestFlaskServer:
         assert response.status_code == 400
         data = json.loads(response.data)
         assert "error" in data
-        assert "400" in data["error"]
+        assert "784" in data["error"]
 
     def test_predict_non_array_image(self, client):
         """Test prediction with non-array image"""
@@ -350,8 +350,8 @@ class TestFlaskServer:
         """Test training with non-numeric pixel values"""
         # Create valid training data except one sample has non-numeric pixel
         train_array = [
-            {"y0": [0.5] * 400, "label": 1},
-            {"y0": [0.3] * 400, "label": 2},
+            {"y0": [0.5] * 784, "label": 1},
+            {"y0": [0.3] * 784, "label": 2},
             {"y0": [0.5] * 399 + [None], "label": 3},  # Invalid pixel value
         ]
         payload = {"train": True, "trainArray": train_array}
@@ -375,11 +375,11 @@ class TestOptimizeEndpoint:
         """Test successful optimization with valid data"""
         # Create training and test data
         training_data = [
-            {"y0": [0.5] * 400, "label": i % 10}
+            {"y0": [0.5] * 784, "label": i % 10}
             for i in range(20)  # 20 training samples
         ]
         test_data = [
-            {"y0": [0.3] * 400, "label": i % 10}
+            {"y0": [0.3] * 784, "label": i % 10}
             for i in range(10)  # 10 test samples
         ]
 
@@ -408,7 +408,7 @@ class TestOptimizeEndpoint:
     def test_optimize_endpoint_missing_training_data(self, client):
         """Test optimization with missing trainingData"""
         payload = {
-            "testData": [{"y0": [0.5] * 400, "label": 1}]
+            "testData": [{"y0": [0.5] * 784, "label": 1}]
         }
 
         response = client.post(
@@ -423,7 +423,7 @@ class TestOptimizeEndpoint:
     def test_optimize_endpoint_missing_test_data(self, client):
         """Test optimization with missing testData"""
         payload = {
-            "trainingData": [{"y0": [0.5] * 400, "label": 1}]
+            "trainingData": [{"y0": [0.5] * 784, "label": 1}]
         }
 
         response = client.post(
@@ -439,7 +439,7 @@ class TestOptimizeEndpoint:
         """Test optimization with empty trainingData"""
         payload = {
             "trainingData": [],
-            "testData": [{"y0": [0.5] * 400, "label": 1}]
+            "testData": [{"y0": [0.5] * 784, "label": 1}]
         }
 
         response = client.post(
@@ -454,7 +454,7 @@ class TestOptimizeEndpoint:
     def test_optimize_endpoint_empty_test_data(self, client):
         """Test optimization with empty testData"""
         payload = {
-            "trainingData": [{"y0": [0.5] * 400, "label": 1}],
+            "trainingData": [{"y0": [0.5] * 784, "label": 1}],
             "testData": []
         }
 
@@ -470,8 +470,8 @@ class TestOptimizeEndpoint:
     def test_optimize_endpoint_invalid_min_nodes(self, client):
         """Test optimization with invalid minNodes"""
         payload = {
-            "trainingData": [{"y0": [0.5] * 400, "label": 1}],
-            "testData": [{"y0": [0.5] * 400, "label": 1}],
+            "trainingData": [{"y0": [0.5] * 784, "label": 1}],
+            "testData": [{"y0": [0.5] * 784, "label": 1}],
             "minNodes": 0
         }
 
@@ -487,8 +487,8 @@ class TestOptimizeEndpoint:
     def test_optimize_endpoint_invalid_max_nodes(self, client):
         """Test optimization with maxNodes <= minNodes"""
         payload = {
-            "trainingData": [{"y0": [0.5] * 400, "label": 1}],
-            "testData": [{"y0": [0.5] * 400, "label": 1}],
+            "trainingData": [{"y0": [0.5] * 784, "label": 1}],
+            "testData": [{"y0": [0.5] * 784, "label": 1}],
             "minNodes": 10,
             "maxNodes": 5
         }
@@ -505,8 +505,8 @@ class TestOptimizeEndpoint:
     def test_optimize_endpoint_invalid_step(self, client):
         """Test optimization with invalid step"""
         payload = {
-            "trainingData": [{"y0": [0.5] * 400, "label": 1}],
-            "testData": [{"y0": [0.5] * 400, "label": 1}],
+            "trainingData": [{"y0": [0.5] * 784, "label": 1}],
+            "testData": [{"y0": [0.5] * 784, "label": 1}],
             "step": 0
         }
 
@@ -522,8 +522,8 @@ class TestOptimizeEndpoint:
     def test_optimize_endpoint_invalid_data_format(self, client):
         """Test optimization with invalid data format"""
         payload = {
-            "trainingData": [{"y0": [0.5] * 400}],  # Missing label
-            "testData": [{"y0": [0.5] * 400, "label": 1}]
+            "trainingData": [{"y0": [0.5] * 784}],  # Missing label
+            "testData": [{"y0": [0.5] * 784, "label": 1}]
         }
 
         response = client.post(
@@ -539,7 +539,7 @@ class TestOptimizeEndpoint:
         """Test optimization with wrong array size"""
         payload = {
             "trainingData": [{"y0": [0.5] * 100, "label": 1}],  # Wrong size
-            "testData": [{"y0": [0.5] * 400, "label": 1}]
+            "testData": [{"y0": [0.5] * 784, "label": 1}]
         }
 
         response = client.post(
@@ -554,8 +554,8 @@ class TestOptimizeEndpoint:
     def test_optimize_endpoint_invalid_label_range(self, client):
         """Test optimization with invalid label"""
         payload = {
-            "trainingData": [{"y0": [0.5] * 400, "label": 10}],  # Invalid label
-            "testData": [{"y0": [0.5] * 400, "label": 1}]
+            "trainingData": [{"y0": [0.5] * 784, "label": 10}],  # Invalid label
+            "testData": [{"y0": [0.5] * 784, "label": 1}]
         }
 
         response = client.post(
@@ -570,11 +570,11 @@ class TestOptimizeEndpoint:
     def test_optimize_endpoint_default_parameters(self, client):
         """Test optimization with default parameters"""
         training_data = [
-            {"y0": [0.5] * 400, "label": i % 10}
+            {"y0": [0.5] * 784, "label": i % 10}
             for i in range(20)
         ]
         test_data = [
-            {"y0": [0.3] * 400, "label": i % 10}
+            {"y0": [0.3] * 784, "label": i % 10}
             for i in range(10)
         ]
 
@@ -596,11 +596,11 @@ class TestOptimizeEndpoint:
     def test_optimize_endpoint_results_sorted(self, client):
         """Test that optimization results are sorted by accuracy"""
         training_data = [
-            {"y0": [0.5] * 400, "label": i % 10}
+            {"y0": [0.5] * 784, "label": i % 10}
             for i in range(20)
         ]
         test_data = [
-            {"y0": [0.3] * 400, "label": i % 10}
+            {"y0": [0.3] * 784, "label": i % 10}
             for i in range(10)
         ]
 
