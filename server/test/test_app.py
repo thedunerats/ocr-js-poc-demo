@@ -367,6 +367,7 @@ class TestFlaskServer:
         assert "pixel 399" in data["error"].lower()  # Last pixel
         assert "invalid value" in data["error"].lower()
 
+
 class TestOptimizeEndpoint:
     """Test suite for the /optimize endpoint"""
 
@@ -618,11 +619,11 @@ class TestOptimizeEndpoint:
         assert response.status_code == 200
         data = json.loads(response.data)
         results = data["results"]
-        
+
         # Check that results are sorted by accuracy (descending)
         accuracies = [r["accuracy"] for r in results]
         assert accuracies == sorted(accuracies, reverse=True)
-        
+
         # Check that optimal is the best result
         assert data["optimal"] == results[0]
 

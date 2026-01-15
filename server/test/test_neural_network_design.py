@@ -165,6 +165,7 @@ class TestNeuralNetworkDesign:
 
         assert 0 <= result1 <= 1
         assert 0 <= result2 <= 1
+
     def test_find_optimal_hidden_nodes_returns_results(self, sample_data):
         """Test that find_optimal_hidden_nodes returns sorted results"""
         data_matrix, data_labels, train_indices, test_indices = sample_data
@@ -177,7 +178,7 @@ class TestNeuralNetworkDesign:
         # Should return a list of tuples
         assert isinstance(results, list)
         assert len(results) > 0
-        
+
         # Each result should be a tuple of (hidden_nodes, accuracy)
         for hidden_nodes, accuracy in results:
             assert isinstance(hidden_nodes, int)
@@ -195,7 +196,7 @@ class TestNeuralNetworkDesign:
 
         # Extract accuracies
         accuracies = [acc for _, acc in results]
-        
+
         # Should be sorted in descending order
         assert accuracies == sorted(accuracies, reverse=True)
 
@@ -210,7 +211,7 @@ class TestNeuralNetworkDesign:
 
         # Should have results for nodes: 10, 12, 14, 16, 18
         assert len(results) == 5
-        
+
         # Check that all expected node counts are present
         node_counts = [nodes for nodes, _ in results]
         expected_nodes = [10, 12, 14, 16, 18]

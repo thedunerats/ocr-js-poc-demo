@@ -64,17 +64,17 @@ def find_optimal_hidden_nodes(
     # Train each configuration for a few epochs
     # Too many epochs with small datasets causes overfitting
     epochs = 3
-    
+
     print(f"Training with {len(train_indices)} samples, testing with {len(test_indices)} samples")
     print(f"Each configuration will train for {epochs} epochs")
-    
+
     for i in range(min_nodes, max_nodes, step):
         nn = OCRNeuralNetwork(i, data_matrix, data_labels, train_indices, False)
-        
+
         # Train for additional epochs (first epoch done in __init__)
         for epoch in range(epochs - 1):
             nn._train(data_matrix, data_labels, train_indices)
-        
+
         performance = model_test(data_matrix, data_labels, test_indices, nn)
         results.append((i, performance))
         print(f"{i} Hidden Nodes: {performance:.4f} (accuracy on {len(test_indices)} test samples)")

@@ -160,10 +160,10 @@ def health_check():
 def optimize_network():
     """
     Find optimal number of hidden nodes for the neural network
-    
+
     This endpoint trains multiple neural networks with different hidden node counts
     and returns the configuration that performs best on the provided test data.
-    
+
     Request body:
     {
         "trainingData": [{"y0": [...400 values...], "label": 0-9}, ...],
@@ -172,7 +172,7 @@ def optimize_network():
         "maxNodes": 50 (optional, default: 50),
         "step": 5 (optional, default: 5)
     }
-    
+
     Response:
     {
         "results": [
@@ -264,7 +264,7 @@ def optimize_network():
         print(f"[OPTIMIZE] Starting optimization: {len(train_indices)} train, "
               f"{len(test_indices)} test samples")
         print(f"[OPTIMIZE] Testing hidden nodes from {min_nodes} to {max_nodes} (step {step})")
-        
+
         # Warn if dataset is too small
         if len(train_indices) < 30:
             print(f"[OPTIMIZE WARNING] Only {len(train_indices)} training samples. "
@@ -296,7 +296,10 @@ def optimize_network():
         # Build message with warnings if needed
         message = f"Optimization completed. Tested {configs_tested} configurations."
         if len(train_indices) < 30:
-            message += f" ⚠️ Warning: Only {len(train_indices)} training samples may not be enough for reliable results. Recommend 30+ samples (3+ per digit 0-9)."
+            message += (
+                f" ⚠️ Warning: Only {len(train_indices)} training samples "
+                f"may not be enough for reliable results. Recommend 30+ samples (3+ per digit 0-9)."
+            )
         if optimal['accuracy'] < 0.3:
             message += " ⚠️ Low accuracy detected - network needs more diverse training data."
 
