@@ -1,19 +1,15 @@
-# GitHub Actions CI/CD Pipeline for OCR Server
-name: OCR Server CI
+# GitHub Actions CI/CD Pipeline for OCR Application
+name: OCR Application CI
 
 on:
   push:
     branches: [ main, develop ]
-    paths:
-      - 'server/**'
   pull_request:
     branches: [ main, develop ]
-    paths:
-      - 'server/**'
 
 jobs:
-  test:
-    name: Run Tests
+  test-server:
+    name: Server Tests
     runs-on: ubuntu-latest
     
     steps:
@@ -37,17 +33,51 @@ jobs:
         docker run --rm -v $(pwd)/htmlcov:/app/htmlcov ocr-server-test \
           pytest --cov=src --cov-report=html --cov-report=term
     
-    - name: Upload coverage report
+    - name: Upload server coverage report
       uses: actions/upload-artifact@v5
       with:
-        name: coverage-report
+        name: server-coverage-report
         path: server/htmlcov/
+        retention-days: 30
+
+  test-client:
+    name: Client Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: client/package-lock.json
+    
+    - name: Install dependencies
+      working-directory: ./client
+      run: npm ci
+    
+    - name: Run tests
+      working-directory: ./client
+      run: npm run test:run
+    
+    - name: Run tests with coverage
+      working-directory: ./client
+      run: npm run test:coverage
+    
+    - name: Upload client coverage report
+      uses: actions/upload-artifact@v5
+      with:
+        name: client-coverage-report
+        path: client/coverage/
         retention-days: 30
 
   build:
     name: Build Server Image
     runs-on: ubuntu-latest
-    needs: test
+    needs: [test-server, test-client]
     
     steps:
     - name: Checkout code
@@ -102,7 +132,7 @@ jobs:
       with:
         python-version: '3.13'
     
-    - name: Install dependencies
+    - name: Install Python dependencies
       working-directory: ./server
       run: |
         pip install flake8 black
@@ -121,3 +151,18 @@ jobs:
           echo "::warning::Black formatting was applied. Please run 'black src/ test/' locally and commit the changes."
           git diff
         fi
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: client/package-lock.json
+    
+    - name: Install Node dependencies
+      working-directory: ./client
+      run: npm ci
+    
+    - name: Build client
+      working-directory: ./client
+      run: npm run build
