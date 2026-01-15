@@ -23,8 +23,11 @@ def model_test(data_matrix, data_labels, test_indices, nn):
     if not test_indices:
         return 0.0
 
+    # Run fewer test iterations for faster optimization
+    # (100 was overkill for small test sets)
+    test_runs = 10
     avg_sum = 0
-    for _ in range(100):
+    for _ in range(test_runs):
         correct_guess_count = 0
         for i in test_indices:
             test = data_matrix[i]
@@ -33,7 +36,7 @@ def model_test(data_matrix, data_labels, test_indices, nn):
                 correct_guess_count += 1
 
         avg_sum += correct_guess_count / float(len(test_indices))
-    return avg_sum / 100
+    return avg_sum / test_runs
 
 
 def find_optimal_hidden_nodes(
@@ -58,11 +61,23 @@ def find_optimal_hidden_nodes(
     print("-" * 50)
 
     results = []
+    # Train each configuration for a few epochs
+    # Too many epochs with small datasets causes overfitting
+    epochs = 3
+    
+    print(f"Training with {len(train_indices)} samples, testing with {len(test_indices)} samples")
+    print(f"Each configuration will train for {epochs} epochs")
+    
     for i in range(min_nodes, max_nodes, step):
         nn = OCRNeuralNetwork(i, data_matrix, data_labels, train_indices, False)
+        
+        # Train for additional epochs (first epoch done in __init__)
+        for epoch in range(epochs - 1):
+            nn._train(data_matrix, data_labels, train_indices)
+        
         performance = model_test(data_matrix, data_labels, test_indices, nn)
         results.append((i, performance))
-        print(f"{i} Hidden Nodes: {performance:.4f}")
+        print(f"{i} Hidden Nodes: {performance:.4f} (accuracy on {len(test_indices)} test samples)")
 
     # Sort by accuracy (descending)
     results.sort(key=lambda x: x[1], reverse=True)

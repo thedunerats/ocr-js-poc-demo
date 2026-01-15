@@ -60,7 +60,7 @@ npm run preview
 The Network Optimizer helps you find the optimal number of hidden nodes for your training data. It automatically tests different network configurations and ranks them by accuracy.
 
 **How to Use**:
-1. **Collect Training Samples**: Draw and train at least 10 samples (more is better)
+1. **Collect Training Samples**: Draw and train at least 10 samples (minimum) or 30+ samples (recommended)
 2. **Configure Parameters**:
    - **Min Nodes**: Starting point for testing (default: 5)
    - **Max Nodes**: Upper limit for testing (default: 30)
@@ -73,8 +73,15 @@ The Network Optimizer helps you find the optimal number of hidden nodes for your
 - 20 training samples = 14 train (70%), 6 test (30%)
 - Best configuration shown with ⭐ OPTIMAL badge
 
+**Data Requirements**:
+- **Minimum:** 10 samples (required for 70/30 split)
+- **Low Accuracy Warning:** 10-29 samples may show 0-30% accuracy (insufficient data)
+- **Recommended:** 30+ samples (3+ per digit 0-9) for reliable results
+- **Best Results:** 50+ samples (5+ per digit) for meaningful accuracy differences
+
 **Tips**:
 - More training samples = more reliable results
+- With <30 samples, all configurations may show similar low accuracy
 - Smaller step = more precise but slower
 - Default range (5-30) works well for digit recognition
 - Optimal node count varies based on your handwriting samples

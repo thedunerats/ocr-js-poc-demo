@@ -153,6 +153,45 @@ Accepts JSON payloads for training and prediction:
 }
 ```
 
+### POST /optimize
+
+Find optimal neural network configuration by testing different hidden node counts.
+
+**Data Requirements:**
+- Minimum 10 total samples (for 70/30 train/test split)
+- Recommended 30+ samples (3+ per digit 0-9) for reliable results
+- With <30 samples, expect low accuracy (0-30%) as network cannot learn all digit patterns
+
+**Request:**
+```json
+{
+  "trainingData": [{"y0": [/* 400 values */], "label": 5}, ...],
+  "testData": [{"y0": [/* 400 values */], "label": 3}, ...],
+  "minNodes": 5,
+  "maxNodes": 30,
+  "step": 5
+}
+```
+
+**Response:**
+```json
+{
+  "results": [
+    {"hiddenNodes": 20, "accuracy": 0.95},
+    {"hiddenNodes": 15, "accuracy": 0.93}
+  ],
+  "optimal": {"hiddenNodes": 20, "accuracy": 0.95},
+  "message": "Optimization completed. Tested 6 configurations."
+}
+```
+
+**Note:** With insufficient data, the response includes warnings:
+```json
+{
+  "message": "Optimization completed. Tested 6 configurations. ⚠️ Warning: Only 7 training samples may not be enough for reliable results. Recommend 30+ samples (3+ per digit 0-9). ⚠️ Low accuracy detected - network needs more diverse training data."
+}
+```
+
 ## Testing
 
 The server includes a comprehensive test suite with 64+ tests covering all components.
@@ -190,10 +229,11 @@ pytest --cov=src --cov-report=html
 - ✅ Numerical stability (sigmoid overflow protection)
 - ✅ Invalid input handling
 
-**Flask API Tests** (`test/test_app.py` - 24+ tests)
+**Flask API Tests** (`test/test_app.py` - 39 tests)
 - ✅ Health check endpoint
 - ✅ Training endpoint validation
 - ✅ Prediction endpoint validation
+- ✅ **Optimization endpoint** (14 tests)
 - ✅ CORS headers
 - ✅ Error responses (400, 500)
 - ✅ Input sanitization
@@ -201,10 +241,11 @@ pytest --cov=src --cov-report=html
 - ✅ Label range validation
 - ✅ Non-numeric value detection
 
-**Neural Network Design Tests** (`test/test_neural_network_design.py` - 12 tests)
+**Neural Network Design Tests** (`test/test_neural_network_design.py` - 18 tests)
 - ✅ Model testing utilities
 - ✅ Accuracy calculations
 - ✅ Different network configurations
+- ✅ **Optimal hidden nodes search**
 - ✅ Data splitting
 - ✅ Empty dataset handling
 
@@ -245,8 +286,8 @@ server/
 ├── test/
 │   ├── __init__.py                 # Test package init
 │   ├── test_ocr.py                 # Neural network tests (28 tests)
-│   ├── test_app.py                 # Flask API tests (24+ tests)
-│   └── test_neural_network_design.py  # Design utility tests (12 tests)
+│   ├── test_app.py                 # Flask API tests (39 tests)
+│   └── test_neural_network_design.py  # Design utility tests (18 tests)
 ├── Dockerfile                      # Production server image
 ├── Dockerfile.test                 # Test runner image
 ├── docker-compose.yml              # Docker Compose configuration

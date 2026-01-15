@@ -286,6 +286,13 @@ The GitHub Actions workflow runs all tests on every push and pull request:
 
 The `/optimize` endpoint allows you to find the optimal number of hidden nodes for your neural network configuration.
 
+**Important:** The optimizer requires sufficient training data for meaningful results:
+- **Minimum:** 10 samples (enables 70/30 train/test split)
+- **Recommended:** 30+ samples (3+ per digit 0-9)
+- **Best Results:** 50+ samples (5+ per digit)
+
+With fewer than 30 samples, the network may not have enough data to learn all digit patterns, resulting in low accuracy across all configurations.
+
 **Usage:**
 ```bash
 curl -X POST http://localhost:3000/optimize \

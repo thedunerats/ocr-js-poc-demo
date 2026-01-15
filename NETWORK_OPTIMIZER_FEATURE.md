@@ -147,12 +147,74 @@ curl -X POST http://localhost:3000/optimize \
 - **Training Set**: 70% of provided trainingData
 - **Test Set**: 30% of provided trainingData
 - **Minimum Requirement**: 10 samples (7 train + 3 test)
+- **Recommended**: 30+ samples (21+ train + 9+ test)
+
+## Data Requirements & Expected Behavior
+
+### Minimum Requirements
+- **Absolute Minimum**: 10 samples total (to enable 70/30 train/test split)
+- **Recommended Minimum**: 30 samples (3+ per digit 0-9)
+- **Optimal**: 50+ samples (5+ per digit 0-9)
+
+### Why Data Size Matters
+The neural network must learn 10 different patterns (digits 0-9). With insufficient data:
+
+**With 10 samples (7 train, 3 test):**
+- Less than 1 sample per digit on average
+- Network cannot learn what most digits look like
+- **Expected Result**: 0-10% accuracy across all configurations
+- **Why**: Insufficient data for any configuration to learn patterns
+
+**With 20 samples (14 train, 6 test):**
+- ~1-2 samples per digit on average
+- Some digits may have no examples
+- **Expected Result**: 10-30% accuracy, little variation between configurations
+- **Why**: Barely enough data, network memorizes specific samples
+
+**With 30+ samples (21+ train, 9+ test):**
+- 3+ samples per digit
+- Network can start learning general patterns
+- **Expected Result**: 40-70% accuracy with visible differences between configurations
+- **Why**: Sufficient data for meaningful learning
+
+**With 50+ samples (35+ train, 15+ test):**
+- 5+ samples per digit
+- Enough variety for robust learning
+- **Expected Result**: 60-90% accuracy with clear optimal configuration
+- **Why**: Optimal data for comparing network architectures
+
+### What the Warning Messages Mean
+
+**Server Log:**
+```
+[OPTIMIZE WARNING] Only 7 training samples. Recommend at least 30 samples (3+ per digit) for meaningful results.
+```
+This means you'll likely see 0% or very low accuracy across all configurations.
+
+**API Response:**
+```json
+{
+  "message": "Optimization completed. Tested 6 configurations. ⚠️ Warning: Only 7 training samples may not be enough for reliable results. Recommend 30+ samples (3+ per digit 0-9). ⚠️ Low accuracy detected - network needs more diverse training data."
+}
+```
+This indicates your results are valid but not meaningful - collect more data.
+
+**Client UI:**
+```
+💡 You have 15 samples. For best results, collect 30+ samples (3+ per digit 0-9)
+```
+You can run optimization, but results will improve significantly with more data.
 
 ### Configuration Testing
 - Tests each configuration from `minNodes` to `maxNodes` in increments of `step`
-- Trains a fresh neural network for each configuration
-- Evaluates accuracy on test set
+- Trains a fresh neural network for each configuration (3 epochs per configuration)
+- Evaluates accuracy on test set (10 test runs per configuration for stability)
 - Returns all results sorted by accuracy (descending)
+
+### Training Parameters
+- **Epochs per Configuration**: 3 (balanced for small datasets; prevents overfitting)
+- **Test Runs per Configuration**: 10 (reduced from 100 for faster optimization)
+- **Why 3 epochs**: More epochs can cause overfitting with small datasets (<30 samples)
 
 ### Validation Rules
 - `minNodes` ≥ 1
@@ -165,11 +227,13 @@ curl -X POST http://localhost:3000/optimize \
 
 ## Performance Considerations
 
-- **Time Complexity**: O(n × m) where n = number of configurations, m = training samples
+- **Time Complexity**: O(n × m × e) where n = configurations, m = training samples, e = epochs (3)
 - **Typical Runtime**: 5-30 seconds depending on:
   - Number of configurations tested
   - Amount of training/test data
   - Server hardware
+- **Training**: Each configuration trains for 3 epochs (optimized for small datasets)
+- **Testing**: Each configuration tested 10 times for accuracy stability
 - **UI Responsiveness**: 
   - Button disabled during optimization
   - Loading indicator shown

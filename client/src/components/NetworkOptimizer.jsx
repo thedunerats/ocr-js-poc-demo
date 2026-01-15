@@ -118,6 +118,12 @@ function NetworkOptimizer({ trainingData, setStatus }) {
             Need {10 - trainingData.length} more training samples (currently: {trainingData.length})
           </p>
         )}
+        
+        {trainingData && trainingData.length >= 10 && trainingData.length < 30 && (
+          <p className="info-text">
+            💡 You have {trainingData.length} samples. For best results, collect 30+ samples (3+ per digit 0-9)
+          </p>
+        )}
       </div>
 
       {results && (

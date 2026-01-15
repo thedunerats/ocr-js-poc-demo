@@ -264,6 +264,11 @@ def optimize_network():
         print(f"[OPTIMIZE] Starting optimization: {len(train_indices)} train, "
               f"{len(test_indices)} test samples")
         print(f"[OPTIMIZE] Testing hidden nodes from {min_nodes} to {max_nodes} (step {step})")
+        
+        # Warn if dataset is too small
+        if len(train_indices) < 30:
+            print(f"[OPTIMIZE WARNING] Only {len(train_indices)} training samples. "
+                  f"Recommend at least 30 samples (3+ per digit) for meaningful results.")
 
         # Run optimization
         results = find_optimal_hidden_nodes(
@@ -288,10 +293,17 @@ def optimize_network():
         print(f"[OPTIMIZE] Completed. Best: {optimal['hiddenNodes']} nodes "
               f"with {optimal['accuracy']:.4f} accuracy")
 
+        # Build message with warnings if needed
+        message = f"Optimization completed. Tested {configs_tested} configurations."
+        if len(train_indices) < 30:
+            message += f" ⚠️ Warning: Only {len(train_indices)} training samples may not be enough for reliable results. Recommend 30+ samples (3+ per digit 0-9)."
+        if optimal['accuracy'] < 0.3:
+            message += " ⚠️ Low accuracy detected - network needs more diverse training data."
+
         return jsonify({
             "results": formatted_results,
             "optimal": optimal,
-            "message": f"Optimization completed. Tested {configs_tested} configurations."
+            "message": message
         }), 200
 
     except Exception as e:
