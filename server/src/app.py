@@ -73,12 +73,12 @@ def handle_request():
                         for pixel_idx, pixel_val in enumerate(data["y0"]):
                             float(pixel_val)
                     except (ValueError, TypeError) as e:
+                        error_msg = (
+                            f"Sample {i}, pixel {pixel_idx}: "
+                            f"Invalid value '{pixel_val}' - {str(e)}"
+                        )
                         return (
-                            jsonify(
-                                {
-                                    "error": f"Sample {i}, pixel {pixel_idx}: Invalid value '{pixel_val}' - {str(e)}"
-                                }
-                            ),
+                            jsonify({"error": error_msg}),
                             400,
                         )
 
@@ -91,13 +91,17 @@ def handle_request():
             try:
                 print(f"[DEBUG] Starting training with {len(train_array)} samples")
                 for idx, sample in enumerate(train_array):
+                    label = sample.get("label")
+                    y0_length = len(sample.get("y0", []))
+                    y0_sample = sample.get("y0", [])[:5]
                     print(
-                        f"[DEBUG] Sample {idx}: label={sample.get('label')}, y0_length={len(sample.get('y0', []))}, y0_sample={sample.get('y0', [])[:5]}..."
+                        f"[DEBUG] Sample {idx}: label={label}, "
+                        f"y0_length={y0_length}, y0_sample={y0_sample}..."
                     )
                 nn.train(train_array)
-                print(f"[DEBUG] Training completed successfully")
+                print("[DEBUG] Training completed successfully")
                 nn.save()
-                print(f"[DEBUG] Model saved successfully")
+                print("[DEBUG] Model saved successfully")
                 return jsonify({"success": True, "message": "Training completed"}), 200
             except Exception as e:
                 import traceback
