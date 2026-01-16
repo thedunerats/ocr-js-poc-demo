@@ -121,13 +121,12 @@ Health check endpoint to verify the server is running.
 }
 ```
 
-### POST /
-Accepts JSON payloads for training and prediction:
+### POST /train
+Train the neural network with provided training data.
 
-**Training:**
+**Request:**
 ```json
 {
-  "train": true,
   "trainArray": [
     {
       "y0": [/* 784-element array representing 28x28 pixel image */],
@@ -137,10 +136,20 @@ Accepts JSON payloads for training and prediction:
 }
 ```
 
-**Prediction:**
+**Response:**
 ```json
 {
-  "predict": true,
+  "success": true,
+  "message": "Training completed"
+}
+```
+
+### POST /predict
+Make a prediction using the trained neural network.
+
+**Request:**
+```json
+{
   "image": [/* 784-element array representing 28x28 pixel image */]
 }
 ```
@@ -148,6 +157,13 @@ Accepts JSON payloads for training and prediction:
 **Response:**
 ```json
 {
+  "type": "test",
+  "result": 7
+}
+```
+
+### POST /optimize
+Find the optimal number of hidden nodes for the neural network.
   "type": "test",
   "result": 5
 }

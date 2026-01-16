@@ -113,22 +113,22 @@ The client connects to the Flask backend through a Vite proxy:
 
 ### API Endpoints
 
-**POST /api**
+**POST /api/train**
 
 Training request:
 ```json
 {
-  "train": true,
   "trainArray": [
     {"y0": [/* 784 pixel array (28×28) */], "label": 5}
   ]
 }
 ```
 
+**POST /api/predict**
+
 Prediction request:
 ```json
 {
-  "predict": true,
   "image": [/* 784 pixel array */]
 }
 ```

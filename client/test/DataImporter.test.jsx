@@ -298,7 +298,7 @@ describe('DataImporter Component', () => {
 
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledWith(
-        '/api',
+        '/api/train',
         expect.objectContaining({
           method: 'POST',
           headers: { 'Content-Type': 'application/json' }

@@ -2,7 +2,7 @@ import { useState, useRef } from 'react'
 import './DataImporter.css'
 import { generateDigitPattern } from '../utils/digitPatternGenerator'
 
-const API_URL = '/api'
+const TRAIN_URL = '/api/train'
 
 function DataImporter({ setStatus, trainingCount, setTrainingCount, setTrainingData, setPixelArray }) {
   const [isImporting, setIsImporting] = useState(false)
@@ -65,13 +65,12 @@ function DataImporter({ setStatus, trainingCount, setTrainingCount, setTrainingD
       setStatus(`✓ Loaded ${validatedData.length} samples, sending to server...`)
 
       // Send to server for training
-      const response = await fetch(API_URL, {
+      const response = await fetch(TRAIN_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          train: true,
           trainArray: validatedData
         })
       })
@@ -163,11 +162,10 @@ function DataImporter({ setStatus, trainingCount, setTrainingCount, setTrainingD
     setStatus('⏳ Training on generated digit...')
 
     try {
-      const response = await fetch(API_URL, {
+      const response = await fetch(TRAIN_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          train: true,
           trainArray: [generatedDigit]
         })
       })

@@ -47,22 +47,22 @@ class TestFlaskServer:
 
     def test_post_endpoint_no_data(self, client):
         """Test POST endpoint with no data"""
-        response = client.post("/", data="", content_type="application/json")
+        response = client.post("/train", data="", content_type="application/json")
 
         assert response.status_code == 400
 
     def test_post_endpoint_invalid_json(self, client):
         """Test POST endpoint with invalid JSON"""
-        response = client.post("/", data="not json", content_type="application/json")
+        response = client.post("/train", data="not json", content_type="application/json")
 
         assert response.status_code == 400
 
     def test_train_endpoint_missing_train_array(self, client):
         """Test training endpoint without trainArray"""
-        payload = {"train": True}
+        payload = {}
 
         response = client.post(
-            "/", data=json.dumps(payload), content_type="application/json"
+            "/train", data=json.dumps(payload), content_type="application/json"
         )
 
         assert response.status_code == 400
@@ -73,7 +73,6 @@ class TestFlaskServer:
     def test_train_endpoint_success(self, client):
         """Test successful training request"""
         payload = {
-            "train": True,
             "trainArray": [
                 {"y0": [0.5] * 784, "label": 5},
                 {"y0": [0.3] * 784, "label": 3},
@@ -81,7 +80,7 @@ class TestFlaskServer:
         }
 
         response = client.post(
-            "/", data=json.dumps(payload), content_type="application/json"
+            "/train", data=json.dumps(payload), content_type="application/json"
         )
 
         assert response.status_code == 200
@@ -91,10 +90,10 @@ class TestFlaskServer:
 
     def test_predict_endpoint_missing_image(self, client):
         """Test prediction endpoint without image"""
-        payload = {"predict": True}
+        payload = {}
 
         response = client.post(
-            "/", data=json.dumps(payload), content_type="application/json"
+            "/predict", data=json.dumps(payload), content_type="application/json"
         )
 
         assert response.status_code == 400
@@ -107,10 +106,10 @@ class TestFlaskServer:
         # Create a random 784-element array (28x28 pixels)
         test_image = np.random.rand(784).tolist()
 
-        payload = {"predict": True, "image": test_image}
+        payload = {"image": test_image}
 
         response = client.post(
-            "/", data=json.dumps(payload), content_type="application/json"
+            "/predict", data=json.dumps(payload), content_type="application/json"
         )
 
         assert response.status_code == 200
@@ -122,10 +121,10 @@ class TestFlaskServer:
 
     def test_predict_endpoint_with_zeros(self, client):
         """Test prediction with all zeros"""
-        payload = {"predict": True, "image": [0] * 784}
+        payload = {"image": [0] * 784}
 
         response = client.post(
-            "/", data=json.dumps(payload), content_type="application/json"
+            "/predict", data=json.dumps(payload), content_type="application/json"
         )
 
         assert response.status_code == 200
@@ -135,27 +134,15 @@ class TestFlaskServer:
 
     def test_predict_endpoint_with_ones(self, client):
         """Test prediction with all ones"""
-        payload = {"predict": True, "image": [1] * 784}
+        payload = {"image": [1] * 784}
 
         response = client.post(
-            "/", data=json.dumps(payload), content_type="application/json"
+            "/predict", data=json.dumps(payload), content_type="application/json"
         )
 
         assert response.status_code == 200
         data = json.loads(response.data)
         assert "result" in data
-
-    def test_invalid_request_type(self, client):
-        """Test request without train or predict"""
-        payload = {"invalid": True}
-
-        response = client.post(
-            "/", data=json.dumps(payload), content_type="application/json"
-        )
-
-        assert response.status_code == 400
-        data = json.loads(response.data)
-        assert "error" in data
 
     def test_cors_headers(self, client):
         """Test that CORS headers are present"""
@@ -167,7 +154,6 @@ class TestFlaskServer:
         """Test training followed by prediction"""
         # First train
         train_payload = {
-            "train": True,
             "trainArray": [
                 {"y0": [0.8] * 784, "label": 7},
                 {"y0": [0.2] * 784, "label": 2},
@@ -176,15 +162,15 @@ class TestFlaskServer:
         }
 
         train_response = client.post(
-            "/", data=json.dumps(train_payload), content_type="application/json"
+            "/train", data=json.dumps(train_payload), content_type="application/json"
         )
         assert train_response.status_code == 200
 
         # Then predict
-        predict_payload = {"predict": True, "image": [0.5] * 784}
+        predict_payload = {"image": [0.5] * 784}
 
         predict_response = client.post(
-            "/", data=json.dumps(predict_payload), content_type="application/json"
+            "/predict", data=json.dumps(predict_payload), content_type="application/json"
         )
         assert predict_response.status_code == 200
         data = json.loads(predict_response.data)
@@ -193,10 +179,10 @@ class TestFlaskServer:
     def test_multiple_predictions(self, client):
         """Test making multiple predictions"""
         for _ in range(5):
-            payload = {"predict": True, "image": np.random.rand(784).tolist()}
+            payload = {"image": np.random.rand(784).tolist()}
 
             response = client.post(
-                "/", data=json.dumps(payload), content_type="application/json"
+                "/predict", data=json.dumps(payload), content_type="application/json"
             )
 
             assert response.status_code == 200
@@ -205,10 +191,10 @@ class TestFlaskServer:
 
     def test_predict_with_invalid_image_size(self, client):
         """Test prediction with wrong image size"""
-        payload = {"predict": True, "image": [0.5] * 100}  # Wrong size, should be 784
+        payload = {"image": [0.5] * 100}  # Wrong size, should be 784
 
         response = client.post(
-            "/", data=json.dumps(payload), content_type="application/json"
+            "/predict", data=json.dumps(payload), content_type="application/json"
         )
 
         # Should handle error gracefully
@@ -216,10 +202,10 @@ class TestFlaskServer:
 
     def test_empty_train_array(self, client):
         """Test training with empty array"""
-        payload = {"train": True, "trainArray": []}
+        payload = {"trainArray": []}
 
         response = client.post(
-            "/", data=json.dumps(payload), content_type="application/json"
+            "/train", data=json.dumps(payload), content_type="application/json"
         )
 
         # Empty array is falsy, should return error
@@ -229,10 +215,10 @@ class TestFlaskServer:
 
     def test_train_missing_y0_field(self, client):
         """Test training with missing y0 field"""
-        payload = {"train": True, "trainArray": [{"label": 5}]}  # Missing y0
+        payload = {"trainArray": [{"label": 5}]}  # Missing y0
 
         response = client.post(
-            "/", data=json.dumps(payload), content_type="application/json"
+            "/train", data=json.dumps(payload), content_type="application/json"
         )
 
         assert response.status_code == 400
@@ -242,10 +228,10 @@ class TestFlaskServer:
 
     def test_train_missing_label_field(self, client):
         """Test training with missing label field"""
-        payload = {"train": True, "trainArray": [{"y0": [0.5] * 784}]}  # Missing label
+        payload = {"trainArray": [{"y0": [0.5] * 784}]}  # Missing label
 
         response = client.post(
-            "/", data=json.dumps(payload), content_type="application/json"
+            "/train", data=json.dumps(payload), content_type="application/json"
         )
 
         assert response.status_code == 400
@@ -256,12 +242,11 @@ class TestFlaskServer:
     def test_train_invalid_array_size(self, client):
         """Test training with wrong array size"""
         payload = {
-            "train": True,
             "trainArray": [{"y0": [0.5] * 100, "label": 5}],  # Wrong size
         }
 
         response = client.post(
-            "/", data=json.dumps(payload), content_type="application/json"
+            "/train", data=json.dumps(payload), content_type="application/json"
         )
 
         assert response.status_code == 400
@@ -271,10 +256,10 @@ class TestFlaskServer:
 
     def test_train_invalid_label_range(self, client):
         """Test training with label outside 0-9 range"""
-        payload = {"train": True, "trainArray": [{"y0": [0.5] * 784, "label": 15}]}
+        payload = {"trainArray": [{"y0": [0.5] * 784, "label": 15}]}
 
         response = client.post(
-            "/", data=json.dumps(payload), content_type="application/json"
+            "/train", data=json.dumps(payload), content_type="application/json"
         )
 
         assert response.status_code == 400
@@ -284,10 +269,10 @@ class TestFlaskServer:
 
     def test_train_negative_label(self, client):
         """Test training with negative label"""
-        payload = {"train": True, "trainArray": [{"y0": [0.5] * 784, "label": -1}]}
+        payload = {"trainArray": [{"y0": [0.5] * 784, "label": -1}]}
 
         response = client.post(
-            "/", data=json.dumps(payload), content_type="application/json"
+            "/train", data=json.dumps(payload), content_type="application/json"
         )
 
         assert response.status_code == 400
@@ -296,10 +281,10 @@ class TestFlaskServer:
 
     def test_train_non_integer_label(self, client):
         """Test training with non-integer label"""
-        payload = {"train": True, "trainArray": [{"y0": [0.5] * 784, "label": "five"}]}
+        payload = {"trainArray": [{"y0": [0.5] * 784, "label": "five"}]}
 
         response = client.post(
-            "/", data=json.dumps(payload), content_type="application/json"
+            "/train", data=json.dumps(payload), content_type="application/json"
         )
 
         assert response.status_code == 400
@@ -308,10 +293,10 @@ class TestFlaskServer:
 
     def test_predict_wrong_array_size(self, client):
         """Test prediction with wrong array size"""
-        payload = {"predict": True, "image": [0.5] * 100}  # Wrong size
+        payload = {"image": [0.5] * 100}  # Wrong size
 
         response = client.post(
-            "/", data=json.dumps(payload), content_type="application/json"
+            "/predict", data=json.dumps(payload), content_type="application/json"
         )
 
         assert response.status_code == 400
@@ -321,10 +306,10 @@ class TestFlaskServer:
 
     def test_predict_non_array_image(self, client):
         """Test prediction with non-array image"""
-        payload = {"predict": True, "image": "not an array"}
+        payload = {"image": "not an array"}
 
         response = client.post(
-            "/", data=json.dumps(payload), content_type="application/json"
+            "/predict", data=json.dumps(payload), content_type="application/json"
         )
 
         assert response.status_code == 400
@@ -335,10 +320,10 @@ class TestFlaskServer:
     def test_predict_non_numeric_values(self, client):
         """Test prediction with non-numeric values in array"""
         image = [0.5] * 783 + ["invalid"]
-        payload = {"predict": True, "image": image}
+        payload = {"image": image}
 
         response = client.post(
-            "/", data=json.dumps(payload), content_type="application/json"
+            "/predict", data=json.dumps(payload), content_type="application/json"
         )
 
         assert response.status_code == 400
@@ -354,10 +339,10 @@ class TestFlaskServer:
             {"y0": [0.3] * 784, "label": 2},
             {"y0": [0.5] * 783 + [None], "label": 3},  # Invalid pixel value
         ]
-        payload = {"train": True, "trainArray": train_array}
+        payload = {"trainArray": train_array}
 
         response = client.post(
-            "/", data=json.dumps(payload), content_type="application/json"
+            "/train", data=json.dumps(payload), content_type="application/json"
         )
 
         assert response.status_code == 400
