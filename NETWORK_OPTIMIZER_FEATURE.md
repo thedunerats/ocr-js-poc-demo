@@ -92,11 +92,11 @@ curl -X POST http://localhost:3000/optimize \
   -H "Content-Type: application/json" \
   -d '{
     "trainingData": [
-      {"y0": [/* 400 pixel values */], "label": 5},
+      {"y0": [/* 784 pixel values */], "label": 5},
       ...
     ],
     "testData": [
-      {"y0": [/* 400 pixel values */], "label": 3},
+      {"y0": [/* 784 pixel values */], "label": 3},
       ...
     ],
     "minNodes": 5,
@@ -222,7 +222,7 @@ You can run optimization, but results will improve significantly with more data.
 - `step` ≥ 1
 - `trainingData` must not be empty
 - `testData` must not be empty
-- All samples must have 400-element `y0` arrays
+- All samples must have 784-element `y0` arrays (28×28 pixels)
 - All labels must be integers 0-9
 
 ## Performance Considerations

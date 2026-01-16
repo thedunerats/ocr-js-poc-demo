@@ -364,7 +364,7 @@ class TestFlaskServer:
         data = json.loads(response.data)
         assert "error" in data
         assert "sample 2" in data["error"].lower()  # Third sample (index 2)
-        assert "pixel 399" in data["error"].lower()  # Last pixel
+        assert "pixel 783" in data["error"].lower()  # Last pixel
         assert "invalid value" in data["error"].lower()
 
 

@@ -20,8 +20,8 @@ The application allows users to draw digits (0-9) on a canvas, which are convert
 ```
 ┌─────────────────┐         ┌──────────────────┐         ┌─────────────────┐
 │   User Draws    │   -->   │  Convert to      │   -->   │  Neural Network │
-│   on Canvas     │         │  Array (400)     │         │  Processes      │
-│   (200x200px)   │         │  20x20 grid      │         │  & Learns       │
+│   on Canvas     │         │  Array (784)     │         │  Processes      │
+│   (280x280px)   │         │  28x28 grid      │         │  & Learns       │
 └─────────────────┘         └──────────────────┘         └─────────────────┘
 ```
 
@@ -30,32 +30,32 @@ The application allows users to draw digits (0-9) on a canvas, which are convert
 ## Data Structure
 
 ### Canvas Representation
-The drawing canvas is **200x200 pixels**, divided into a **20x20 grid** of squares:
+The drawing canvas is **280x280 pixels**, divided into a **28x28 grid** of squares:
 - Each square is **10x10 pixels**
-- This creates **400 total squares** (20 × 20 = 400)
+- This creates **784 total squares** (28 × 28 = 784)
 - Each square represents **one input** to the neural network
 
 ### The Data Array
 ```javascript
 // Initial state: all squares are empty (0)
-data = [0, 0, 0, 0, ..., 0]  // 400 elements
+data = [0, 0, 0, 0, ..., 0]  // 784 elements
 
 // After drawing, filled squares become 1
-data = [0, 1, 1, 0, ..., 1]  // 400 elements (0s and 1s)
+data = [0, 1, 1, 0, ..., 1]  // 784 elements (0s and 1s)
 ```
 
 ### Visual Representation
 ```
-Canvas (200x200px)                    Data Array (400 elements)
+Canvas (280x280px)                    Data Array (784 elements)
 ┌─────────────────┐                   
 │ □ □ □ □ □ □ ... │                   [0, 0, 0, 0, 0, 0, ...,
 │ □ ■ ■ ■ □ □ ... │  ──────────>      0, 1, 1, 1, 0, 0, ...,
 │ □ ■ □ ■ □ □ ... │    Convert        0, 1, 0, 1, 0, 0, ...,
 │ □ ■ ■ ■ □ □ ... │                   0, 1, 1, 1, 0, 0, ...,
-│ □ □ □ □ □ □ ... │                   ... (400 total)]
+│ □ □ □ □ □ □ ... │                   ... (784 total)]
 │      ...        │
 └─────────────────┘
-  20x20 grid
+  28x28 grid
 ```
 
 ---
@@ -73,8 +73,8 @@ handleMouseDown(event) -> fillSquare(x, y)
 **2. Calculate Grid Position**
 ```javascript
 // Convert mouse coordinates to grid position
-const xPixel = Math.floor(x / PIXEL_WIDTH)  // Which column (0-19)
-const yPixel = Math.floor(y / PIXEL_WIDTH)  // Which row (0-19)
+const xPixel = Math.floor(x / PIXEL_WIDTH)  // Which column (0-27)
+const yPixel = Math.floor(y / PIXEL_WIDTH)  // Which row (0-27)
 ```
 
 **3. Calculate Array Index**
@@ -83,8 +83,8 @@ const yPixel = Math.floor(y / PIXEL_WIDTH)  // Which row (0-19)
 const index = ((xPixel - 1) * TRANSLATED_WIDTH + yPixel) - 1
 
 // Example: Square at position (5, 3)
-// index = ((5-1) * 20 + 3) - 1 = 82
-// So data[82] = 1
+// index = ((5-1) * 28 + 3) - 1 = 114
+// So data[114] = 1
 ```
 
 **4. Update Array and Canvas**
@@ -101,10 +101,10 @@ Grid Position (x, y)  →  Array Index  →  Data Value
 │ (0, 1)           →    1           →    0 or 1   │
 │ (0, 2)           →    2           →    0 or 1   │
 │ ...                                              │
-│ (1, 0)           →    20          →    0 or 1   │
-│ (1, 1)           →    21          →    0 or 1   │
+│ (1, 0)           →    28          →    0 or 1   │
+│ (1, 1)           →    29          →    0 or 1   │
 │ ...                                              │
-│ (19, 19)         →    399         →    0 or 1   │
+│ (27, 27)         →    783         →    0 or 1   │
 └──────────────────────────────────────────────────┘
 ```
 
@@ -194,15 +194,15 @@ Grid Position (x, y)  →  Array Index  →  Data Value
   "train": true,
   "trainArray": [
     {
-      "y0": [0, 0, 0, 1, 1, 1, 0, ...],  // 400 values (0 or 1)
+      "y0": [0, 0, 0, 1, 1, 1, 0, ...],  // 784 values (0 or 1)
       "label": 5                          // The digit you drew
     },
     {
-      "y0": [1, 1, 0, 0, 0, 1, 1, ...],  // 400 values
+      "y0": [1, 1, 0, 0, 0, 1, 1, ...],  // 784 values
       "label": 7
     },
     {
-      "y0": [0, 1, 1, 1, 0, 0, 1, ...],  // 400 values
+      "y0": [0, 1, 1, 1, 0, 0, 1, ...],  // 784 values
       "label": 2
     }
   ]
@@ -242,9 +242,9 @@ Grid Position (x, y)  →  Array Index  →  Data Value
    │                                     │
    │ Forward Propagation:                │
    │                                     │
-   │ Input Layer (400 neurons)           │
+   │ Input Layer (784 neurons)           │
    │    ↓ [weights: theta1]              │
-   │ Hidden Layer (20 neurons)           │
+   │ Hidden Layer (28 neurons)           │
    │    ↓ [activation: sigmoid]          │
    │ Output Layer (10 neurons)           │
    │    ↓ [weights: theta2]              │
@@ -272,7 +272,7 @@ Grid Position (x, y)  →  Array Index  →  Data Value
 // What gets sent to the server
 {
   "predict": true,
-  "image": [0, 0, 0, 1, 1, 1, 0, ...]  // 400 values (0 or 1)
+  "image": [0, 0, 0, 1, 1, 1, 0, ...]  // 784 values (0 or 1)
 }
 
 // What comes back
@@ -293,19 +293,19 @@ Grid Position (x, y)  →  Array Index  →  Data Value
 │                    3-LAYER NEURAL NETWORK                      │
 └────────────────────────────────────────────────────────────────┘
 
-INPUT LAYER (400 neurons)
-    Each neuron represents one square from the 20x20 grid
+INPUT LAYER (784 neurons)
+    Each neuron represents one square from the 28x28 grid
     Values: 0 (empty) or 1 (filled)
     
     neuron_0  ─┐
     neuron_1  ─┤
     neuron_2  ─┤
        ...     │
-    neuron_399─┘
-                │ theta1 weights (400 × 20 = 8,000 connections)
+    neuron_783─┘
+                │ theta1 weights (784 × 28 = 21,952 connections)
                 │ + input_layer_bias
                 v
-HIDDEN LAYER (20 neurons)
+HIDDEN LAYER (28 neurons)
     Learns patterns and features from the input
     Uses sigmoid activation function
     
@@ -313,8 +313,8 @@ HIDDEN LAYER (20 neurons)
     neuron_1  ─┤
     neuron_2  ─┤
        ...     │
-    neuron_19 ─┘
-                │ theta2 weights (20 × 10 = 200 connections)
+    neuron_27 ─┘
+                │ theta2 weights (28 × 10 = 280 connections)
                 │ + hidden_layer_bias
                 v
 OUTPUT LAYER (10 neurons)
@@ -389,7 +389,7 @@ Handles both training and prediction requests.
   "train": true,
   "trainArray": [
     {
-      "y0": [0, 1, 1, 0, ...],  // 400 numbers
+      "y0": [0, 1, 1, 0, ...],  // 784 numbers
       "label": 5                 // 0-9
     }
   ]
@@ -408,7 +408,7 @@ Handles both training and prediction requests.
 ```json
 {
   "predict": true,
-  "image": [0, 1, 1, 0, ...]  // 400 numbers
+  "image": [0, 1, 1, 0, ...]  // 784 numbers
 }
 ```
 
@@ -499,9 +499,9 @@ The server validates all incoming data:
 ### What Gets Saved?
 ```
 ocr_neural_network.json
-├── theta1: 8,000 weights (400 → 20)
-├── theta2: 200 weights (20 → 10)
-├── input_layer_bias: 20 values
+├── theta1: 21,952 weights (784 → 28)
+├── theta2: 280 weights (28 → 10)
+├── input_layer_bias: 28 values
 └── hidden_layer_bias: 10 values
 ```
 These weights represent everything the network has learned!
@@ -529,7 +529,7 @@ data = [0,0,0,0,0,0,0,0,0,0,
         0,0,0,1,1,1,0,0,0,0,
         0,1,1,1,0,0,0,0,0,0,
         0,1,1,1,1,1,1,0,0,0,
-        ... ] // 400 total
+        ... ] // 784 total
 
 Step 3: Send to server with label
 { y0: data, label: 2 }
@@ -560,10 +560,10 @@ Step 4: Network learns
 
 ## Summary
 
-1. **Draw** on 200x200 canvas → **400 binary values** (20×20 grid)
+1. **Draw** on 280x280 canvas → **784 binary values** (28×28 grid)
 2. **Training**: Send `[{y0: array, label: digit}]` → Network adjusts weights
 3. **Testing**: Send `{image: array}` → Network returns predicted digit
-4. **Learning**: Backpropagation adjusts 8,210 weights to minimize errors
+4. **Learning**: Backpropagation adjusts 22,232 weights to minimize errors
 5. **Persistence**: All learned weights saved to JSON file
 
 The more you train with varied examples, the smarter the network becomes! 🧠✨

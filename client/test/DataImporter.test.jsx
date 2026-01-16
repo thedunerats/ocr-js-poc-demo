@@ -39,11 +39,11 @@ describe('DataImporter Component', () => {
       />
     )
 
-    expect(screen.getByText(/Bulk Data Import/i)).toBeInTheDocument()
-    expect(screen.getByText(/Upload a JSON file with multiple training samples/i)).toBeInTheDocument()
+    expect(screen.getByText(/Smart Training Data Generator/i)).toBeInTheDocument()
+    expect(screen.getByText(/Generate realistic digit patterns or upload your own training data/i)).toBeInTheDocument()
   })
 
-  it('renders upload button', () => {
+  it('renders generate and upload buttons', () => {
     render(
       <DataImporter
         setStatus={mockSetStatus}
@@ -53,6 +53,7 @@ describe('DataImporter Component', () => {
       />
     )
 
+    expect(screen.getByText(/Generate Random Digit/i)).toBeInTheDocument()
     expect(screen.getByText(/Upload Training Data/i)).toBeInTheDocument()
   })
 
@@ -377,7 +378,7 @@ describe('DataImporter Component', () => {
     )
 
     const fileInput = document.querySelector('input[type="file"]')
-    const validData = [{ y0: Array(400).fill(0.5), label: 5 }]
+    const validData = [{ y0: Array(784).fill(0.5), label: 5 }]
     const file = createMockFile(JSON.stringify(validData), 'test.json', { type: 'application/json' })
 
     await user.upload(fileInput, file)

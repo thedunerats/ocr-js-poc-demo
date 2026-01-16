@@ -120,7 +120,7 @@ Training request:
 {
   "train": true,
   "trainArray": [
-    {"y0": [/* 400 pixel array */], "label": 5}
+    {"y0": [/* 784 pixel array (28×28) */], "label": 5}
   ]
 }
 ```
