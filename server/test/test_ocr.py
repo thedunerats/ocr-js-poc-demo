@@ -6,6 +6,7 @@ import pytest
 import numpy as np
 import json
 import os
+import time
 from src.ocr import OCRNeuralNetwork
 
 
@@ -232,8 +233,6 @@ class TestOCRNeuralNetwork:
         for i in range(6):
             nn_instance.save(max_backups=3)
             # Small delay to ensure different timestamps
-            import time
-
             time.sleep(0.01)
 
         # Should only have 3 backups
@@ -365,8 +364,6 @@ class TestOCRNeuralNetwork:
 
         # Create multiple saves
         nn_instance.save()
-        import time
-
         time.sleep(0.01)
         nn_instance.save()
         time.sleep(0.01)

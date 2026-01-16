@@ -5,7 +5,8 @@ const CANVAS_WIDTH = 280
 const TRANSLATED_WIDTH = 28
 const PIXEL_WIDTH = 10 // TRANSLATED_WIDTH = CANVAS_WIDTH / PIXEL_WIDTH
 const BATCH_SIZE = 3 // Reduced for faster training
-const API_URL = '/api'
+const TRAIN_URL = '/api/train'
+const PREDICT_URL = '/api/predict'
 
 function DrawingCanvas({ setStatus, trainingCount, setTrainingCount, trainingData, setTrainingData, pixelArray, setPixelArray, readOnly = false }) {
   const canvasRef = useRef(null)
@@ -158,9 +159,9 @@ function DrawingCanvas({ setStatus, trainingCount, setTrainingCount, trainingDat
     setStatus('')
   }
 
-  const sendData = async (json) => {
+  const sendData = async (url, json) => {
     try {
-      const response = await fetch(API_URL, {
+      const response = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -219,10 +220,12 @@ function DrawingCanvas({ setStatus, trainingCount, setTrainingCount, trainingDat
           }
         })
         
-        await sendData({
-          trainArray: sanitizedTrainArray,
-          train: true
-        })
+        await sendData(
+          TRAIN_URL,
+          {
+            trainArray: sanitizedTrainArray
+          }
+        )
         setStatus(`✓ Trained with ${newTrainArray.length} sample${newTrainArray.length > 1 ? 's' : ''}! Total: ${trainingCount + 1}`)
         setTrainArray([])
       } catch (error) {
@@ -245,10 +248,12 @@ function DrawingCanvas({ setStatus, trainingCount, setTrainingCount, trainingDat
 
     try {
       setStatus('🔍 Testing...')
-      const response = await sendData({
-        image: data,
-        predict: true
-      })
+      const response = await sendData(
+        PREDICT_URL,
+        {
+          image: data
+        }
+      )
       
       if (response.type === 'test') {
         setStatus(`🎯 The neural network predicts you wrote a '${response.result}'`)

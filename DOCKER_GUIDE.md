@@ -76,10 +76,9 @@ curl http://localhost:3000/health
 
 ### Training
 ```bash
-curl -X POST http://localhost:3000/ \
+curl -X POST http://localhost:3000/train \
   -H "Content-Type: application/json" \
   -d '{
-    "train": true,
     "trainArray": [
       {"y0": [0.5, ...], "label": 5}
     ]
@@ -88,10 +87,9 @@ curl -X POST http://localhost:3000/ \
 
 ### Prediction
 ```bash
-curl -X POST http://localhost:3000/ \
+curl -X POST http://localhost:3000/predict \
   -H "Content-Type: application/json" \
   -d '{
-    "predict": true,
     "image": [0.5, 0.3, ...]
   }'
 ```

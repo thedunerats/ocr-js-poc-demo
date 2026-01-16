@@ -177,13 +177,14 @@ Step 3: Draw "2" → enter 2 → click "Train Now" (repeat 3-5 times)
 - **Framework**: Flask with CORS support
 - **Endpoints**:
   - `GET /health` - Health check
-  - `POST /` - Training and prediction
+  - `POST /train` - Train the neural network
+  - `POST /predict` - Make predictions
   - `POST /optimize` - Find optimal hidden nodes configuration
 
 ### API
 The server provides a simple REST API:
-- `POST /` with `{ "train": true, "trainArray": [...] }` - Train the network
-- `POST /` with `{ "predict": true, "image": [...] }` - Predict a digit
+- `POST /train` with `{ "trainArray": [...] }` - Train the network
+- `POST /predict` with `{ "image": [...] }` - Predict a digit
 - `POST /optimize` with training and test data - Find optimal hidden nodes
 - `GET /health` - Check server status
  ## 🧪 Testing

@@ -138,9 +138,8 @@ Grid Position (x, y)  →  Array Index  →  Data Value
                  v
 3. SEND TO SERVER
    ┌─────────────────────────────────────┐
-   │ POST /api                           │
+   │ POST /api/train                     │
    │ {                                   │
-   │   train: true,                      │
    │   trainArray: [                     │
    │     { y0: [...], label: 5 },        │
    │     { y0: [...], label: 7 },        │
@@ -191,7 +190,6 @@ Grid Position (x, y)  →  Array Index  →  Data Value
 ```javascript
 // What gets sent to the server
 {
-  "train": true,
   "trainArray": [
     {
       "y0": [0, 0, 0, 1, 1, 1, 0, ...],  // 784 values (0 or 1)
@@ -228,10 +226,9 @@ Grid Position (x, y)  →  Array Index  →  Data Value
          v
 2. SEND TO SERVER
    ┌─────────────────────────────────────┐
-   │ POST /api                           │
+   │ POST /api/predict                   │
    │ {                                   │
-   │   predict: true,                    │
-   │   image: [0,1,1,0,1,...]  // 400    │
+   │   image: [0,1,1,0,1,...]  // 784    │
    │ }                                   │
    └─────────────┬───────────────────────┘
                  │
@@ -271,7 +268,6 @@ Grid Position (x, y)  →  Array Index  →  Data Value
 ```javascript
 // What gets sent to the server
 {
-  "predict": true,
   "image": [0, 0, 0, 1, 1, 1, 0, ...]  // 784 values (0 or 1)
 }
 
@@ -380,13 +376,12 @@ Purpose: Converts any input to a value between 0 and 1
 
 ### Endpoints
 
-#### POST `/api`
-Handles both training and prediction requests.
+#### POST `/train`
+Train the neural network with provided training data.
 
 **Training Request:**
 ```json
 {
-  "train": true,
   "trainArray": [
     {
       "y0": [0, 1, 1, 0, ...],  // 784 numbers
@@ -404,10 +399,12 @@ Handles both training and prediction requests.
 }
 ```
 
+#### POST `/predict`
+Make a prediction using the trained neural network.
+
 **Prediction Request:**
 ```json
 {
-  "predict": true,
   "image": [0, 1, 1, 0, ...]  // 784 numbers
 }
 ```
