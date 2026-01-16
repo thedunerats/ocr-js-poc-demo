@@ -154,10 +154,10 @@ Response:
 ```json
 {
   "results": [
-    {"hiddenNodes": 20, "accuracy": 0.95},
-    {"hiddenNodes": 15, "accuracy": 0.93}
+    {"hiddenNodes": 28, "accuracy": 0.95},
+    {"hiddenNodes": 25, "accuracy": 0.93}
   ],
-  "optimal": {"hiddenNodes": 20, "accuracy": 0.95},
+  "optimal": {"hiddenNodes": 28, "accuracy": 0.95},
   "message": "Optimization completed. Tested 6 configurations."
 }
 ```

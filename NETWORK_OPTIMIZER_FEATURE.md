@@ -110,15 +110,15 @@ curl -X POST http://localhost:3000/optimize \
 ```json
 {
   "results": [
-    {"hiddenNodes": 20, "accuracy": 0.95},
-    {"hiddenNodes": 15, "accuracy": 0.93},
-    {"hiddenNodes": 25, "accuracy": 0.90},
-    {"hiddenNodes": 10, "accuracy": 0.87},
-    {"hiddenNodes": 30, "accuracy": 0.85},
-    {"hiddenNodes": 5, "accuracy": 0.80}
+    {"hiddenNodes": 28, "accuracy": 0.95},
+    {"hiddenNodes": 25, "accuracy": 0.94},
+    {"hiddenNodes": 30, "accuracy": 0.92},
+    {"hiddenNodes": 20, "accuracy": 0.91},
+    {"hiddenNodes": 15, "accuracy": 0.88},
+    {"hiddenNodes": 10, "accuracy": 0.82}
   ],
   "optimal": {
-    "hiddenNodes": 20,
+    "hiddenNodes": 28,
     "accuracy": 0.95
   },
   "message": "Optimization completed. Tested 6 configurations."

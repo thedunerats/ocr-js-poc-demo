@@ -341,11 +341,11 @@ curl -X POST http://localhost:3000/optimize \
 ```json
 {
   "results": [
-    {"hiddenNodes": 20, "accuracy": 0.95},
+    {"hiddenNodes": 28, "accuracy": 0.95},
     {"hiddenNodes": 25, "accuracy": 0.94},
     ...
   ],
-  "optimal": {"hiddenNodes": 20, "accuracy": 0.95},
+  "optimal": {"hiddenNodes": 28, "accuracy": 0.95},
   "message": "Optimization completed. Tested 9 configurations."
 }
 ```
