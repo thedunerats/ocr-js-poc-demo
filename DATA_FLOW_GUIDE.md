@@ -130,7 +130,7 @@ Grid Position (x, y)  →  Array Index  →  Data Value
    ┌─────────────────────────────────────┐
    │ Add to trainArray:                  │
    │ {                                   │
-   │   y0: [0,1,1,0,1,...],  // 400 nums │
+   │   y0: [0,1,1,0,1,...],  // 784 nums │
    │   label: 5               // 0-9     │
    │ }                                   │
    └─────────────┬───────────────────────┘
@@ -154,7 +154,7 @@ Grid Position (x, y)  →  Array Index  →  Data Value
    │ For each sample:                    │
    │                                     │
    │ a) Forward Propagation              │
-   │    Input (400) → Hidden (20) → Out (10) │
+   │    Input (784) → Hidden (28) → Out (10) │
    │                                     │
    │ b) Calculate Error                  │
    │    Expected: [0,0,0,0,0,1,0,0,0,0]  │
@@ -172,8 +172,8 @@ Grid Position (x, y)  →  Array Index  →  Data Value
 5. SAVE WEIGHTS
    ┌─────────────────────────────────────┐
    │ Save to: ocr_neural_network.json    │
-   │ - theta1 (400→20 weights)           │
-   │ - theta2 (20→10 weights)            │
+   │ - theta1 (784→28 weights)           │
+   │ - theta2 (28→10 weights)            │
    │ - input_layer_bias                  │
    │ - hidden_layer_bias                 │
    └─────────────┬───────────────────────┘
@@ -463,7 +463,7 @@ This helps you find the best network architecture for your specific dataset!
 ### Data Validation
 
 The server validates all incoming data:
-- ✓ Array must have exactly **400 elements**
+- ✓ Array must have exactly **784 elements**
 - ✓ All values must be **numeric** (0 or 1)
 - ✓ Labels must be **integers 0-9**
 - ✓ No NaN, Infinity, or undefined values
@@ -472,20 +472,20 @@ The server validates all incoming data:
 
 ## Key Concepts Explained
 
-### Why 400 Elements?
-- Canvas: 200px × 200px
-- Grid: 20 × 20 squares
-- Result: **20 × 20 = 400 data points**
+### Why 784 Elements?
+- Canvas: 280px × 280px
+- Grid: 28 × 28 squares
+- Result: **28 × 28 = 784 data points**
 
 ### Why Binary (0 or 1)?
 - **0** = Square is empty (black)
 - **1** = Square is filled (white/drawn)
 - Simple binary input is easier for neural network to learn
 
-### Why 20 Hidden Neurons?
+### Why 28 Hidden Neurons?
 - Too few: Network can't learn complex patterns
 - Too many: Network might memorize instead of generalize
-- **20** is a good balance for this task (found through testing)
+- **28** is a good balance for this task (found through testing)
 - **Use the `/optimize` endpoint** to find the optimal number for your specific data!
 
 ### Why Batch Size of 3?

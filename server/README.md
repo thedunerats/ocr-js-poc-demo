@@ -186,10 +186,10 @@ Find optimal neural network configuration by testing different hidden node count
 ```json
 {
   "results": [
-    {"hiddenNodes": 20, "accuracy": 0.95},
-    {"hiddenNodes": 15, "accuracy": 0.93}
+    {"hiddenNodes": 28, "accuracy": 0.95},
+    {"hiddenNodes": 25, "accuracy": 0.93}
   ],
-  "optimal": {"hiddenNodes": 20, "accuracy": 0.95},
+  "optimal": {"hiddenNodes": 28, "accuracy": 0.95},
   "message": "Optimization completed. Tested 6 configurations."
 }
 ```
@@ -311,7 +311,7 @@ server/
 ### Neural Network
 - **Architecture**: Feedforward neural network
   - Input layer: 784 nodes (28×28 pixel images)
-  - Hidden layer: Configurable (default: 20 nodes)
+  - Hidden layer: Configurable (default: 28 nodes)
   - Output layer: 10 nodes (digits 0-9)
 - **Training**: Backpropagation with gradient descent
 - **Activation**: Sigmoid function
