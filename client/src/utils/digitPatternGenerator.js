@@ -63,6 +63,26 @@ const drawArc = (grid, cx, cy, radius, startAngle, endAngle, thickness = 1) => {
   }
 }
 
+// Draw an ellipse
+const drawEllipse = (grid, cx, cy, rx, ry, thickness = 1) => {
+  // Smooth ellipse with 60 steps
+  const steps = 60
+  
+  for (let i = 0; i < steps; i++) {
+    const angle = (i / steps) * Math.PI * 2
+    const x = Math.round(cx + rx * Math.cos(angle))
+    const y = Math.round(cy + ry * Math.sin(angle))
+    
+    // Draw with minimal thickness (2x2 instead of 3x3)
+    setPixel(grid, x, y, 1)
+    if (thickness >= 1) {
+      setPixel(grid, x + 1, y, 1)
+      setPixel(grid, x, y + 1, 1)
+      setPixel(grid, x + 1, y + 1, 1)
+    }
+  }
+}
+
 // Fill gaps in lines to ensure smooth connectivity (optimized)
 const fillGaps = (grid) => {
   const filled = [...grid]
@@ -142,21 +162,7 @@ const digitGenerators = {
     const grid = Array(784).fill(0)
     
     // Draw a proper ellipse (one continuous oval shape)
-    const cx = 14, cy = 14  // Center
-    const rx = 6, ry = 10   // Horizontal and vertical radii
-    const steps = 60        // Smooth ellipse
-    
-    for (let i = 0; i <= steps; i++) {
-      const angle = (i / steps) * Math.PI * 2
-      const x = Math.round(cx + rx * Math.cos(angle))
-      const y = Math.round(cy + ry * Math.sin(angle))
-      
-      // Draw with thickness for better visibility
-      setPixel(grid, x, y, 1)
-      setPixel(grid, x + 1, y, 1)
-      setPixel(grid, x, y + 1, 1)
-      setPixel(grid, x + 1, y + 1, 1)
-    }
+    drawEllipse(grid, 14, 14, 6, 10, 1)
     
     return grid
   },
