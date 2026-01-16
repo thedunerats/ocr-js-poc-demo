@@ -4,6 +4,7 @@ import math
 import json
 import os
 import shutil
+import traceback
 
 
 class OCRNeuralNetwork:
@@ -144,8 +145,6 @@ class OCRNeuralNetwork:
                 print(f"[OCR ERROR] ValueError at sample {idx}: {str(e)}")
                 raise ValueError(f"Training failed at sample {idx}: {str(e)}")
             except Exception as e:
-                import traceback
-
                 print(
                     f"[OCR ERROR] Unexpected error at sample {idx}: {traceback.format_exc()}"
                 )
