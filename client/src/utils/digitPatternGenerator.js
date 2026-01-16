@@ -141,12 +141,22 @@ const digitGenerators = {
   0: () => {
     const grid = Array(784).fill(0)
     
-    // Simple oval - just draw vertical oval with proper proportions
-    // Draw full circle for horizontal, stretch vertically with lines
-    drawArc(grid, 14, 8, 7, 0, Math.PI * 2, 1)
-    drawArc(grid, 14, 20, 7, 0, Math.PI * 2, 1)
-    drawLine(grid, 7, 8, 7, 20, 1)
-    drawLine(grid, 21, 8, 21, 20, 1)
+    // Draw a proper ellipse (one continuous oval shape)
+    const cx = 14, cy = 14  // Center
+    const rx = 6, ry = 10   // Horizontal and vertical radii
+    const steps = 60        // Smooth ellipse
+    
+    for (let i = 0; i <= steps; i++) {
+      const angle = (i / steps) * Math.PI * 2
+      const x = Math.round(cx + rx * Math.cos(angle))
+      const y = Math.round(cy + ry * Math.sin(angle))
+      
+      // Draw with thickness for better visibility
+      setPixel(grid, x, y, 1)
+      setPixel(grid, x + 1, y, 1)
+      setPixel(grid, x, y + 1, 1)
+      setPixel(grid, x + 1, y + 1, 1)
+    }
     
     return grid
   },
