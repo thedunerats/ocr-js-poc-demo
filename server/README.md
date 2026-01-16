@@ -163,13 +163,6 @@ Make a prediction using the trained neural network.
 ```
 
 ### POST /optimize
-Find the optimal number of hidden nodes for the neural network.
-  "type": "test",
-  "result": 5
-}
-```
-
-### POST /optimize
 
 Find optimal neural network configuration by testing different hidden node counts.
 
