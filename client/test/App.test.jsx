@@ -10,19 +10,18 @@ describe('App Component', () => {
 
   it('renders the subtitle', () => {
     render(<App />)
-    expect(screen.getByText(/Draw a digit and train or test the neural network/i)).toBeInTheDocument()
+    expect(screen.getByText(/Train and test a neural network for digit recognition/i)).toBeInTheDocument()
   })
 
   it('displays training count', () => {
     render(<App />)
-    expect(screen.getByText(/Training samples collected:/i)).toBeInTheDocument()
+    expect(screen.getByText(/Training samples:/i)).toBeInTheDocument()
     expect(screen.getByText('0')).toBeInTheDocument()
   })
 
   it('shows training tips', () => {
     render(<App />)
-    expect(screen.getByText(/Tip: Train 3-5 examples of EACH digit/i)).toBeInTheDocument()
-    expect(screen.getByText(/Use "Train Now" for immediate training/i)).toBeInTheDocument()
+    expect(screen.getByText(/Train 3-5 examples of each digit/i)).toBeInTheDocument()
   })
 
   it('renders DrawingCanvas component', () => {

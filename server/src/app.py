@@ -11,13 +11,13 @@ CORS(app)  # Enable CORS for all routes
 # Initialize with empty training data
 # In a real application, you would load actual training data
 data_matrix = np.zeros(
-    (100, 400)
-)  # Placeholder: 100 samples, 400 features (20x20 pixels)
+    (100, 784)
+)  # Placeholder: 100 samples, 784 features (28x28 pixels)
 data_labels = list(range(10)) * 10  # Placeholder labels
 training_indices = list(range(100))
 
-# Initialize the neural network
-nn = OCRNeuralNetwork(20, data_matrix, data_labels, training_indices, use_file=True)
+# Initialize the neural network (28x28 = 784 pixels)
+nn = OCRNeuralNetwork(28, data_matrix, data_labels, training_indices, use_file=True)
 
 
 @app.route("/", methods=["POST"])
@@ -48,11 +48,11 @@ def handle_request():
                             400,
                         )
 
-                    if len(data["y0"]) != 400:
+                    if len(data["y0"]) != 784:
                         return (
                             jsonify(
                                 {
-                                    "error": f"Sample {i}: Expected 400 pixels, got {len(data['y0'])}"
+                                    "error": f"Sample {i}: Expected 784 pixels, got {len(data['y0'])}"
                                 }
                             ),
                             400,
@@ -120,10 +120,10 @@ def handle_request():
             if not isinstance(image, list):
                 return jsonify({"error": "image must be an array"}), 400
 
-            if len(image) != 400:
+            if len(image) != 784:
                 return (
                     jsonify(
-                        {"error": f"image must contain 400 pixels, got {len(image)}"}
+                        {"error": f"image must contain 784 pixels, got {len(image)}"}
                     ),
                     400,
                 )
@@ -166,8 +166,8 @@ def optimize_network():
 
     Request body:
     {
-        "trainingData": [{"y0": [...400 values...], "label": 0-9}, ...],
-        "testData": [{"y0": [...400 values...], "label": 0-9}, ...],
+        "trainingData": [{"y0": [...784 values...], "label": 0-9}, ...],
+        "testData": [{"y0": [...784 values...], "label": 0-9}, ...],
         "minNodes": 5 (optional, default: 5),
         "maxNodes": 50 (optional, default: 50),
         "step": 5 (optional, default: 5)
@@ -238,9 +238,9 @@ def optimize_network():
                     "error": f"Sample {i}: Missing 'y0' or 'label' field"
                 }), 400
 
-            if len(sample["y0"]) != 400:
+            if len(sample["y0"]) != 784:
                 return jsonify({
-                    "error": f"Sample {i}: Expected 400 pixels, got {len(sample['y0'])}"
+                    "error": f"Sample {i}: Expected 784 pixels, got {len(sample['y0'])}"
                 }), 400
 
             label = sample["label"]

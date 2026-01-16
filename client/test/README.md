@@ -76,7 +76,7 @@ npm run test:coverage
 - ✅ Handles 500 Internal Server Error
 - ✅ Handles network failures gracefully
 - ✅ Sanitizes NaN values in pixel data
-- ✅ Validates array length (400 elements required)
+- ✅ Validates array length (784 elements required)
 - ✅ Accumulates multiple samples into batch
 
 **Prediction API**:
@@ -85,7 +85,7 @@ npm run test:coverage
 - ✅ Handles 500 Internal Server Error
 - ✅ Handles network failures gracefully
 - ✅ Sanitizes NaN values in pixel data
-- ✅ Validates array length (400 elements required)
+- ✅ Validates array length (784 elements required)
 
 ### NetworkOptimizer Component (18 tests)
 **Component Rendering**:

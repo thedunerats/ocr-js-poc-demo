@@ -16,7 +16,7 @@ class TestOCRNeuralNetwork:
     def sample_data(self):
         """Create sample training data"""
         np.random.seed(42)
-        data_matrix = np.random.rand(50, 400)
+        data_matrix = np.random.rand(50, 784)
         data_labels = [i % 10 for i in range(50)]
         training_indices = list(range(40))
         return data_matrix, data_labels, training_indices
@@ -96,7 +96,7 @@ class TestOCRNeuralNetwork:
 
     def test_predict(self, nn_instance):
         """Test prediction functionality"""
-        test_input = np.random.rand(400)
+        test_input = np.random.rand(784)
         prediction = nn_instance.predict(test_input)
 
         assert isinstance(prediction, (int, np.integer))
@@ -105,8 +105,8 @@ class TestOCRNeuralNetwork:
     def test_train(self, nn_instance):
         """Test training functionality"""
         training_data = [
-            {"y0": np.random.rand(400), "label": 5},
-            {"y0": np.random.rand(400), "label": 3},
+            {"y0": np.random.rand(784), "label": 5},
+            {"y0": np.random.rand(784), "label": 3},
         ]
 
         # Store original weights
@@ -148,7 +148,7 @@ class TestOCRNeuralNetwork:
 
         # Modify weights
         nn_instance.theta1 = nn_instance._rand_initialize_weights(
-            400, nn_instance.num_hidden_nodes
+            784, nn_instance.num_hidden_nodes
         )
         nn_instance.theta2 = nn_instance._rand_initialize_weights(
             nn_instance.num_hidden_nodes, 10
@@ -188,7 +188,7 @@ class TestOCRNeuralNetwork:
 
     def test_predict_consistency(self, nn_instance):
         """Test that predictions are consistent for the same input"""
-        test_input = np.random.rand(400)
+        test_input = np.random.rand(784)
 
         prediction1 = nn_instance.predict(test_input)
         prediction2 = nn_instance.predict(test_input)
@@ -251,7 +251,7 @@ class TestOCRNeuralNetwork:
 
         # Modify and save again (creates backup)
         nn_instance.theta1 = nn_instance._rand_initialize_weights(
-            400, nn_instance.num_hidden_nodes
+            784, nn_instance.num_hidden_nodes
         )
         nn_instance.save()
 
@@ -280,7 +280,7 @@ class TestOCRNeuralNetwork:
         """Test training with wrong input size"""
         invalid_data = [{"y0": [0.5] * 100, "label": 5}]  # Wrong size
 
-        with pytest.raises(ValueError, match="400"):
+        with pytest.raises(ValueError, match="784"):
             nn_instance.train(invalid_data)
 
     def test_train_with_missing_fields(self, nn_instance):
@@ -291,34 +291,34 @@ class TestOCRNeuralNetwork:
 
         # Missing label
         with pytest.raises(ValueError, match="label"):
-            nn_instance.train([{"y0": [0.5] * 400}])
+            nn_instance.train([{"y0": [0.5] * 784}])
 
     def test_train_with_invalid_label(self, nn_instance):
         """Test training with invalid label values"""
         # Label too high
         with pytest.raises(ValueError, match="0-9"):
-            nn_instance.train([{"y0": [0.5] * 400, "label": 15}])
+            nn_instance.train([{"y0": [0.5] * 784, "label": 15}])
 
         # Negative label
         with pytest.raises(ValueError, match="0-9"):
-            nn_instance.train([{"y0": [0.5] * 400, "label": -1}])
+            nn_instance.train([{"y0": [0.5] * 784, "label": -1}])
 
     def test_train_with_non_numeric_data(self, nn_instance):
         """Test training with non-numeric input data"""
-        invalid_data = [{"y0": ["a"] * 400, "label": 5}]
+        invalid_data = [{"y0": ["a"] * 784, "label": 5}]
 
         with pytest.raises((ValueError, RuntimeError)):
             nn_instance.train(invalid_data)
 
     def test_predict_with_wrong_size(self, nn_instance):
         """Test prediction with wrong input size"""
-        with pytest.raises(ValueError, match="400"):
+        with pytest.raises(ValueError, match="784"):
             nn_instance.predict([0.5] * 100)
 
     def test_predict_with_non_numeric(self, nn_instance):
         """Test prediction with non-numeric values"""
         with pytest.raises((ValueError, RuntimeError)):
-            nn_instance.predict(["invalid"] * 400)
+            nn_instance.predict(["invalid"] * 784)
 
     def test_predict_with_none(self, nn_instance):
         """Test prediction with None input"""
@@ -328,7 +328,7 @@ class TestOCRNeuralNetwork:
     def test_train_multiple_samples_with_one_invalid(self, nn_instance):
         """Test that training fails correctly when one sample is invalid"""
         mixed_data = [
-            {"y0": [0.5] * 400, "label": 5},  # Valid
+            {"y0": [0.5] * 784, "label": 5},  # Valid
             {"y0": [0.3] * 100, "label": 3},  # Invalid size
         ]
 
@@ -339,8 +339,8 @@ class TestOCRNeuralNetwork:
         """Test training with boundary label values (0 and 9)"""
         # Should succeed with labels 0 and 9
         valid_data = [
-            {"y0": [0.5] * 400, "label": 0},
-            {"y0": [0.8] * 400, "label": 9},
+            {"y0": [0.5] * 784, "label": 0},
+            {"y0": [0.8] * 784, "label": 9},
         ]
 
         # Should not raise any errors
@@ -349,15 +349,15 @@ class TestOCRNeuralNetwork:
     def test_predict_with_extreme_values(self, nn_instance, tmp_path):
         """Test prediction with extreme numeric values"""
         # Very large values
-        result1 = nn_instance.predict([1000.0] * 400)
+        result1 = nn_instance.predict([1000.0] * 784)
         assert 0 <= result1 <= 9
 
         # Very small values
-        result2 = nn_instance.predict([-1000.0] * 400)
+        result2 = nn_instance.predict([-1000.0] * 784)
         assert 0 <= result2 <= 9
 
-        # Mixed extreme values
-        result3 = nn_instance.predict([1e10, -1e10] * 200)
+        # Mixed extreme values (properly generate 784 elements)
+        result3 = nn_instance.predict([1e10 if i % 2 == 0 else -1e10 for i in range(784)])
         assert 0 <= result3 <= 9
         """Test that list_backups returns backups sorted by most recent first"""
         nn_instance.NN_FILE_PATH = str(tmp_path / "test_sorted.json")

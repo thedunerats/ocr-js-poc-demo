@@ -1,18 +1,57 @@
 import { useRef, useEffect, useState } from 'react'
 import './DrawingCanvas.css'
 
-const CANVAS_WIDTH = 200
-const TRANSLATED_WIDTH = 20
+const CANVAS_WIDTH = 280
+const TRANSLATED_WIDTH = 28
 const PIXEL_WIDTH = 10 // TRANSLATED_WIDTH = CANVAS_WIDTH / PIXEL_WIDTH
 const BATCH_SIZE = 3 // Reduced for faster training
 const API_URL = '/api'
 
-function DrawingCanvas({ setStatus, trainingCount, setTrainingCount, trainingData, setTrainingData }) {
+function DrawingCanvas({ setStatus, trainingCount, setTrainingCount, trainingData, setTrainingData, pixelArray, setPixelArray, readOnly = false }) {
   const canvasRef = useRef(null)
+  const prevPixelArrayRef = useRef(null)
+  const redrawScheduledRef = useRef(false)
+  const animationFrameRef = useRef(null)
   const [isDrawing, setIsDrawing] = useState(false)
-  const [data, setData] = useState(new Array(400).fill(0))
+  const [data, setData] = useState(new Array(784).fill(0))
   const [digit, setDigit] = useState('')
   const [trainArray, setTrainArray] = useState([])
+
+  // Update canvas when pixelArray changes (from generated digit)
+  useEffect(() => {
+    if (pixelArray && pixelArray.length === 784) {
+      // Skip if it's the same array reference (prevents double-renders)
+      if (prevPixelArrayRef.current === pixelArray) return
+      
+      prevPixelArrayRef.current = pixelArray
+      
+      // Cancel any pending animation frame and reset flag
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current)
+        animationFrameRef.current = null
+      }
+      
+      // Always reset the flag before scheduling
+      redrawScheduledRef.current = true
+      
+      // Use requestAnimationFrame to batch updates
+      animationFrameRef.current = requestAnimationFrame(() => {
+        setData(pixelArray)
+        redrawCanvas(pixelArray)
+        redrawScheduledRef.current = false
+        animationFrameRef.current = null
+      })
+    }
+    
+    // Cleanup on unmount
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current)
+        animationFrameRef.current = null
+        redrawScheduledRef.current = false
+      }
+    }
+  }, [pixelArray])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -43,6 +82,28 @@ function DrawingCanvas({ setStatus, trainingCount, setTrainingCount, trainingDat
     }
   }
 
+  const redrawCanvas = (pixelData) => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    
+    const ctx = canvas.getContext('2d')
+    
+    // Clear canvas
+    ctx.fillStyle = '#000000'
+    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_WIDTH)
+    drawGrid(ctx)
+    
+    // Draw only non-zero pixels - batch fillStyle for efficiency
+    ctx.fillStyle = '#ffffff'
+    for (let i = 0; i < pixelData.length; i++) {
+      if (pixelData[i] > 0) {
+        const y = Math.floor(i / TRANSLATED_WIDTH)
+        const x = i % TRANSLATED_WIDTH
+        ctx.fillRect(x * PIXEL_WIDTH, y * PIXEL_WIDTH, PIXEL_WIDTH, PIXEL_WIDTH)
+      }
+    }
+  }
+
   const getCanvasCoordinates = (e) => {
     const canvas = canvasRef.current
     const rect = canvas.getBoundingClientRect()
@@ -57,8 +118,9 @@ function DrawingCanvas({ setStatus, trainingCount, setTrainingCount, trainingDat
     const xPixel = Math.floor(x / PIXEL_WIDTH)
     const yPixel = Math.floor(y / PIXEL_WIDTH)
     
-    const index = ((xPixel - 1) * TRANSLATED_WIDTH + yPixel) - 1
-    if (index >= 0 && index < 400) {
+    // Use row-major order: index = y * width + x
+    const index = yPixel * TRANSLATED_WIDTH + xPixel
+    if (index >= 0 && index < 784) {
       const newData = [...data]
       newData[index] = 1
       setData(newData)
@@ -69,13 +131,14 @@ function DrawingCanvas({ setStatus, trainingCount, setTrainingCount, trainingDat
   }
 
   const handleMouseDown = (e) => {
+    if (readOnly) return
     setIsDrawing(true)
     const { x, y } = getCanvasCoordinates(e)
     fillSquare(x, y)
   }
 
   const handleMouseMove = (e) => {
-    if (!isDrawing) return
+    if (!isDrawing || readOnly) return
     const { x, y } = getCanvasCoordinates(e)
     fillSquare(x, y)
   }
@@ -90,7 +153,7 @@ function DrawingCanvas({ setStatus, trainingCount, setTrainingCount, trainingDat
     ctx.fillStyle = '#000000'
     ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_WIDTH)
     drawGrid(ctx)
-    setData(new Array(400).fill(0))
+    setData(new Array(784).fill(0))
     setDigit('')
     setStatus('')
   }
@@ -197,6 +260,11 @@ function DrawingCanvas({ setStatus, trainingCount, setTrainingCount, trainingDat
 
   return (
     <div className="drawing-canvas">
+      <h2>{readOnly ? 'Preview Canvas' : 'Drawing Canvas'} (28x28 Grid)</h2>
+      <p className="canvas-instruction">
+        {readOnly ? 'Generated patterns appear here for review' : 'Draw a digit below'}
+      </p>
+      
       <canvas
         ref={canvasRef}
         width={CANVAS_WIDTH}

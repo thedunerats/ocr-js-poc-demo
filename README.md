@@ -20,11 +20,15 @@ ocr-js-poc-demo/
 │   ├── src/
 │   │   ├── components/
 │   │   │   ├── DrawingCanvas.jsx
+│   │   │   ├── DataImporter.jsx
 │   │   │   └── NetworkOptimizer.jsx
+│   │   ├── utils/
+│   │   │   └── digitPatternGenerator.js
 │   │   ├── App.jsx
 │   │   └── main.jsx
-│   ├── test/                   # Client test suite (51 tests)
+│   ├── test/                   # Client test suite (66 tests)
 │   │   ├── App.test.jsx
+│   │   ├── DataImporter.test.jsx
 │   │   ├── DrawingCanvas.test.jsx
 │   │   ├── integration.test.jsx
 │   │   ├── NetworkOptimizer.test.jsx
@@ -94,15 +98,34 @@ npm test
 
 ## 📖 Using the Application
 
+### Tab-Based Interface
+
+The application features three tabs for different workflows:
+
+**✏️ Draw Tab**: Manually draw and train on your own handwriting
+**🎲 Generate Tab**: Auto-generate realistic digit patterns for quick training
+**⚙️ Optimize Tab**: Find the optimal hidden layer configuration
+
 ### Training the Neural Network
 
+#### Option 1: Manual Drawing (Draw Tab)
+
 1. **Open the app** at `http://localhost:5173`
-2. **Draw a digit** (0-9) on the black canvas using your mouse
-3. **Enter the digit** you drew in the input field
-4. **Choose training method**:
+2. **Select the "✏️ Draw" tab**
+3. **Draw a digit** (0-9) on the canvas using your mouse
+4. **Enter the digit** you drew in the input field
+5. **Choose training method**:
    - **Add to Batch**: Collects samples, auto-trains after 3
    - **Train Now**: Trains immediately with current drawing
-5. **Train multiple digits**: Repeat for all digits 0-9
+6. **Train multiple digits**: Repeat for all digits 0-9
+
+#### Option 2: Generate Synthetic Digits (Generate Tab)
+
+1. **Select the "🎲 Generate" tab**
+2. **Click "Generate Random Digit"** - a realistic digit pattern appears on the canvas
+3. **Review the generated digit** - if it looks good, click "✓ Train on This"
+4. **Repeat** - generate and train on multiple digits for quick training
+5. **Or upload bulk data** - use the JSON file uploader for batch training
 
 ### Testing Predictions
 
@@ -142,13 +165,13 @@ Step 3: Draw "2" → enter 2 → click "Train Now" (repeat 3-5 times)
 
 ### Backend Neural Network
 - **Architecture**: 3-layer feedforward network
-  - Input layer: 400 nodes (20×20 pixel grid)
-  - Hidden layer: 20 nodes
+  - Input layer: 784 nodes (28×28 pixel grid)
+  - Hidden layer: 28 nodes (default, configurable)
   - Output layer: 10 nodes (digits 0-9)
 - **Training**: Backpropagation with gradient descent
 - **Activation**: Sigmoid function
 - **Framework**: Custom implementation using NumPy
-- **Testing**: pytest (64+ tests)
+- **Testing**: pytest (83 tests)
 
 ### Server
 - **Framework**: Flask with CORS support
@@ -165,7 +188,7 @@ The server provides a simple REST API:
 - `GET /health` - Check server status
  ## 🧪 Testing
 
-The project includes comprehensive test suites for both frontend and backend with **134 total tests**.
+The project includes comprehensive test suites for both frontend and backend with **149 total tests**.
 
 ### Server Tests (Python/pytest)
 
@@ -215,16 +238,21 @@ npm run test:ui           # Interactive UI
 ```
 
 **Test Coverage:**
-- ✅ **51 tests** covering React components
+- ✅ **66 tests** covering React components
 - ✅ **App Component** (7 tests)
-  - Rendering and layout
+  - Tab-based UI rendering
   - Training count display
   - Status messages
 - ✅ **DrawingCanvas Component** (13 tests)
-  - Canvas rendering
+  - Canvas rendering (28×28 grid)
   - User interactions
   - Form validation
   - Button functionality
+- ✅ **DataImporter Component** (15 tests)
+  - Digit pattern generation
+  - File upload and validation
+  - Bulk data import
+  - JSON format validation (784 pixels)
 - ✅ **NetworkOptimizer Component** (18 tests)
   - Component rendering and UI
   - Input validation and state management
@@ -245,16 +273,17 @@ The GitHub Actions workflow runs all tests on every push and pull request:
   - OCR Neural Network (28 tests)
   - Flask API endpoints (39 tests, includes /optimize)
   - Neural network design utilities (18 tests)
-- ✅ **Client tests** (JavaScript/Vitest) - 51 tests
+- ✅ **Client tests** (JavaScript/Vitest) - 66 tests
   - App component (7 tests)
   - DrawingCanvas component (13 tests)
+  - DataImporter component (15 tests)
   - NetworkOptimizer component (18 tests)
   - API integration (13 tests)
 - ✅ Code coverage reports (both server and client)
 - ✅ Linting (flake8, black)
 - ✅ Build validation
 
-**Total Test Coverage: 134 tests**
+**Total Test Coverage: 149 tests**
 
 **Test Files:**
 
@@ -266,6 +295,7 @@ The GitHub Actions workflow runs all tests on every push and pull request:
 **Client:**
 - `test/App.test.jsx` - App component tests (7 tests)
 - `test/DrawingCanvas.test.jsx` - Canvas component tests (13 tests)
+- `test/DataImporter.test.jsx` - Data importer tests (15 tests)
 - `test/NetworkOptimizer.test.jsx` - Network optimizer tests (18 tests)
 - `test/integration.test.jsx` - API integration tests (13 tests)
 - `test/setup.js` - Test environment configuration
@@ -443,9 +473,10 @@ docker-compose up -d ocr-server
 
 ### Training Data
 The network expects:
-- Flattened 20×20 pixel images (400 values)
-- Pixel values normalized between 0 and 1
+- Flattened 28×28 pixel images (784 values)
+- Pixel values normalized between 0 and 1 (0 = black, 1 = white)
 - Labels from 0 to 9
+- Can be provided via manual drawing, auto-generated patterns, or JSON bulk upload
 
 ## Notes
 
