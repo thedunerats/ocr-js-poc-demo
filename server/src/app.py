@@ -4,6 +4,7 @@ from src.ocr import OCRNeuralNetwork
 from src.neural_network_design import find_optimal_hidden_nodes
 import numpy as np
 import os
+import traceback
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
@@ -29,7 +30,7 @@ def train():
         except Exception:
             return jsonify({"error": "Invalid JSON"}), 400
 
-        if not payload:
+        if payload is None:
             return jsonify({"error": "Invalid JSON"}), 400
 
         train_array = payload.get("trainArray")
@@ -104,8 +105,6 @@ def train():
             print("[DEBUG] Model saved successfully")
             return jsonify({"success": True, "message": "Training completed"}), 200
         except Exception as e:
-            import traceback
-
             error_details = traceback.format_exc()
             print(f"[ERROR] Training failed: {error_details}")
             return jsonify({"error": f"Training failed: {str(e)}"}), 500
@@ -123,7 +122,7 @@ def predict():
         except Exception:
             return jsonify({"error": "Invalid JSON"}), 400
 
-        if not payload:
+        if payload is None:
             return jsonify({"error": "Invalid JSON"}), 400
 
         image = payload.get("image")
@@ -321,7 +320,6 @@ def optimize_network():
         }), 200
 
     except Exception as e:
-        import traceback
         error_details = traceback.format_exc()
         print(f"[ERROR] Optimization failed: {error_details}")
         return jsonify({"error": f"Optimization failed: {str(e)}"}), 500
