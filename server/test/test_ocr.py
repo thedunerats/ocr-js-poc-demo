@@ -357,7 +357,7 @@ class TestOCRNeuralNetwork:
         assert 0 <= result2 <= 9
 
         # Mixed extreme values
-        result3 = nn_instance.predict([1e10, -1e10] * 200)
+        result3 = nn_instance.predict([1e10, -1e10] * 784)
         assert 0 <= result3 <= 9
         """Test that list_backups returns backups sorted by most recent first"""
         nn_instance.NN_FILE_PATH = str(tmp_path / "test_sorted.json")

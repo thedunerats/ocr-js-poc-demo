@@ -45,8 +45,8 @@ function DataImporter({ setStatus, trainingCount, setTrainingCount, setTrainingD
           throw new Error(`Sample ${i}: Missing or invalid 'y0' array`)
         }
 
-        if (sample.y0.length !== 400) {
-          throw new Error(`Sample ${i}: Expected 400 pixels, got ${sample.y0.length}`)
+        if (sample.y0.length !== 784) {
+          throw new Error(`Sample ${i}: Expected 784 pixels, got ${sample.y0.length}`)
         }
 
         if (typeof sample.label !== 'number' || sample.label < 0 || sample.label > 9) {

@@ -334,7 +334,7 @@ class TestFlaskServer:
 
     def test_predict_non_numeric_values(self, client):
         """Test prediction with non-numeric values in array"""
-        image = [0.5] * 399 + ["invalid"]
+        image = [0.5] * 783 + ["invalid"]
         payload = {"predict": True, "image": image}
 
         response = client.post(
@@ -352,7 +352,7 @@ class TestFlaskServer:
         train_array = [
             {"y0": [0.5] * 784, "label": 1},
             {"y0": [0.3] * 784, "label": 2},
-            {"y0": [0.5] * 399 + [None], "label": 3},  # Invalid pixel value
+            {"y0": [0.5] * 783 + [None], "label": 3},  # Invalid pixel value
         ]
         payload = {"train": True, "trainArray": train_array}
 
@@ -549,7 +549,7 @@ class TestOptimizeEndpoint:
         assert response.status_code == 400
         data = json.loads(response.data)
         assert "error" in data
-        assert "400 pixels" in data["error"]
+        assert "784 pixels" in data["error"]
 
     def test_optimize_endpoint_invalid_label_range(self, client):
         """Test optimization with invalid label"""
