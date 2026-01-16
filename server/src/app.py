@@ -238,9 +238,9 @@ def optimize_network():
                     "error": f"Sample {i}: Missing 'y0' or 'label' field"
                 }), 400
 
-            if len(sample["y0"]) != 400:
+            if len(sample["y0"]) != 784:
                 return jsonify({
-                    "error": f"Sample {i}: Expected 400 pixels, got {len(sample['y0'])}"
+                    "error": f"Sample {i}: Expected 784 pixels, got {len(sample['y0'])}"
                 }), 400
 
             label = sample["label"]
